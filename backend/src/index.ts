@@ -4,19 +4,17 @@ import { corsConfig } from './config';
 import { startServer } from './config/server';
 import { errorHandler } from './middlewares';
 import { NotFoundError } from './utils';
+import apiRouter from './routes';
 
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use(cors(corsConfig))
 
-app.get('/', (_req, res) => {
-  res.send('Hola mundo');
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-
+app.use('/api', apiRouter )
 
 // Cualquier ruta que no coincida con las anteriores lanzará un error 404 personalizado en el error middleware
 app.use((_, __, next) => {

@@ -6,9 +6,14 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,        
     "strict": true,                                      
-    "skipLibCheck": true                                 
+    "skipLibCheck": true,
+    // OJO: Clave para trabajar con decoradores
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,         
+    "outDir": "./dist"                        
   },
   "include": [
     "src/**/*.ts"                                     
   ],
+  "exclude": ["node_modules"]
 }
