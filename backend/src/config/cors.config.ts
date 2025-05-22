@@ -3,5 +3,6 @@ export const corsConfig = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true
 };
