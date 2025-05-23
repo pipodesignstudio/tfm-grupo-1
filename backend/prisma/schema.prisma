@@ -8,11 +8,11 @@ datasource db {
 }
 
 model usuarios {
-  id              Int       @id @default(autoincrement())
-  nombre          String?   @db.VarChar(100)
-  apellidos       String?   @db.VarChar(100)
-  email           String    @unique(map: "idx_email") @db.VarChar(100)
-  password        String    @db.VarChar(255)
-  primera_session Boolean?  @default(true)
-  fecha_registro  DateTime? @default(now()) @db.DateTime(0)
+  id             Int       @id @default(autoincrement()) @db.UnsignedInt
+  nombre         String?   @db.VarChar(100)
+  apellido       String?   @db.VarChar(100)
+  email          String    @unique(map: "idx_email") @db.VarChar(100)
+  contrasena     String    @db.VarChar(255)
+  primera_sesion Boolean?  @default(true)
+  fecha_creacion DateTime? @default(now()) @db.DateTime(0)
 }

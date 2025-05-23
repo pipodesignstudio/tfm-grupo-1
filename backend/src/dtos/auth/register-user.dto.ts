@@ -3,8 +3,7 @@ import { IsOptional, IsString, MaxLength, IsNotEmpty, IsEmail, MinLength } from 
 // DTO para crear un nuevo usuario
 // Nota: los decoradores se aplican de último a primero
 
-
-export class CreateUserDto { 
+export class RegisterUserDto { 
     @IsString({ message: 'El nombre debe ser una cadena de texto.' })
     @MaxLength(100, { message: 'El nombre no debe exceder los 100 caracteres.' })
     @IsOptional()
