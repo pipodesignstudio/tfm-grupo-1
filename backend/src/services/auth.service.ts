@@ -11,20 +11,49 @@ import prisma from "../config/prisma.config";
 import { IUser } from "../interfaces";
 
 export class AuthService {
+
+  
   /**
-   * Crea un nuevo usuario en la base de datos.
+   * Registra un nuevo usuario en la base de datos.
+   *
+   * Si el usuario se registra con una invitación, se intenta loggear al usuario
+   * correspondiente. De lo contrario, crea un nuevo usuario. Si el email ya existe,
+   * lanza un error 409.
+   *
+   * @param dto Los datos del usuario a registrar, provenientes del DTO validado.
+   * @returns El objeto de usuario creado (sin la contraseña) o el usuario logeado
+   *          si se proporciona un ID de usuario.
+   * @throws {InternalServerError} Para otros errores inesperados de la base de datos.
+   */
+  public async registerUserService(dto: RegisterUserDto): Promise<any> {
+    // Si viene con una invitación
+    if(dto.familyId) {
+      
+    } else {
+      return await this.createUser(dto);
+    }
+  }
+
+  /**
+   * Crea un nuevo usuario sin relaciones familiares.
    *
    * @param dto Los datos del usuario a crear, provenientes del DTO validado.
    * @returns El objeto de usuario creado (sin la contraseña).
    * @throws {ConflictError} Si el email ya existe.
    * @throws {InternalServerError} Para otros errores inesperados de la base de datos.
    */
-  public async createUser(dto: RegisterUserDto): Promise<IUser> {
+  private async createUser(dto: RegisterUserDto): Promise<IUser> {
     try {
+
       // 1. Verificar si el email ya existe
       const existingUser = await prisma.usuarios.findUnique({
         where: { email: dto.email },
       });
+
+      // Si se proporciona un ID y el usuario ya existe intentamos loggear
+      if (dto.familyId && existingUser) {
+        
+      }
 
       if (existingUser) {
         throw new ConflictError("El email ya está registrado.");
@@ -57,7 +86,6 @@ export class AuthService {
     }
   }
 
-  // ... (Tu método createUser existente) ...
 
   /**
    * Autentica un usuario verificando sus credenciales.
@@ -105,4 +133,5 @@ export class AuthService {
       }
     }
   }
+
 }
