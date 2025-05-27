@@ -31,15 +31,14 @@ export class AuthService {
       }
 
       // 2. Hashear la contraseña antes de guardarla en la base de datos
-      const hashedPassword = await bcrypt.hash(dto.password, 10);
+      const hashedPassword = await bcrypt.hash(dto.contrasena, 10);
 
       // 3. Insertar el nuevo usuario en la base de datos
       const newUser: IUser = await prisma.usuarios.create({
         data: {
           email: dto.email,
           contrasena: hashedPassword,
-          nombre: dto.nombre,
-          apellido: dto.apellidos,
+          nick: 'Hola mundo',
           primera_sesion: true,
           fecha_creacion: new Date(),
         },

@@ -7,12 +7,155 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model actividades {
+  id            Int               @id @default(autoincrement())
+  rutina_id     Int
+  titulo        String?           @db.VarChar(100)
+  descripcion   String?           @db.Text
+  dia_semana    Int?              @db.TinyInt
+  hora_inicio   DateTime?         @db.Time(0)
+  hora_fin      DateTime?         @db.Time(0)
+  ninos_id      Int
+  color         String?           @db.VarChar(45)
+  tipo          actividades_tipo?
+  ubicacion     String?           @db.VarChar(45)
+  responsable   Int?
+  rutinas       rutinas           @relation(fields: [rutina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_actividad_rutina")
+  ninos         ninos             @relation(fields: [ninos_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_actividades_ninos1")
+  recordatorios recordatorios[]
+
+  @@index([rutina_id], map: "fk_actividad_rutina")
+  @@index([ninos_id], map: "fk_actividades_ninos1_idx")
+}
+
+model alergias {
+  id       Int    @id @default(autoincrement())
+  ninos_id Int
+  nombre   String @db.VarChar(100)
+  ninos    ninos  @relation(fields: [ninos_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_alergias_ninos1")
+
+  @@index([ninos_id], map: "fk_alergias_ninos1_idx")
+}
+
+model familia {
+  id               Int                @id @default(autoincrement())
+  descripcion      String?            @db.Text
+  familia_usuarios familia_usuarios[]
+  ninos            ninos[]
+}
+
+model familia_usuarios {
+  perfiles_aprendizaje_id Int
+  usuarios_id             Int
+  rol                     familia_usuarios_rol?
+  familia                 familia               @relation(fields: [perfiles_aprendizaje_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_perfiles_aprendizaje_has_usuarios_perfiles_aprendizaje1")
+  usuarios                usuarios              @relation(fields: [usuarios_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_perfiles_aprendizaje_has_usuarios_usuarios1")
+
+  @@id([perfiles_aprendizaje_id, usuarios_id])
+  @@index([perfiles_aprendizaje_id], map: "fk_perfiles_aprendizaje_has_usuarios_perfiles_aprendizaje1_idx")
+  @@index([usuarios_id], map: "fk_perfiles_aprendizaje_has_usuarios_usuarios1_idx")
+}
+
+model ninos {
+  id                      Int           @id @default(autoincrement())
+  perfiles_aprendizaje_id Int
+  nombre                  String        @db.VarChar(100)
+  apellido                String        @db.VarChar(100)
+  img_perfil              Bytes?
+  fecha_nacimiento        DateTime      @db.Date
+  descripcion             String?       @db.Text
+  genero                  String?       @db.VarChar(45)
+  peso                    Int?
+  altura                  Int?
+  actividades             actividades[]
+  alergias                alergias[]
+  familia                 familia       @relation(fields: [perfiles_aprendizaje_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ninos_perfiles_aprendizaje1")
+  notas                   notas[]
+  rutinas                 rutinas[]
+
+  @@index([perfiles_aprendizaje_id], map: "fk_ninos_perfiles_aprendizaje1_idx")
+}
+
+model notas {
+  id             Int      @id @default(autoincrement())
+  ninos_id       Int
+  titulo         String?  @db.VarChar(45)
+  texto          String?  @db.Text
+  fecha_creacion DateTime @default(now()) @db.DateTime(0)
+  ninos          ninos    @relation(fields: [ninos_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_notas_ninos1")
+
+  @@index([ninos_id], map: "fk_notas_ninos1_idx")
+}
+
+model objetivos {
+  id         Int     @id @default(autoincrement())
+  rutinas_id Int
+  nombre     String? @db.VarChar(45)
+  color      String? @db.VarChar(45)
+  tipo       String? @db.VarChar(45)
+  rutinas    rutinas @relation(fields: [rutinas_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_objetivos_rutinas1")
+
+  @@index([rutinas_id], map: "fk_objetivos_rutinas1_idx")
+}
+
+model recordatorios {
+  id           Int         @id @default(autoincrement())
+  actividad_id Int
+  fecha_envio  DateTime?   @db.Date
+  enviado      Boolean?    @default(false)
+  actividades  actividades @relation(fields: [actividad_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_recordatorio_actividad")
+
+  @@index([actividad_id], map: "fk_recordatorio_actividad")
+}
+
+model rutinas {
+  id             Int           @id @default(autoincrement())
+  nombre         String?       @db.VarChar(100)
+  descripcion    String?       @db.Text
+  fecha_creacion DateTime?     @default(now()) @db.DateTime(0)
+  ninos_id       Int
+  frecuencia     Json?
+  fecha_fin      DateTime?     @db.Date
+  actividades    actividades[]
+  objetivos      objetivos[]
+  ninos          ninos         @relation(fields: [ninos_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rutinas_ninos1")
+
+  @@index([ninos_id], map: "fk_rutinas_ninos1_idx")
+}
+
+model sesiones {
+  id           Int       @id @default(autoincrement())
+  usuario_id   Int
+  fecha_inicio DateTime? @default(now()) @db.DateTime(0)
+  usuarios     usuarios  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_sesion_usuario")
+
+  @@index([usuario_id], map: "fk_sesion_usuario")
+}
+
 model usuarios {
-  id             Int       @id @default(autoincrement()) @db.UnsignedInt
-  nombre         String?   @db.VarChar(100)
-  apellido       String?   @db.VarChar(100)
-  email          String    @unique(map: "idx_email") @db.VarChar(100)
-  contrasena     String    @db.VarChar(255)
-  primera_sesion Boolean?  @default(true)
-  fecha_creacion DateTime? @default(now()) @db.DateTime(0)
+  id               Int                @id @default(autoincrement())
+  nombre           String?            @db.VarChar(100)
+  apellido         String?            @db.VarChar(100)
+  nick             String             @db.VarChar(45)
+  img_perfil       Bytes?
+  email            String             @unique(map: "email") @db.VarChar(255)
+  contrasena       String             @db.VarChar(255)
+  primera_sesion   Boolean?           @default(true)
+  fecha_creacion   DateTime?          @default(now()) @db.DateTime(0)
+  borrado          Boolean?           @default(false)
+  email_verificado Boolean?           @default(false)
+  familia_usuarios familia_usuarios[]
+  sesiones         sesiones[]
+}
+
+enum familia_usuarios_rol {
+  admin
+  cuidador
+  nino
+}
+
+enum actividades_tipo {
+  Tarea
+  Evento
+  Habito
 }
