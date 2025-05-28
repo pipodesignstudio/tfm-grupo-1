@@ -20,6 +20,7 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
+    console.log('🔑 Verificando token de autenticación...');
   try {
     const authHeader = req.headers.authorization;
 

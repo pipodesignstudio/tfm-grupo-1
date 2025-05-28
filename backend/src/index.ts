@@ -8,7 +8,7 @@ import { errorHandler } from './middlewares';
 import { NotFoundError } from './utils';
 import apiRouter from './routes';
 import apiDocsConfig from './config/api-docs.config';
-
+import './types/express';
 
 const app = express();
 

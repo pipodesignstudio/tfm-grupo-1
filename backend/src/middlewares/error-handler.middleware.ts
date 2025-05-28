@@ -1,5 +1,5 @@
 // src/middlewares/errorHandler.ts
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import { CustomError } from "../utils";
 
 export const errorHandler = (
@@ -29,13 +29,18 @@ export const errorHandler = (
   } else if (err instanceof SyntaxError && "body" in err) {
     statusCode = 400;
     message = "JSON inválido en el cuerpo de la solicitud.";
-    isServerError = true;
-    data = { errorType: "InvalidJsonSyntax" };
-  } else if (!req.body) {
-    statusCode = 400;
-    message = "El cuerpo de la solicitud está vacío.";
     isServerError = false;
-    data = { errorType: "InvalidJsonSyntax" };
+    data = { error: "INVALID_JSON" };
+  } else if (err.name === "JsonWebTokenError") {
+     statusCode = 400;
+    message = "El formato del token es erróneo";
+    isServerError = false;
+    data = { error: "INVALID_TOKEN_FORMAT" };
+  } else if (err.name === "TokenExpiredError") {
+     statusCode = 401;    
+    message = "El token ha expirado";
+    isServerError = false;
+    data = { error: "TOKEN_EXPIRED" };
   }
   res.status(statusCode).json({
     success: false,
