@@ -1,3 +1,5 @@
+import { error } from "console"
+
 export const CustomErrorSchema = {
   type: 'object',
   required: ['message', 'statusCode', 'isServerError'],
@@ -23,8 +25,7 @@ export const CustomErrorSchema = {
       nullable: true,
       additionalProperties: true,
       example: {
-        field: 'email',
-        value: 'invalid-email',
+        error: 'ERR_DATA',
       }
     }
   },
@@ -282,6 +283,9 @@ export const InternalServerErrorSchema = {
       type: 'object',
       description: 'Información adicional del error (no debe incluir información sensible)',
       nullable: true,
+      example: {
+        error: 'INTERNAL_ERROR',
+      }
     }
   },
   additionalProperties: false

@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import dotenv from 'dotenv';
+
 
 import { LoginUserDto, RegisterUserDto } from "../dtos";
 import {
@@ -9,30 +11,12 @@ import {
 } from "../utils";
 import prisma from "../config/prisma.config";
 import { IUser } from "../interfaces";
+import { EmailService } from "./email.service";
+
+const emailService = new EmailService();
+dotenv.config();
 
 export class AuthService {
-
-  
-  /**
-   * Registra un nuevo usuario en la base de datos.
-   *
-   * Si el usuario se registra con una invitación, se intenta loggear al usuario
-   * correspondiente. De lo contrario, crea un nuevo usuario. Si el email ya existe,
-   * lanza un error 409.
-   *
-   * @param dto Los datos del usuario a registrar, provenientes del DTO validado.
-   * @returns El objeto de usuario creado (sin la contraseña) o el usuario logeado
-   *          si se proporciona un ID de usuario.
-   * @throws {InternalServerError} Para otros errores inesperados de la base de datos.
-   */
-  public async registerUserService(dto: RegisterUserDto): Promise<any> {
-    // Si viene con una invitación
-    if(dto.familyId) {
-      
-    } else {
-      return await this.createUser(dto);
-    }
-  }
 
   /**
    * Crea un nuevo usuario sin relaciones familiares.
@@ -42,21 +26,18 @@ export class AuthService {
    * @throws {ConflictError} Si el email ya existe.
    * @throws {InternalServerError} Para otros errores inesperados de la base de datos.
    */
-  private async createUser(dto: RegisterUserDto): Promise<IUser> {
+    public async createUser(dto: RegisterUserDto): Promise<IUser> {
     try {
 
       // 1. Verificar si el email ya existe
       const existingUser = await prisma.usuarios.findUnique({
-        where: { email: dto.email },
+        where: { email: dto.email, id: dto.familyId },
       });
 
-      // Si se proporciona un ID y el usuario ya existe intentamos loggear
-      if (dto.familyId && existingUser) {
-        
-      }
-
       if (existingUser) {
-        throw new ConflictError("El email ya está registrado.");
+        throw new ConflictError("El usuario ya está registrado, por favor inicie sesión.", {
+          error: "EMAIL_IN_USE",
+        });
       }
 
       // 2. Hashear la contraseña antes de guardarla en la base de datos
@@ -67,11 +48,20 @@ export class AuthService {
         data: {
           email: dto.email,
           contrasena: hashedPassword,
-          nick: 'Hola mundo',
+          nick: dto.nick,
           primera_sesion: true,
           fecha_creacion: new Date(),
         },
       });
+
+      const _baseurl = process.env.FRONTEND_URL || "http://localhost:3000";
+      const url = `${_baseurl}/auth/verificar/${newUser.id}`;
+      await emailService.sendWelcomeVerificationEmail(
+        dto.email,
+        dto.nick,
+        url
+      );
+
 
       return newUser;
     } catch (error: any) {
@@ -116,7 +106,7 @@ export class AuthService {
         console.log("Contraseña incorrecta");
         throw new UnauthorizedError(
           "Credenciales incorrectas.",
-          { error: "Contraseña incorrecta" },
+          { error: "WRONG_PASSWORD" },
           false
         );
       }
@@ -133,5 +123,7 @@ export class AuthService {
       }
     }
   }
+
+  // TODO: Implementar la funcionalidad de autenticación de usuarios cuando viene de una familia
 
 }

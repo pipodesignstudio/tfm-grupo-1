@@ -24,7 +24,7 @@ export class AuthController {
   public async register(req: Request, res: Response): Promise<void> {
     const dto: RegisterUserDto = req.body;
 
-    const createdUser: IUser = await authService.registerUserService(dto);
+    const createdUser: IUser = await authService.createUser(dto);
     const jwt = generateJwtToken(createdUser);
 
     const response: IAuthResponse = {
