@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import dotenv from "dotenv";
 
 import { LoginUserDto, RegisterUserDto } from "../dtos";
-import { ApiResponse } from "../utils/success-api-response.util";
+import { ApiCorrectResponse } from "../utils/success-api-response.util";
 import { IAuthResponse, IUser } from "../interfaces";
 import { AuthService } from "../services";
 import { generateJwtToken } from "../utils";
@@ -38,7 +38,7 @@ export class AuthController {
       },
     };
 
-    ApiResponse.success(res, response, true, "Registrado con exito", 200);
+    ApiCorrectResponse.genericSuccess(res, response, true, "Registrado con exito", 200);
   }
 
   /**
@@ -63,7 +63,7 @@ export class AuthController {
       },
     };
 
-    ApiResponse.success(res, response, true, "Inicio de sesión exitoso.");
+    ApiCorrectResponse.genericSuccess(res, response, true, "Inicio de sesión exitoso.");
   }
 }
 

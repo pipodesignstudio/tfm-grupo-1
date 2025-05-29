@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { UsersController } from "../controllers";
-import { authMiddleware } from "../middlewares";
+import { authMiddleware, validationMiddleware } from "../middlewares";
 import { Request, Response, NextFunction } from 'express';
-import { asyncHandler } from "../utils";
+import { asyncMiddlewareWrapper } from "../utils";
+import { UpdateUserDto } from "../dtos";
 
 
 const router = Router();
@@ -17,34 +18,77 @@ const usersController = new UsersController();
  *     summary: Obtiene los datos de un usuario
  *     tags:
  *       - Usuarios
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/RegisterUserDto'
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       '200':
- *         description: Usuario registrado exitosamente
+ *         description: Usuario obtenido exitosamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
- *       '400':
- *         description: Solicitud inválida
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BadRequestError'
- *       '409':
- *         description: Conflicto, recurso ya existe
+ *               $ref: '#/components/schemas/UserSuccessResponse'
+ *       '404':
+ *         description: No se ha encontrado el usuario
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ConflictError'
  */
-router.get('/profile', asyncHandler(authMiddleware), usersController.retrieveUserData);
+router.get('/profile', asyncMiddlewareWrapper(authMiddleware), usersController.retrieveUserDataFromToken);
 
+/**
+ * @openapi
+ * /api/users/complete-onboarding:
+ *   patch:
+ *     summary: Confirma que el usuario ya no debe volver a ver el walktrough
+ *     tags:
+ *       - Usuarios
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Usuario obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '404':
+ *         description: No se ha encontrado el usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ConflictError'
+ */
+router.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware), usersController.completeOnboarding);
+
+
+/**
+ * @openapi
+ * /api/users/complete-onboarding:
+ *   patch:
+ *     summary: Confirma que el usuario ya no debe volver a ver el walktrough
+ *     tags:
+ *       - Usuarios
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Usuario obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '404':
+ *         description: No se ha encontrado el usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ConflictError'
+ */
+router.patch('/verify-email', asyncMiddlewareWrapper(authMiddleware), usersController.verifyEmail);
+
+
+router.patch('/update', asyncMiddlewareWrapper(authMiddleware), validationMiddleware(UpdateUserDto), usersController.verifyEmail);
 
 
 export default router;

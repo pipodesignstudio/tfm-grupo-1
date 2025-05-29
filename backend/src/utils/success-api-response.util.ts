@@ -1,28 +1,37 @@
 // src/utils/apiResponse.ts
 import { Response } from "express";
-import { CustomError } from "./errors.util";
+import { IUser } from "../interfaces";
 
-interface SuccessApiResponseData  {
-  message?: string;
-  data?: any;
-  success: boolean;
-  error?: Error | CustomError | any;
-  statusCode?: number;
-}
 
-export class ApiResponse {
-  static success(
+export class ApiCorrectResponse {
+  static genericSuccess(
     res: Response,
     data: any,
     success: boolean = true,
     message: string = "Success",
     statusCode: number = 200
   ) {
-    const responseBody: SuccessApiResponseData  = {
+    const responseBody  = {
       success,
       message,
       data,
-      statusCode,
+      statusCode
+    };
+    res.status(statusCode).json(responseBody);
+  }
+
+  static returnUserResponse(
+    res:Response,
+    data:{user: Omit<IUser , 'id' | 'contrasena'> },
+    success: boolean,
+    message: string,
+    statusCode: number,
+  ) {
+    const responseBody  = {
+      success: true,
+      data,
+      message,
+      statusCode
     };
     res.status(statusCode).json(responseBody);
   }

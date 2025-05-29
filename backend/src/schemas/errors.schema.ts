@@ -1,4 +1,5 @@
 import { error } from "console"
+import e from "express"
 
 export const CustomErrorSchema = {
   type: 'object',
@@ -219,6 +220,9 @@ export const ConflictErrorSchema = {
       type: 'object',
       description: 'Detalles específicos del conflicto',
       nullable: true,
+       example: {
+        error: 'ERR_DATA',
+      }
     }
   },
   additionalProperties: false

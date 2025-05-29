@@ -51,6 +51,9 @@ export class AuthService {
           nick: dto.nick,
           primera_sesion: true,
           fecha_creacion: new Date(),
+          borrado: false,
+          email_verificado: false,
+          img_perfil: null,
         },
       });
 

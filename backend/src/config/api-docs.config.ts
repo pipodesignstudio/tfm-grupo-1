@@ -1,5 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, UnauthorizedErrorSchema } from '../schemas';
+import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, UnauthorizedErrorSchema, UserApiResponseSchema } from '../schemas';
 
 export const schemas = {
   // Auth schemas
@@ -14,7 +14,8 @@ export const schemas = {
   ConflictError: ConflictErrorSchema,
   InvalidInputError: InvalidInputErrorSchema,
   InternalServerError: InternalServerErrorSchema,
-  SuccessResponse: SuccessApiResponseSchema
+  SuccessResponse: SuccessApiResponseSchema,
+  UserSuccessResponse: UserApiResponseSchema
 }
 
 const options = {
@@ -32,12 +33,20 @@ const options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: `Autenticación JWT.
+El token debe ser enviado en el encabezado 'Authorization' como 'Bearer <token>'`,
+        },
+      },
       schemas
     },
   },
    apis: [
-    // './src/routes/test.route.ts', // Asegúrate de que apunta a tu archivo de prueba
-    './src/routes/**/*.ts',   // Asegúrate de que apunta a tus ARCHIVOS .TS
+    './src/routes/**/*.ts', 
   ],
 };
 

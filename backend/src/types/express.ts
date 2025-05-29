@@ -5,7 +5,9 @@ declare global {
     interface Request {
       user?: Omit<
         IUser,
-        'contrasena' | 'primera_sesion' | 'fecha_creacion' | 'nombre' | 'apellido'
+        'contrasena' |
+        'email_verificado' | 'borrado' |
+        'primera_sesion' | 'fecha_creacion' | 'nombre' | 'apellido' | 'nick' | 'img_perfil'
       >;
     }
   }
