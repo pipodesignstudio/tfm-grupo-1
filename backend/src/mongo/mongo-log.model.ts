@@ -1,4 +1,3 @@
-// src/models/Log.model.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ILog extends Document {
@@ -32,24 +31,32 @@ const LogSchema: Schema = new Schema({
   timestamp: { type: Date, default: Date.now, required: true },
 
   error: {
-    code: { type: String },
-    message: { type: String, required: true },
-    stack: { type: String },
-    details: { type: Schema.Types.Mixed },
-    request: {
-      method: { type: String },
-      url: { type: String },
-      ip: { type: String },
-      userId: { type: Number },
-    },
+    type: new Schema({ 
+      code: { type: String },
+      message: { type: String, required: true }, 
+      stack: { type: String },
+      details: { type: Schema.Types.Mixed },
+      request: {
+        method: { type: String },
+        url: { type: String },
+        ip: { type: String },
+        userId: { type: Number },
+      },
+    }),
+    required: false, 
+    _id: false 
   },
 
   userAction: {
-    userId: { type: Number, required: true },
-    action: { type: String, required: true },
+    type: new Schema({ 
+      userId: { type: Number, required: true }, 
+      action: { type: String, required: true },
+    }),
+    required: false, 
+    _id: false 
   },
 }, {
-  timestamps: false, // Quiero que la fecha sea cuando se genera en el servidor, no cuando se guarda
+  timestamps: false,
   collection: 'logs'
 });
 
