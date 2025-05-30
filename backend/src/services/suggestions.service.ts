@@ -1,12 +1,17 @@
 import prisma from "../config/prisma.config";
+import { IActividad } from "../interfaces/actividad.interface";
+import { IAService } from "./ia.service";
+
+const ai = new IAService();
 
 export class SuggestionsService {
     async buildSuggestions(id:number) {
-        const activities = await prisma.actividades.findMany({
+        const activities:IActividad[] = await prisma.actividades.findMany({
             where: {
-                usuario_responsable: 1
+                usuario_responsable: id
             }
         });
-        return activities;
+        const suggestions = await ai.generateAISuggestions(activities);
+        return suggestions;
     }
 }
