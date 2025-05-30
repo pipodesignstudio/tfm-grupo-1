@@ -6,7 +6,7 @@ import { LoginUserDto, RegisterUserDto } from "../dtos";
 import { ApiCorrectResponse } from "../utils/success-api-response.util";
 import { IAuthResponse, IUser } from "../interfaces";
 import { AuthService } from "../services";
-import { generateJwtToken } from "../utils";
+import { generateJwtToken, logger } from "../utils";
 
 dotenv.config();
 
@@ -44,7 +44,15 @@ export class AuthController {
       },
     };
 
-    ApiCorrectResponse.genericSuccess(res, response, true, "Registrado con exito", 200);
+    logger.logUserAction(createdUser.id, "REGISTER");
+
+    ApiCorrectResponse.genericSuccess(
+      res,
+      response,
+      true,
+      "Registrado con exito",
+      200
+    );
   }
 
   /**
@@ -67,7 +75,7 @@ export class AuthController {
         img_perfil: user.img_perfil,
         primera_sesion: user.primera_sesion,
         created_at: user.fecha_creacion,
-        nick: user.nick
+        nick: user.nick,
       },
       token: {
         expires_in: JWT_EXPIRES_IN as number,
@@ -75,7 +83,13 @@ export class AuthController {
       },
     };
 
-    ApiCorrectResponse.genericSuccess(res, response, true, "Inicio de sesión exitoso.");
+    logger.logUserAction(user.id, "LOGIN");
+
+    ApiCorrectResponse.genericSuccess(
+      res,
+      response,
+      true,
+      "Inicio de sesión exitoso."
+    );
   }
 }
-
