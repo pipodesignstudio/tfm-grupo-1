@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import dotenv from "dotenv";
 
 import { LoginUserDto, RegisterUserDto } from "../dtos";
+
 import { ApiCorrectResponse } from "../utils/success-api-response.util";
 import { IAuthResponse, IUser } from "../interfaces";
 import { AuthService } from "../services";
@@ -31,6 +32,11 @@ export class AuthController {
       user: {
         email: createdUser.email,
         created_at: createdUser.fecha_creacion,
+        primera_sesion: createdUser.primera_sesion,
+        nombre: createdUser.nombre,
+        apellido: createdUser.apellido,
+        img_perfil: createdUser.img_perfil,
+        nick: createdUser.nick,
       },
       token: {
         expires_in: JWT_EXPIRES_IN as number,
@@ -55,7 +61,13 @@ export class AuthController {
 
     const response: IAuthResponse = {
       user: {
-        email: dto.email,
+        email: user.email,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        img_perfil: user.img_perfil,
+        primera_sesion: user.primera_sesion,
+        created_at: user.fecha_creacion,
+        nick: user.nick
       },
       token: {
         expires_in: JWT_EXPIRES_IN as number,

@@ -16,7 +16,7 @@ export function validationMiddleware<T>(
 ) {
   return (req: Request, res: Response, next: NextFunction) => {
     
-    const dtoInstance = plainToInstance(dtoClass, req.body);
+const dtoInstance = plainToInstance(dtoClass, req.body || {});
 
     validate(dtoInstance as object, {
       skipMissingProperties: validateOnlyProvidedFields,

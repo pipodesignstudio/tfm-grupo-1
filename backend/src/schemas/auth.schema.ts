@@ -8,7 +8,6 @@ export const RegisterUserDtoSchema = {
       maxLength: 50,
       description: 'Nick de usuario único',
       example: 'juan_perez',
-      pattern: '^[a-zA-Z0-9_]+$' // Opcional: patrón para nick
     },
     email: {
       type: 'string',

@@ -7,6 +7,7 @@ export class CustomError extends Error {
     public isServerError: boolean;
     public data: IErrorData | null;
 
+
     constructor(message: string, statusCode: number, data: IErrorData | null, isServerError: boolean) {
         super(message);
         Object.setPrototypeOf(this, CustomError.prototype); // Forzar el reconocimiento en el middleware

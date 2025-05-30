@@ -40,13 +40,13 @@ export class UserService {
    * @returns Una promesa que ser resuelve como verdadera si va todo bien
    * @throws {CustomError} Captura posibles errores y los lanza al middleware
    * @throws {InternalServerError} Devuelve un error 500 controlado si no lo localizamos
-   */
+  */
 
   async completeUserOnboardingOrVerifyEmail(user: IRequestUser, action: 'complete' | 'verify'): Promise<boolean> {
     try {
       await prisma.usuarios.update({
         where: { id: user.id },
-        data: action === 'verify' ? { email_verificado: true } : { primera_sesion: true },
+        data: action === 'verify' ? { email_verificado: true } : { primera_sesion: false },
       });
       return true;
     } catch (error) {
@@ -123,6 +123,31 @@ export class UserService {
     });
 
     return updatedUser;
+  }
+
+  /**
+   * Marca un usuario como borrado (Borrado lógico).
+   * @param user El objeto con los datos del usuario a borrar.
+   * @returns True si el usuario ha sido marcado como borrado.
+   * @throws InternalServerError si hay un problema al intentar borrar el usuario.
+   */
+  async deleteUser(user: IRequestUser): Promise<boolean> {
+    try {
+      await prisma.usuarios.update({
+        where: { id: user.id },
+        data: { borrado: true },
+      });
+      return true;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      console.error("Error inesperado en completeOnboarding:", error);
+      throw new InternalServerError(
+        "Error interno al procesar la solicitud del usuario.",
+        { error: "INTERNAL_SERVER_ERROR" }
+      );
+    }
   }
 
 }

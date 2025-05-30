@@ -1,5 +1,5 @@
 import {  Request, Response } from "express";
-import { ApiCorrectResponse, NotFoundError } from "../utils";
+import { ApiCorrectResponse, BadRequestError, NotFoundError } from "../utils";
 import { UserService } from "../services";
 import { UpdateUserDto } from "../dtos";
 
@@ -77,6 +77,18 @@ export class UsersController {
     res: Response
   ): Promise<void> => {
       const dataToUpdate: UpdateUserDto = req.body;
+      
+
+      // Como los campos son opcionales, no vamos a impactar la BBDD con todos los campos vacios
+      if (Object.keys(dataToUpdate).length === 0) {
+        throw new BadRequestError(
+          "No se han enviado datos para actualizar",
+          {
+            error: "EMPTY_FIELDS",
+          },
+          false
+        );
+      }
 
       const updatedUser = await userService.updateProfile(
         req.user!.id,
@@ -92,5 +104,21 @@ export class UsersController {
       );
   };
 
+
+  async deleteUser(req:Request, res:Response) {
+    const reqUser = req.user!;
+    const success = await userService.deleteUser(reqUser);
+    if (success) {
+      ApiCorrectResponse.genericSuccess(
+        res,
+        {
+          message: "USER_DELETED",
+        },
+        true,
+        "Eliminado con exito",
+        200
+      );
+    }
+  }
 
 }

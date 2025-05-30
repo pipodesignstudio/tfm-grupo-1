@@ -1,9 +1,11 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, UnauthorizedErrorSchema, UserApiResponseSchema } from '../schemas';
+import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, UnauthorizedErrorSchema, UpdateUserDtoSchema, UserApiResponseSchema } from '../schemas';
+import { UpdateUserDto } from '../dtos';
 
 export const schemas = {
-  // Auth schemas
+  // Dto
   RegisterUserDto: RegisterUserDtoSchema,
+  UpdateUserDto: UpdateUserDtoSchema,
 
   // Error schemas
   CustomError: CustomErrorSchema,
@@ -14,6 +16,8 @@ export const schemas = {
   ConflictError: ConflictErrorSchema,
   InvalidInputError: InvalidInputErrorSchema,
   InternalServerError: InternalServerErrorSchema,
+
+  // Acierto
   SuccessResponse: SuccessApiResponseSchema,
   UserSuccessResponse: UserApiResponseSchema
 }

@@ -46,7 +46,8 @@ export const authMiddleware = async (
       ) as typeof decodedPayload;
     } catch (error: any) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new UnauthorizedError("El token de autenticación ha expirado.");
+        throw new UnauthorizedError("El token de autenticación ha expirado.", {
+          error: "TOKEN_EXPIRED",});
       }
       throw new UnauthorizedError("Token de autenticación inválido.", {
         error: "INVALID_TOKEN",

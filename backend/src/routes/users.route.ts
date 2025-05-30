@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { UsersController } from "../controllers";
 import { authMiddleware, validationMiddleware } from "../middlewares";
-import { Request, Response, NextFunction } from 'express';
 import { asyncMiddlewareWrapper } from "../utils";
 import { UpdateUserDto } from "../dtos";
 
 
-const router = Router();
+const userRouter = Router();
 
 const usersController = new UsersController();
 
@@ -32,9 +31,9 @@ const usersController = new UsersController();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ConflictError'
+ *               $ref: '#/components/schemas/NotFoundError'
  */
-router.get('/profile', asyncMiddlewareWrapper(authMiddleware), usersController.retrieveUserDataFromToken);
+userRouter.get('/profile', asyncMiddlewareWrapper(authMiddleware), usersController.retrieveUserDataFromToken);
 
 /**
  * @openapi
@@ -57,10 +56,9 @@ router.get('/profile', asyncMiddlewareWrapper(authMiddleware), usersController.r
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ConflictError'
+ *               $ref: '#/components/schemas/NotFoundError'
  */
-router.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware), usersController.completeOnboarding);
-
+userRouter.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware), usersController.completeOnboarding);
 
 /**
  * @openapi
@@ -73,7 +71,7 @@ router.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware), use
  *       - bearerAuth: []
  *     responses:
  *       '200':
- *         description: Usuario obtenido exitosamente
+ *         description: Email verificado con éxito
  *         content:
  *           application/json:
  *             schema:
@@ -83,12 +81,73 @@ router.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware), use
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ConflictError'
+ *               $ref: '#/components/schemas/NotFoundError'
  */
-router.patch('/verify-email', asyncMiddlewareWrapper(authMiddleware), usersController.verifyEmail);
+userRouter.patch('/verify-email', asyncMiddlewareWrapper(authMiddleware), usersController.verifyEmail);
+
+/**
+ * @openapi
+ * /api/users/update:
+ *   patch:
+ *     summary: Actualiza al usuario
+ *     tags:
+ *       - Usuarios
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUserDto'
+ *     responses:
+ *       '200':
+ *         description: Usuario actualizado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserSuccessResponse'
+ *       '400':
+ *          description: Solicitud inválida
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/BadRequestError'
+ *       '404':
+ *         description: No se ha encontrado el usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
+ */
+userRouter.patch('/update', asyncMiddlewareWrapper(authMiddleware), validationMiddleware(UpdateUserDto), usersController.updateProfile);
 
 
-router.patch('/update', asyncMiddlewareWrapper(authMiddleware), validationMiddleware(UpdateUserDto), usersController.verifyEmail);
+/**
+ * @openapi
+ * /api/users/delete:
+ *   delete:
+ *     summary: Borra la cuenta del usuario
+ *     tags:
+ *       - Usuarios
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Usuario borrado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '404':
+ *         description: No se ha encontrado el usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
+ */
+userRouter.delete('/delete', asyncMiddlewareWrapper(authMiddleware), usersController.deleteUser);
 
 
-export default router;
+
+export default userRouter;

@@ -4,9 +4,8 @@ import { AuthController } from "../controllers/auth.controller";
 import { validationMiddleware } from "../middlewares";
 import { LoginUserDto, RegisterUserDto } from "../dtos";
 
-const router = Router();
+const authRouter = Router();
 const authController = new AuthController();
-
 
 
 /**
@@ -23,7 +22,7 @@ const authController = new AuthController();
  *           schema:
  *             $ref: '#/components/schemas/RegisterUserDto'
  *     responses:
- *       '200':
+ *       '201':
  *         description: Usuario registrado exitosamente
  *         content:
  *           application/json:
@@ -43,7 +42,7 @@ const authController = new AuthController();
  *               $ref: '#/components/schemas/ConflictError'
  */
 
-router.post(
+authRouter.post(
   "/register",
   validationMiddleware(RegisterUserDto),
   authController.register
@@ -78,6 +77,6 @@ router.post(
  *               $ref: '#/components/schemas/BadRequestError'
  */
 // Login de usuarios
-router.post("/login", validationMiddleware(LoginUserDto), authController.login);
+authRouter.post("/login", validationMiddleware(LoginUserDto), authController.login);
 
-export default router;
+export default authRouter;
