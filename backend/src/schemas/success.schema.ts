@@ -1,4 +1,3 @@
-import { format } from "path";
 
 export const SuccessApiResponseSchema = {
   type: "object",
@@ -96,6 +95,64 @@ export const UserApiResponseSchema = {
       },
       required: ["user"],
       additionalProperties: false,
+    },
+  },
+  additionalProperties: false,
+};
+
+
+export const SuggestionApiResponseSchema = {
+  type: "object",
+  required: ["success", "message", "statusCode"],
+  properties: {
+    success: {
+      type: "boolean",
+      description: "Indica si la operación fue exitosa",
+      enum: [true],
+      example: true,
+    },
+    message: {
+      type: "string",
+      description: "Mensaje descriptivo del resultado",
+      default: "Success",
+      example: "Operación realizada exitosamente",
+    },
+    statusCode: {
+      type: "number",
+      description: "Código de estado HTTP de la respuesta",
+      minimum: 200,
+      maximum: 299,
+      example: 200,
+    },
+    data: {
+      description: "Listado de sugerencias construidas. Máximo de tres",
+      nullable: false,
+      example: [
+        {
+            "titulo": "Preparar mochila para el colegio",
+            "descripcion": "Revisar la lista de material y guardar lo necesario para el día siguiente.",
+            "dia_semana": 0,
+            "hora_inicio": "2024-07-21T19:00:00.000Z",
+            "color": "#8C7AE6",
+            "tipo": "Hábito"
+        },
+        {
+            "titulo": "Jugar a las sumas y restas",
+            "descripcion": "Usar tarjetas o juegos de mesa para practicar operaciones básicas.",
+            "dia_semana": 2,
+            "hora_inicio": "2024-07-23T16:00:00.000Z",
+            "color": "#FFB100",
+            "tipo": "Tarea"
+        },
+        {
+            "titulo": "Tiempo de juego libre al aire libre",
+            "descripcion": "Salir al patio o parque para jugar y correr.",
+            "dia_semana": 5,
+            "hora_inicio": "2024-07-26T17:30:00.000Z",
+            "color": "#2ECC71",
+            "tipo": "Evento"
+        }
+    ],
     },
   },
   additionalProperties: false,
