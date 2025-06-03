@@ -1,5 +1,3 @@
-import { error } from "console"
-import e from "express"
 
 export const CustomErrorSchema = {
   type: 'object',
