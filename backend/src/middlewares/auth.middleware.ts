@@ -26,7 +26,8 @@ export const authMiddleware = async (
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedError(
-        "Token de autenticación no proporcionado o formato incorrecto."
+        "Token de autenticación no proporcionado o formato incorrecto.", {
+          error: "MISSING_AUTH_HEADER"}
       );
     }
 
@@ -69,7 +70,7 @@ export const authMiddleware = async (
     // CRUCIAL: De esta forma asignamos el usuario a la request extrayendo su data del token.
     // El backend puede manejar al user gracias a esto
 
-    req.user = {
+    req.user  = {
       id: user.id,
       email: user.email,
     };

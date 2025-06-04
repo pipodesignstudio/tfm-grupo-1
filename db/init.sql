@@ -132,11 +132,12 @@ CREATE TABLE `familia_usuarios` (
 CREATE TABLE `invitacion_usuario_familia` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `familia_id` INT NOT NULL,
-  `usuario_emisor` INT DEFAULT NULL,
+  `usuario_emisor` INT DEFAULT NOT NULL,
   `email_destinatario` VARCHAR(255) NOT NULL,
   `rol` ENUM('admin', 'cuidador', 'nino') NOT NULL,
-  `aceptado` BOOLEAN DEFAULT FALSE,
-  `fecha_envio` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `atentido` BOOLEAN DEFAULT FALSE,
+  `aceptado` BOOLEAN DEFAULT FALSE NOT NULL,
+  `fecha_envio` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CONSTRAINT `fk_invitacion_usuario_familia_familia1` FOREIGN KEY (`familia_id`) REFERENCES `familia`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -154,4 +155,3 @@ CREATE INDEX `fk_notas_ninos1_idx` ON `notas` (`ninos_id`);
 CREATE INDEX `fk_familia_usuarios_usuarios_idx` ON `familia_usuarios` (`usuarios_id`);
 CREATE INDEX `fk_familia_usuarios_familia_idx` ON `familia_usuarios` (`familia_id`);
 CREATE INDEX `fk_invitacion_usuario_familia_familia1_idx` ON `invitacion_usuario_familia` (`familia_id`);
-

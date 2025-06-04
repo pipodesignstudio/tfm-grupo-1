@@ -112,8 +112,8 @@ INSERT INTO notas (ninos_id, titulo, texto, fecha_creacion) VALUES
 -- Invitaciones de Usuarios a Familias
 -- Estas serían invitaciones pendientes o ya aceptadas que podrías simular
 -- Suponemos que el usuario 1 (Ana) invita a un nuevo usuario (futuro id 7) a su familia 1
-INSERT INTO invitacion_usuario_familia (familia_id, usuario_emisor, email_destinatario, rol, aceptado, fecha_envio) VALUES
-(1, 1, 'nuevo.miembro@email.com', 'cuidador', 0, NOW()),
-(2, 3, 'amigo.laura@email.com', 'cuidador', 1, '2025-05-20 10:00:00'); -- Una invitación ya aceptada
+INSERT INTO invitacion_usuario_familia (familia_id, usuario_emisor, email_destinatario, rol, atentido, aceptado, fecha_envio) VALUES
+(1, 1, 'nuevo.miembro@email.com', 'cuidador', 0, 0, NOW()),
+(2, 3, 'amigo.laura@email.com', 'cuidador', 1, 1, '2025-05-20 10:00:00'); -- Una invitación ya aceptada
 
 SET FOREIGN_KEY_CHECKS=1; -- Vuelve a habilitar la verificación de claves foráneas

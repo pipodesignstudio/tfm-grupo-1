@@ -49,11 +49,25 @@ model familia_usuarios {
   usuarios_id Int
   rol         familia_usuarios_rol
   familia     familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_familia_usuarios_familia1")
-  usuarios    usuarios             @relation(fields: [usuarios_id], references: [id], onDelete: Cascade, map: "fk_perfiles_aprendizaje_has_usuarios_usuarios1")
+  usuarios    usuarios             @relation(fields: [usuarios_id], references: [id], onDelete: Cascade, map: "fk_familia_usuarios_usuarios1")
 
   @@id([familia_id, usuarios_id])
   @@index([familia_id], map: "fk_familia_usuarios_familia_idx")
   @@index([usuarios_id], map: "fk_familia_usuarios_usuarios_idx")
+}
+
+model invitacion_usuario_familia {
+  id                 Int                            @id @default(autoincrement())
+  familia_id         Int
+  usuario_emisor     Int
+  email_destinatario String                         @db.VarChar(255)
+  rol                invitacion_usuario_familia_rol
+  atentido           Boolean?                       @default(false)
+  aceptado           Boolean?                       @default(false)
+  fecha_envio        DateTime?                      @default(now()) @db.Timestamp(0)
+  familia            familia                        @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_invitacion_usuario_familia_familia1")
+
+  @@index([familia_id], map: "fk_invitacion_usuario_familia_familia1_idx")
 }
 
 model ninos {
@@ -69,7 +83,7 @@ model ninos {
   altura                  Int?
   actividades             actividades[]
   alergias                alergias[]
-  familia                 perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
+  perfiles_aprendizaje    perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
   notas                   notas[]
   rutinas                 rutinas[]
 
@@ -96,6 +110,13 @@ model objetivos {
   rutinas    rutinas @relation(fields: [rutinas_id], references: [id], onDelete: Cascade, map: "fk_objetivos_rutinas1")
 
   @@index([rutinas_id], map: "fk_objetivos_rutinas1_idx")
+}
+
+model perfiles_aprendizaje {
+  id          Int     @id @default(autoincrement())
+  nombre      String  @db.VarChar(100)
+  descripcion String? @db.Text
+  ninos       ninos[]
 }
 
 model recordatorios {
@@ -138,27 +159,13 @@ model usuarios {
   familia_usuarios familia_usuarios[]
 }
 
-model invitacion_usuario_familia {
-  id                 Int                            @id @default(autoincrement())
-  familia_id         Int
-  usuario_emisor     Int?
-  email_destinatario String                         @db.VarChar(255)
-  rol                invitacion_usuario_familia_rol
-  aceptado           Boolean?                       @default(false)
-  fecha_envio        DateTime?                      @default(now()) @db.Timestamp(0)
-  familia            familia                        @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_invitacion_usuario_familia_familia1")
-
-  @@index([familia_id], map: "fk_invitacion_usuario_familia_familia1_idx")
-}
-
-model perfiles_aprendizaje {
-  id          Int     @id @default(autoincrement())
-  nombre      String  @db.VarChar(100)
-  descripcion String? @db.Text
-  ninos       ninos[]
-}
-
 enum familia_usuarios_rol {
+  admin
+  cuidador
+  nino
+}
+
+enum invitacion_usuario_familia_rol {
   admin
   cuidador
   nino
@@ -168,10 +175,4 @@ enum actividades_tipo {
   Tarea
   Evento
   Habito
-}
-
-enum invitacion_usuario_familia_rol {
-  admin
-  cuidador
-  nino
 }

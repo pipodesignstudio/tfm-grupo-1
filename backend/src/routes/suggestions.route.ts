@@ -28,7 +28,7 @@ const suggestionsRoute = Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UnauthorizedErrorSchema'
+ *               $ref: '#/components/schemas/UnauthorizedError'
  */
 
 suggestionsRoute.get(

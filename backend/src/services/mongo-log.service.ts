@@ -11,28 +11,35 @@ export class MongoLogService {
    * @param req El objeto Request de Express para obtener contexto (opcional).
    * @param details Datos adicionales relevantes al error.
    */
-  public async logError(error: Error | CustomError, req?: Request, details?: object): Promise<void> {
+public async logError(error: Error | CustomError | string, req?: Request, details?: object): Promise<void> {
     const errorData: ILogErrorData = {
-      message: error.message,
-      stack: error.stack,
-      details: details,
+      message: ''
     };
 
-    if (error instanceof CustomError) {
-      errorData.code = error.statusCode.toString(); 
-      if (error.data) {
-        errorData.details = { ...errorData.details, ...error.data }; 
-      }
+    if (typeof error === 'string') {
+      errorData.code = error;
+      errorData.message = error; // Or a default message if you prefer
     } else {
-      errorData.code = 'UNEXPECTED_ERROR'; 
+      errorData.message = error.message;
+      errorData.stack = error.stack;
+      errorData.details = details;
+
+      if (error instanceof CustomError) {
+        errorData.code = error.statusCode.toString();
+        if (error.data) {
+          errorData.details = { ...errorData.details, ...error.data };
+        }
+      } else {
+        errorData.code = 'UNEXPECTED_ERROR';
+      }
     }
 
     if (req) {
       errorData.request = {
         method: req.method,
         url: req.originalUrl,
-        ip: req.ip, 
-        userId: req.user?.id, 
+        ip: req.ip,
+        userId: req.user?.id,
       };
     }
 
@@ -42,7 +49,7 @@ export class MongoLogService {
         error: errorData,
       });
       await logEntry.save();
-      console.log('✅ Error logeado en MongoDB:', errorData.message);
+      console.log('✅ Error logeado en MongoDB:', errorData.message || errorData.code);
     } catch (dbError) {
       console.error('❌ Error al logear el error en MongoDB:', dbError);
     }

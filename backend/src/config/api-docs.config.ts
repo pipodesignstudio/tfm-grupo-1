@@ -1,10 +1,12 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, SuggestionApiResponseSchema, UnauthorizedErrorSchema, UpdateUserDtoSchema, UserApiResponseSchema } from '../schemas';
+import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, InvitationResponseSchema, NewInvitationSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, SuggestionApiResponseSchema, UnauthorizedErrorSchema, UpdateUserDtoSchema, UserApiResponseSchema } from '../schemas';
 
 export const schemas = {
   // Dto
   RegisterUserDto: RegisterUserDtoSchema,
   UpdateUserDto: UpdateUserDtoSchema,
+  NewInvitationDto: NewInvitationSchema,
+  InvitationResponseDto: InvitationResponseSchema,
 
   // Error schemas
   CustomError: CustomErrorSchema,
