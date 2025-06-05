@@ -13,8 +13,15 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
         theme: {
-            preset: Aura
+            preset: Aura,
+        options: {
+          darkModeSelector: '.dark', // Hace override de las preferencias de usuario
+          cssLayer: {
+            name: 'primeng',
+            order: 'theme, base, primeng' // Hace que todo conviva
         }
+        }
+      }
     })
   ]
 };

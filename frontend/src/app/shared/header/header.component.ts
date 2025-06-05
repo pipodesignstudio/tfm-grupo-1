@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-
+import { Component, inject } from '@angular/core';
+import { ThemeService } from '../../service/theme.service';
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -8,13 +8,10 @@ import { Component, signal } from '@angular/core';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
-  isDarkMode = signal(false);
+  private themeService = inject(ThemeService);
+  isDarkMode = this.themeService.darkTheme;
 
   toggleDarkMode() {
-    this.isDarkMode.update((value) => {
-      const isDark = !value;
-      document.body.classList.toggle('dark', isDark);
-      return isDark;
-    });
+    this.themeService.toggleDarkMode();
   }
 }

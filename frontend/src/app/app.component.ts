@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from "./shared/header/header.component";
 import { FooterComponent } from "./shared/footer/footer.component";
+
+import { ThemeService } from "./service/theme.service";
 
 @Component({
   selector: 'app-root',
@@ -12,9 +14,8 @@ import { FooterComponent } from "./shared/footer/footer.component";
 export class AppComponent {
   title = 'Nido';
 
+  private themeService = inject(ThemeService);
+
   ngOnInit() {
-  const unwantedStyle = document.querySelector('style[data-primeng-style-id="global-variables"]');
-  if (unwantedStyle) {
-    unwantedStyle.remove();
-  }}
+  this.themeService.applyTheme();}
 }
