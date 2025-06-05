@@ -1,52 +1,80 @@
-<div class='demo-app'>
-
-  <div class='demo-app-sidebar'>
-    <div class='demo-app-sidebar-section'>
-      <h2>Instructions</h2>
-      <ul>
-        <li>Select dates and you will be prompted to create a new event</li>
-        <li>Drag, drop, and resize events</li>
-        <li>Click an event to delete it</li>
-      </ul>
-    </div>
-    <div class='demo-app-sidebar-section'>
-      <label>
-        <input
-          type='checkbox'
-          [checked]='calendarVisible()'
-          (change)='handleCalendarToggle()'
-        />
-        toggle whole calendar
-      </label>
-    </div>
-    <div class='demo-app-sidebar-section'>
-      <label>
-        <input
-          type='checkbox'
-          [checked]='calendarOptions().weekends'
-          (change)='handleWeekendsToggle()'
-        />
-        toggle weekends
-      </label>
-    </div>
-    <div class='demo-app-sidebar-section'>
-      <h2>All Events ({{currentEvents().length}})</h2>
-      <ul>
-        <li *ngFor='let event of currentEvents()'>
-          <b>{{event.startStr}}</b>
-          <i>{{event.title}}</i>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class='demo-app-main'>
-    <full-calendar *ngIf='calendarVisible()' [options]='calendarOptions()'>
+<div class="flex flex-col items-center bg-gray-100 min-h-screen pt-6 pb-20">
+  <!-- Calendario -->
+  <div class="w-[90%] max-w-md">
+    <full-calendar
+      [options]="calendarOptions()"
+      class="rounded-xl shadow-md bg-white p-4"
+    >
       <ng-template #eventContent let-arg>
-        <b>{{ arg.timeText }}</b>
-        <i>{{ arg.event.title }}</i>
+        <b class="text-sm text-gray-800">{{ arg.timeText }}</b>
+        <i class="text-sm text-gray-500 ml-1">{{ arg.event.title }}</i>
       </ng-template>
     </full-calendar>
   </div>
 
+  <!-- Eventos listados -->
+  <div class="mt-6 space-y-4 px-4 w-full">
+    <p class="text-sm font-semibold text-gray-700">February, 15th, Thu</p>
+    <div
+      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <i class="pi pi-book text-xl text-purple-800"></i>
+        <span class="text-gray-800 font-medium">Read</span>
+      </div>
+      <input
+        type="checkbox"
+        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
+      />
+    </div>
+
+    <p class="text-sm font-semibold text-gray-700">February, 16th, Fri</p>
+    <div
+      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <i class="pi pi-book text-xl text-purple-800"></i>
+        <span class="text-gray-800 font-medium">Read</span>
+      </div>
+      <input
+        type="checkbox"
+        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
+      />
+    </div>
+
+    <p class="text-sm font-semibold text-gray-700">This week</p>
+    <div
+      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <i class="pi pi-book text-xl text-purple-800"></i>
+        <span class="text-gray-800 font-medium">Read</span>
+      </div>
+      <input
+        type="checkbox"
+        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
+      />
+    </div>
+
+    <div
+      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <i class="pi pi-book text-xl text-purple-800"></i>
+        <span class="text-gray-800 font-medium">Read</span>
+      </div>
+      <input
+        type="checkbox"
+        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
+      />
+    </div>
+
+    <!-- Botón flotante -->
+    <button
+      class="fixed bottom-20 right-5 bg-purple-500 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-2xl"
+      (click)="agregarEventoRapido()"
+    >
+      +
+    </button>
+  </div>
 </div>

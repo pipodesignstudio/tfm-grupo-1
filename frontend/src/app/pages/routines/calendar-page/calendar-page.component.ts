@@ -1,36 +1,33 @@
-import { Component,  signal, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, ChangeDetectorRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import { CalendarOptions, DateSelectArg, EventClickArg, EventApi } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
-
 
 @Component({
   selector: 'app-calendar-page',
+  standalone: true,
   imports: [CommonModule, FullCalendarModule],
   templateUrl: './calendar-page.component.html',
-  styleUrl: './calendar-page.component.css'
+  styleUrl: './calendar-page.component.css',
+  encapsulation: ViewEncapsulation.None
 })
-
 export class CalendarPageComponent {
+  @ViewChild('fullCalendarRef') calendarComponent!: FullCalendarComponent;
+
   calendarVisible = signal(true);
+  currentEvents = signal<EventApi[]>([]);
+
   calendarOptions = signal<CalendarOptions>({
-    plugins: [
-      interactionPlugin,
-      dayGridPlugin,
-      timeGridPlugin,
-      listPlugin,
-    ],
+    plugins: [interactionPlugin, dayGridPlugin],
     headerToolbar: {
-      left: 'prev,next today',
+      left: '',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      right: ''
     },
     initialView: 'dayGridMonth',
-    initialEvents: [], // alternatively, use the `events` setting to fetch from a feed
+    initialEvents: [],
     weekends: true,
     editable: true,
     selectable: true,
@@ -39,16 +36,9 @@ export class CalendarPageComponent {
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this)
-    /* you can update a remote database when these fire:
-    eventAdd:
-    eventChange:
-    eventRemove:
-    */
   });
-  currentEvents = signal<EventApi[]>([]);
 
-  constructor(private changeDetector: ChangeDetectorRef) {
-  }
+  constructor(private changeDetector: ChangeDetectorRef) {}
 
   handleCalendarToggle() {
     this.calendarVisible.update((bool) => !bool);
@@ -62,10 +52,9 @@ export class CalendarPageComponent {
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
-    const title = prompt('Please enter a new title for your event');
+    const title = prompt('Ingresa el título del evento:');
     const calendarApi = selectInfo.view.calendar;
-
-    calendarApi.unselect(); // clear date selection
+    calendarApi.unselect();
 
     if (title) {
       calendarApi.addEvent({
@@ -79,13 +68,27 @@ export class CalendarPageComponent {
   }
 
   handleEventClick(clickInfo: EventClickArg) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+    if (confirm(`¿Eliminar el evento '${clickInfo.event.title}'?`)) {
       clickInfo.event.remove();
     }
   }
 
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
-    this.changeDetector.detectChanges(); // workaround for pressionChangedAfterItHasBeenCheckedError
+    this.changeDetector.detectChanges();
+  }
+
+  agregarEventoRapido() {
+    const title = prompt('Título del nuevo evento');
+    if (title && this.calendarComponent) {
+      const calendarApi = this.calendarComponent.getApi();
+      const date = new Date();
+      calendarApi.addEvent({
+        title,
+        start: date.toISOString().slice(0, 10),
+        allDay: true
+      });
+    }
   }
 }
+
