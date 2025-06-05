@@ -11,4 +11,10 @@ import { FooterComponent } from "./shared/footer/footer.component";
 })
 export class AppComponent {
   title = 'Nido';
+
+  ngOnInit() {
+  const unwantedStyle = document.querySelector('style[data-primeng-style-id="global-variables"]');
+  if (unwantedStyle) {
+    unwantedStyle.remove();
+  }}
 }
