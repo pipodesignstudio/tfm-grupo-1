@@ -80,20 +80,6 @@ INSERT INTO actividades (rutina_id, ninos_id, titulo, descripcion, dia_semana, h
 (5, 5, 'Poner la mesa', 'Diego ayudará a poner los cubiertos y platos.', 2, '13:30:00', '13:45:00', '#2ECC71', 'Habito', '{"lugar": "Comedor"}', 5), -- Martes
 (5, 5, 'Repasar inglés', 'Practicar 5 palabras nuevas de inglés.', 4, '17:00:00', '17:15:00', '#E74C3C', 'Tarea', '{"lugar": "Escritorio de Diego"}', 6); -- Jueves
 
-
--- Recordatorios (Fechas en el futuro para que tengan sentido)
-INSERT INTO recordatorios (actividad_id, fecha_envio, enviado) VALUES
-(1, '2025-06-03 07:00:00', 0), -- Recordatorio para 'Vestirse solo'
-(2, '2025-06-03 07:30:00', 0), -- Recordatorio para 'Desayunar'
-(3, '2025-06-05 19:45:00', 0), -- Recordatorio para 'Preparar pijama'
-(4, '2025-06-05 20:15:00', 0), -- Recordatorio para 'Cuento de buenas noches'
-(5, '2025-06-06 17:45:00', 0), -- Recordatorio para 'Lectura diaria'
-(6, '2025-06-06 18:15:00', 0), -- Recordatorio para 'Ejercicios de mates'
-(7, '2025-06-07 10:30:00', 0), -- Recordatorio para 'Parque'
-(8, '2025-06-08 16:45:00', 0), -- Recordatorio para 'Recoger cuarto'
-(9, '2025-06-03 13:15:00', 0), -- Recordatorio para 'Poner la mesa'
-(10, '2025-06-05 16:45:00', 0); -- Recordatorio para 'Repasar inglés'
-
 -- Alergias
 INSERT INTO alergias (ninos_id, nombre) VALUES
 (1, 'Polen'),

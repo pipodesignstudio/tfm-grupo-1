@@ -56,20 +56,6 @@ model familia_usuarios {
   @@index([usuarios_id], map: "fk_familia_usuarios_usuarios_idx")
 }
 
-model invitacion_usuario_familia {
-  id                 Int                            @id @default(autoincrement())
-  familia_id         Int
-  usuario_emisor     Int
-  email_destinatario String                         @db.VarChar(255)
-  rol                invitacion_usuario_familia_rol
-  atentido           Boolean?                       @default(false)
-  aceptado           Boolean?                       @default(false)
-  fecha_envio        DateTime?                      @default(now()) @db.Timestamp(0)
-  familia            familia                        @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_invitacion_usuario_familia_familia1")
-
-  @@index([familia_id], map: "fk_invitacion_usuario_familia_familia1_idx")
-}
-
 model ninos {
   id                      Int                  @id @default(autoincrement())
   perfiles_aprendizaje_id Int
@@ -120,11 +106,12 @@ model perfiles_aprendizaje {
 }
 
 model recordatorios {
-  id           Int         @id @default(autoincrement())
+  id           Int                        @id @default(autoincrement())
   actividad_id Int
-  fecha_envio  DateTime?   @db.DateTime(0)
-  enviado      Boolean     @default(false)
-  actividades  actividades @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_actividad")
+  periodicidad recordatorios_periodicidad @default(dbgenerated("(_latin1\\'Daily\\')"))
+  activo       Boolean                    @default(true)
+  utlimo_envio DateTime?                  @db.Timestamp(0)
+  actividades  actividades                @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_actividad")
 
   @@index([actividad_id], map: "fk_recordatorio_actividad")
 }
@@ -159,13 +146,21 @@ model usuarios {
   familia_usuarios familia_usuarios[]
 }
 
-enum familia_usuarios_rol {
-  admin
-  cuidador
-  nino
+model invitacion_usuario_familia {
+  id                 Int                            @id @default(autoincrement())
+  familia_id         Int
+  usuario_emisor     Int
+  email_destinatario String                         @db.VarChar(255)
+  rol                invitacion_usuario_familia_rol
+  atentido           Boolean                        @default(false)
+  aceptado           Boolean                        @default(false)
+  fecha_envio        DateTime                       @default(now()) @db.Timestamp(0)
+  familia            familia                        @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_invitacion_usuario_familia_familia1")
+
+  @@index([familia_id], map: "fk_invitacion_usuario_familia_familia1_idx")
 }
 
-enum invitacion_usuario_familia_rol {
+enum familia_usuarios_rol {
   admin
   cuidador
   nino
@@ -175,4 +170,16 @@ enum actividades_tipo {
   Tarea
   Evento
   Habito
+}
+
+enum recordatorios_periodicidad {
+  Daily
+  Weekly
+  Monthly
+}
+
+enum invitacion_usuario_familia_rol {
+  admin
+  cuidador
+  nino
 }

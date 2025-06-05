@@ -133,7 +133,7 @@ CREATE TABLE `familia_usuarios` (
 CREATE TABLE `invitacion_usuario_familia` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `familia_id` INT NOT NULL,
-  `usuario_emisor` INT DEFAULT NOT NULL,
+  `usuario_emisor` INT NOT NULL,
   `email_destinatario` VARCHAR(255) NOT NULL,
   `rol` ENUM('admin', 'cuidador', 'nino') NOT NULL,
   `atentido` BOOLEAN DEFAULT FALSE NOT NULL,
