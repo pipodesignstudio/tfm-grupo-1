@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import prisma from "../config/prisma.config";
 import { InvitationResponseDto, NewInvitationDto } from "../dtos";
 import { IInvitation, IExistingInvitationResponse } from "../interfaces";
-import { BadRequestError, InternalServerError, logger } from "../utils";
+import { BadRequestError, InternalServerError, logger, UnauthorizedError } from "../utils";
 import { UserService } from "./user.service";
 import { EmailService } from "./email.service";
 
@@ -400,44 +400,57 @@ export class InvitationsService {
    * @throws InternalServerError si ocurre un error al acceder a la base de datos.
    */
 
-  async getInvitationById(id: number):Promise<IInvitation | null> {
-    try {
-      const invitation = await prisma.invitacion_usuario_familia.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        familia_id: true,
-        usuario_emisor: true,
-        email_destinatario: true,
-        rol: true,
-        atentido: true,
-        aceptado: true,
-        fecha_envio: true,
-      },
+  async getInvitationById(id: number, requesterId: number): Promise<IInvitation | null> {
+    const invitation = await prisma.invitacion_usuario_familia.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            familia_id: true,
+            usuario_emisor: true,
+            email_destinatario: true,
+            rol: true,
+            atentido: true,
+            aceptado: true,
+            fecha_envio: true,
+        },
     });
 
     if (!invitation) {
-      return null;
+        return null;
     }
 
-    return {
-      id: invitation.id,
-      familyId: invitation.familia_id,
-      senderId: invitation.usuario_emisor!,
-      destinationEmail: invitation.email_destinatario,
-      role: invitation.rol,
-      attended: invitation.atentido ?? false,
-      accepted: invitation.aceptado ?? false,
-      sentDate: invitation.fecha_envio ?? undefined,
+    if (invitation.usuario_emisor !== requesterId) {
+        const err = new UnauthorizedError(
+            "No tienes permiso para acceder a esta invitación.",
+            { error: "UNAUTHORIZED" },
+            false
+        );
+        logger.logError(err); 
+        throw err; // Este error será capturado por el controlador, no por el catch de esta función.
     }
+
+    // Si el error no es UnauthorizedError, o si ocurre un error inesperado de Prisma, etc.
+    try {
+        return {
+            id: invitation.id,
+            familyId: invitation.familia_id,
+            senderId: invitation.usuario_emisor!,
+            destinationEmail: invitation.email_destinatario,
+            role: invitation.rol,
+            attended: invitation.atentido ?? false,
+            accepted: invitation.aceptado ?? false,
+            sentDate: invitation.fecha_envio ?? undefined,
+        };
     } catch (error) {
-       const err = new InternalServerError(
-          "Error interno al procesar la solicitud del usuario.",
-          { error: "INTERNAL_SERVER_ERROR" }
+        // Aquí capturamos SOLO errores inesperados que NO son UnauthorizedError
+        // O podrías tener un catch más específico para errores de Prisma, etc.
+        const err = new InternalServerError(
+            "Error interno al procesar la solicitud del usuario.",
+            { error: "INTERNAL_SERVER_ERROR" }
         );
         logger.logError(err);
         throw err;
     }
-  }
+}
 
 }

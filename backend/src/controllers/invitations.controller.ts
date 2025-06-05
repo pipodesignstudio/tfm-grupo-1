@@ -190,9 +190,11 @@ export class InvitationsController {
    */
   async getInvitationById(req: Request, res: Response, next: NextFunction) {
     const id = +req.params.id;
+    const reqUser = req.user!;
+    const requesterId = reqUser.id;
 
     try {
-      const invitation = await invitationsService.getInvitationById(id);
+      const invitation = await invitationsService.getInvitationById(id, requesterId);
       return ApiCorrectResponse.genericSuccess(
         res,
         { invitation },

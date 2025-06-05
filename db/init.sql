@@ -97,8 +97,9 @@ CREATE TABLE `actividades` (
 CREATE TABLE `recordatorios` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `actividad_id` INT NOT NULL,
-  `fecha_envio` DATETIME DEFAULT NULL,
-  `enviado` BOOLEAN NOT NULL DEFAULT FALSE,
+  `periodicidad` ENUM('Daily', 'Weekly', 'Monthly') DEFAULT ('Daily') NOT NULL,
+  `activo` BOOLEAN NOT NULL DEFAULT TRUE,
+  `utlimo_envio` TIMESTAMP DEFAULT NULL,
   CONSTRAINT `fk_recordatorio_actividad` FOREIGN KEY (`actividad_id`) REFERENCES `actividades`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -135,7 +136,7 @@ CREATE TABLE `invitacion_usuario_familia` (
   `usuario_emisor` INT DEFAULT NOT NULL,
   `email_destinatario` VARCHAR(255) NOT NULL,
   `rol` ENUM('admin', 'cuidador', 'nino') NOT NULL,
-  `atentido` BOOLEAN DEFAULT FALSE,
+  `atentido` BOOLEAN DEFAULT FALSE NOT NULL,
   `aceptado` BOOLEAN DEFAULT FALSE NOT NULL,
   `fecha_envio` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CONSTRAINT `fk_invitacion_usuario_familia_familia1` FOREIGN KEY (`familia_id`) REFERENCES `familia`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
