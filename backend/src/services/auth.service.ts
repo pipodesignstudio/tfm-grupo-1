@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import { LoginUserDto, RegisterUserDto } from "../dtos";
 import {
+  BadRequestError,
   ConflictError,
   CustomError,
   InternalServerError,
@@ -96,7 +97,9 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedError("Credenciales incorrectas.");
+        throw new BadRequestError("Usuario no encontrado en la base de datos.", {
+          error: "USER_NOT_FOUND",
+        });
       }
 
       // 2. Comparar la contraseña proporcionada con la contraseña hasheada en la BBDD

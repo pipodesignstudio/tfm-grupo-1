@@ -24,35 +24,36 @@ export class InvitationsService {
   async manageCreateInvitation(
     dto: NewInvitationDto,
     requesterId: number
-  ): Promise<boolean> {
+  ): Promise<IInvitation | null> {
+    const { destinationEmail, familyId, role } = dto;
+
+    const invitation: Omit<IInvitation, "id" | "sentDate"> = {
+      destinationEmail,
+      familyId,
+      senderId: requesterId,
+      role,
+      accepted: false,
+      attended: false,
+    };
+
+    const saved = await this.saveInvitationIntoDB(invitation);
+
+    if (!saved) return null;
+
     try {
-      const { destinationEmail, familyId, role } = dto;
-
-      const invitation: Omit<IInvitation, "id" | "sentDate"> = {
-        destinationEmail,
-        familyId,
-        senderId: requesterId,
-        role,
-        accepted: false,
-        attended: false,
-      };
-
-      const invitationId = await this.saveInvitationIntoDB(invitation);
-      if (!invitationId) return false;
-
       const sender = await this.userService.getUserById(requesterId);
-      if (!sender) return false;
+      if (!sender) throw new Error("Emisor no encontrado");
 
       const userExists = await this.userService.getUserByEmail(
         destinationEmail
       );
 
-      // TODO: Llamar al servicio de familia para coger el nombre
+      // TODO: Obtener el nombre real de la familia
       const url = userExists
-        ? `${this.baseUrl}/dashboard/invitations/${invitationId}`
-        : `${this.baseUrl}/auth/register?invitationId=${invitationId}`;
+        ? `${this.baseUrl}/dashboard/invitations/${saved.id}`
+        : `${this.baseUrl}/auth/register?invitationId=${saved.id}`;
 
-      const success = await this.emailService.sendInvitationEmailToUser(
+      const emailSent = await this.emailService.sendInvitationEmailToUser(
         destinationEmail,
         sender.nick,
         url,
@@ -60,11 +61,22 @@ export class InvitationsService {
         !!userExists
       );
 
-      return success;
+      if (!emailSent) throw new Error("Error al enviar el correo");
+
+      return saved;
     } catch (error) {
-      logger.logError("Error al guardar la invitación en la base de datos");
-      console.error(error);
-      return false;
+      logger.logError("Fallo en el proceso de creación de la invitación");
+
+      // Rollback: eliminamos la invitación si algo falla
+      try {
+        await prisma.invitacion_usuario_familia.delete({
+          where: { id: saved.id },
+        });
+      } catch (deleteError) {
+        logger.logError("Error al intentar borrar la invitación tras fallo");
+      }
+
+      return null;
     }
   }
 
@@ -180,11 +192,11 @@ export class InvitationsService {
    * Guarda una invitación en la base de datos.
    *
    * @param invitation - Los datos de la invitación (sin ID ni fecha).
-   * @returns El ID generado de la invitación o null en caso de error.
+   * @returns La invitación recién publicada.
    */
   private async saveInvitationIntoDB(
     invitation: Omit<IInvitation, "id" | "sentDate">
-  ): Promise<number | null> {
+  ): Promise<IInvitation | null> {
     try {
       const result = await prisma.invitacion_usuario_familia.create({
         data: {
@@ -195,8 +207,28 @@ export class InvitationsService {
           atentido: false,
           aceptado: false,
         },
+        select: {
+          id: true,
+          familia_id: true,
+          usuario_emisor: true,
+          email_destinatario: true,
+          rol: true,
+          atentido: true,
+          aceptado: true,
+          fecha_envio: true,
+        },
       });
-      return result.id;
+
+      return {
+        id: result.id,
+        familyId: result.familia_id,
+        senderId: result.usuario_emisor!,
+        destinationEmail: result.email_destinatario,
+        role: result.rol,
+        attended: result.atentido ?? false,
+        accepted: result.aceptado ?? false,
+        sentDate: result.fecha_envio ?? undefined,
+      };
     } catch (error) {
       logger.logError("Error al guardar la invitación en la base de datos");
       return null;
@@ -206,66 +238,206 @@ export class InvitationsService {
   // -------------------- Manage Invitations --------------------
 
   async manageInvitationResp(
-  dto: InvitationResponseDto,
-  userId: number
-): Promise<boolean> {
-  const { invitationId, isAccepted } = dto;
+    dto: InvitationResponseDto,
+    userId: number
+  ): Promise<boolean> {
+    const { invitationId, isAccepted } = dto;
 
-  const invitation = await prisma.invitacion_usuario_familia.findUnique({
-    where: { id: invitationId },
-    select: {
-      familia_id: true,
-      usuario_emisor: true,
-      email_destinatario: true,
-      rol: true,
-      atentido: true,
-      aceptado: true,
-    },
-  });
-
-  if (!invitation) {
-    const err = new BadRequestError(
-      "No se ha encontrado la invitación.",
-      { error: "INVITATION_NOT_FOUND" },
-      false
-    );
-    logger.logError(err);
-    throw err;
-  }
-
-  if (invitation.atentido) {
-    const err = new BadRequestError(
-      "La invitación ya ha sido atendida.",
-      { error: "INVITATION_ALREADY_ATTENDED" },
-      false
-    );
-    logger.logError(err);
-    throw err;
-  }
-
-  try {
-    await prisma.invitacion_usuario_familia.update({
+    const invitation = await prisma.invitacion_usuario_familia.findUnique({
       where: { id: invitationId },
-      data: {
+      select: {
+        familia_id: true,
+        usuario_emisor: true,
+        email_destinatario: true,
+        rol: true,
         atentido: true,
-        aceptado: isAccepted,
+        aceptado: true,
       },
     });
 
-    if (isAccepted) {
-      await prisma.familia_usuarios.create({
-        data: {
-          familia_id: invitation.familia_id,
-          usuarios_id: userId,
-          rol: invitation.rol,
-        },
-      });
+    if (!invitation) {
+      const err = new BadRequestError(
+        "No se ha encontrado la invitación.",
+        { error: "INVITATION_NOT_FOUND" },
+        false
+      );
+      logger.logError(err);
+      throw err;
     }
 
-    return true; 
-  } catch (error) {
-    logger.logError("Error al procesar la invitación");
-    return false; 
+    if (invitation.atentido) {
+      const err = new BadRequestError(
+        "La invitación ya ha sido atendida.",
+        { error: "INVITATION_ALREADY_ATTENDED" },
+        false
+      );
+      logger.logError(err);
+      throw err;
+    }
+
+    try {
+      await prisma.invitacion_usuario_familia.update({
+        where: { id: invitationId },
+        data: {
+          atentido: true,
+          aceptado: isAccepted,
+        },
+      });
+
+      if (isAccepted) {
+        await prisma.familia_usuarios.create({
+          data: {
+            familia_id: invitation.familia_id,
+            usuarios_id: userId,
+            rol: invitation.rol,
+          },
+        });
+      }
+
+      return true;
+    } catch (error) {
+      logger.logError("Error al procesar la invitación");
+      return false;
+    }
   }
-}
+
+
+  /**
+   * Obtiene una lista de invitaciones de un usuario.
+   *
+   * Se pueden obtener las invitaciones enviadas por el usuario o las
+   * invitaciones recibidas por el usuario.
+   *
+   * @param userId - ID del usuario.
+   * @param type - Tipo de invitaciones a obtener, "sent" o "received". Busca reutilizar el método
+   * @returns Un array de invitaciones.
+   */
+  async getInvitationsFromUser(userId: number, type: "sent" | "received"): Promise<IInvitation[]> {
+    if (type === "received") {
+      try {
+        const user = await prisma.usuarios.findUnique({
+        where: { id: userId },
+        select: {
+          email: true,
+        }
+      });
+
+        const invitations = await prisma.invitacion_usuario_familia.findMany({
+          where: { email_destinatario: user?.email },
+          select: {
+            id: true,
+            familia_id: true,
+            usuario_emisor: true,
+            email_destinatario: true,
+            rol: true,
+            atentido: true,
+            aceptado: true,
+            fecha_envio: true,
+          },
+        });
+
+        return invitations.map((invitation) => ({
+          id: invitation.id,
+          familyId: invitation.familia_id,
+          senderId: invitation.usuario_emisor!,
+          destinationEmail: invitation.email_destinatario,
+          role: invitation.rol,
+          attended: invitation.atentido ?? false,
+          accepted: invitation.aceptado ?? false,
+          sentDate: invitation.fecha_envio ?? undefined,
+        }));
+      } catch (error) {
+        const err = new InternalServerError(
+          "Error interno al procesar la solicitud del usuario.",
+          { error: "INTERNAL_SERVER_ERROR" }
+        );
+        logger.logError(err);
+        throw err;
+      }
+    } else {
+      try {
+        const invitations = await prisma.invitacion_usuario_familia.findMany({
+          where: { usuario_emisor: userId },
+          select: {
+            id: true,
+            familia_id: true,
+            usuario_emisor: true,
+            email_destinatario: true,
+            rol: true,
+            atentido: true,
+            aceptado: true,
+            fecha_envio: true,
+          },
+        });
+
+        return invitations.map((invitation) => ({
+          id: invitation.id,
+          familyId: invitation.familia_id,
+          senderId: invitation.usuario_emisor!,
+          destinationEmail: invitation.email_destinatario,
+          role: invitation.rol,
+          attended: invitation.atentido ?? false,
+          accepted: invitation.aceptado ?? false,
+          sentDate: invitation.fecha_envio ?? undefined,
+        }));
+      } catch (error) {
+        const err = new InternalServerError(
+          "Error interno al procesar la solicitud del usuario.",
+          { error: "INTERNAL_SERVER_ERROR" }
+        );
+        logger.logError(err);
+        throw err;
+      }
+    }
+  }
+
+
+  /**
+   * Obtiene una invitación por su ID.
+   *
+   * @param id - ID de la invitación a buscar.
+   * @returns La invitación correspondiente o null si no se encuentra.
+   * @throws InternalServerError si ocurre un error al acceder a la base de datos.
+   */
+
+  async getInvitationById(id: number):Promise<IInvitation | null> {
+    try {
+      const invitation = await prisma.invitacion_usuario_familia.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        familia_id: true,
+        usuario_emisor: true,
+        email_destinatario: true,
+        rol: true,
+        atentido: true,
+        aceptado: true,
+        fecha_envio: true,
+      },
+    });
+
+    if (!invitation) {
+      return null;
+    }
+
+    return {
+      id: invitation.id,
+      familyId: invitation.familia_id,
+      senderId: invitation.usuario_emisor!,
+      destinationEmail: invitation.email_destinatario,
+      role: invitation.rol,
+      attended: invitation.atentido ?? false,
+      accepted: invitation.aceptado ?? false,
+      sentDate: invitation.fecha_envio ?? undefined,
+    }
+    } catch (error) {
+       const err = new InternalServerError(
+          "Error interno al procesar la solicitud del usuario.",
+          { error: "INTERNAL_SERVER_ERROR" }
+        );
+        logger.logError(err);
+        throw err;
+    }
+  }
+
 }
