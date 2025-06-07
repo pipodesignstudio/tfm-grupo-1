@@ -108,12 +108,15 @@ model perfiles_aprendizaje {
 model recordatorios {
   id           Int                        @id @default(autoincrement())
   actividad_id Int
-  periodicidad recordatorios_periodicidad @default(dbgenerated("(_latin1\\'Daily\\')"))
+  usuario_id   Int
+  periodicidad recordatorios_periodicidad @default(dbgenerated("(_latin1\\'daily\\')"))
   activo       Boolean                    @default(true)
-  utlimo_envio DateTime?                  @db.Timestamp(0)
+  ultimo_envio DateTime?                  @db.Timestamp(0)
   actividades  actividades                @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_actividad")
+  usuarios     usuarios                   @relation(fields: [usuario_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_usuario")
 
   @@index([actividad_id], map: "fk_recordatorio_actividad")
+  @@index([usuario_id], map: "fk_recordatorio_usuario")
 }
 
 model rutinas {
@@ -144,6 +147,7 @@ model usuarios {
   borrado          Boolean            @default(false)
   email_verificado Boolean            @default(false)
   familia_usuarios familia_usuarios[]
+  recordatorios    recordatorios[]
 }
 
 model invitacion_usuario_familia {
@@ -172,14 +176,14 @@ enum actividades_tipo {
   Habito
 }
 
-enum recordatorios_periodicidad {
-  Daily
-  Weekly
-  Monthly
-}
-
 enum invitacion_usuario_familia_rol {
   admin
   cuidador
   nino
+}
+
+enum recordatorios_periodicidad {
+  daily
+  weekly
+  monthly
 }

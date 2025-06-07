@@ -78,4 +78,23 @@ public async logError(error: Error | CustomError | string, req?: Request, detail
       console.error('❌ Error al logear la acción de usuario en MongoDB:', dbError);
     }
   }
+
+  /**
+   * Registra un evento de información en la base de datos de logs.
+   * @param message El mensaje a logear.
+   */
+  public async logInfo(message: string): Promise<void> {
+    try {
+      const logEntry = new Log({
+        type: 'info',
+        message: message,
+      });
+      await logEntry.save();
+      console.log('✅ Info logeada en MongoDB:', message); 
+    } catch (dbError) {
+      console.error('❌ Error al logear la información en MongoDB:', dbError);
+    }
+  }
+
+
 }

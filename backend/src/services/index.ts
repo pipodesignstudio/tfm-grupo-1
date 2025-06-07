@@ -4,5 +4,6 @@ export * from './ia.service';
 export * from './invitations.service';
 export * from './mongo-log.service';
 export * from './printer.service';
+export * from './reminders.service';
 export * from './suggestions.service';
 export * from './user.service';

@@ -97,12 +97,13 @@ CREATE TABLE `actividades` (
 CREATE TABLE `recordatorios` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `actividad_id` INT NOT NULL,
-  `periodicidad` ENUM('Daily', 'Weekly', 'Monthly') DEFAULT ('Daily') NOT NULL,
+  `usuario_id` INT NOT NULL,
+  `periodicidad` ENUM('daily', 'weekly', 'monthly') DEFAULT ('daily') NOT NULL,
   `activo` BOOLEAN NOT NULL DEFAULT TRUE,
-  `utlimo_envio` TIMESTAMP DEFAULT NULL,
-  CONSTRAINT `fk_recordatorio_actividad` FOREIGN KEY (`actividad_id`) REFERENCES `actividades`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `ultimo_envio` TIMESTAMP DEFAULT NULL,
+  CONSTRAINT `fk_recordatorio_actividad` FOREIGN KEY (`actividad_id`) REFERENCES `actividades`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_recordatorio_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
 
 CREATE TABLE `alergias` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -151,6 +152,7 @@ CREATE INDEX `fk_objetivos_rutinas1_idx` ON `objetivos` (`rutinas_id`);
 CREATE INDEX `fk_actividad_rutina` ON `actividades` (`rutina_id`);
 CREATE INDEX `fk_actividades_ninos1_idx` ON `actividades` (`ninos_id`);
 CREATE INDEX `fk_recordatorio_actividad` ON `recordatorios` (`actividad_id`);
+CREATE INDEX `fk_recordatorio_usuario` ON `recordatorios` (`usuario_id`);
 CREATE INDEX `fk_alergias_ninos1_idx` ON `alergias` (`ninos_id`);
 CREATE INDEX `fk_notas_ninos1_idx` ON `notas` (`ninos_id`);
 CREATE INDEX `fk_familia_usuarios_usuarios_idx` ON `familia_usuarios` (`usuarios_id`);

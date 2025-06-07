@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import nodemailer, { Transporter } from "nodemailer";
 import { verifyWelcomeEmail } from "../templates/email/welcome-email.template";
-import { manageInvitationEmailTemplate, manageInvitationWithNewUser } from "../templates/email";
+import { manageInvitationEmailTemplate, manageInvitationWithNewUser, recordatioEmailTemplate } from "../templates/email";
 
 dotenv.config();
 
@@ -36,6 +36,15 @@ export class EmailService {
     this.defaultFrom = process.env.EMAIL_USER!;
   }
 
+  /**
+   * Envía un correo electrónico de bienvenida al usuario con un enlace
+   * de verificación de email.
+   *
+   * @param email - Email del usuario.
+   * @param nickname - Nickname del usuario.
+   * @param url - URL de verificación de email.
+   * @returns Booleano indicando si se ha enviado el correo exitosamente.
+   */
   public async sendWelcomeVerificationEmail(
     email: string,
     nickname: string,
@@ -63,6 +72,17 @@ export class EmailService {
       return false;
     }
   }
+  /**
+   * Envía un correo electrónico de invitación a un usuario con un enlace
+   * para unirse a una familia.
+   *
+   * @param email - Email del usuario.
+   * @param nickname - Nickname del usuario.
+   * @param url - URL de invitación.
+   * @param familyName - Nombre de la familia.
+   * @param userIsRegistered - Indica si el usuario ya está registrado.
+   * @returns Booleano indicando si se ha enviado el correo exitosamente.
+   */
   public async sendInvitationEmailToUser(
     email: string,
     nickname: string,
@@ -94,4 +114,39 @@ export class EmailService {
       return false;
     }
   }
+
+  /**
+   * Envía un correo electrónico de recordatorio a un usuario con un enlace
+   * para acceder a una actividad.
+   *
+   * @param email - Email del usuario.
+   * @param nickname - Nickname del usuario.
+   * @param title - Título de la actividad.
+   * @param url - URL de la actividad.
+   * @returns Booleano indicando si se ha enviado el correo exitosamente.
+   */
+  async sendRecordatorio(email: string, nickname: string, title:string, url: string) {
+    const mailOptions = {
+      from: this.defaultFrom, 
+      to: email,
+      subject: `🔔 ${nickname} recordatorio de NIDO`,
+      html: recordatioEmailTemplate(nickname, title, url)
+    };
+
+    try {
+      const response = await this.transporter.sendMail(mailOptions);
+      console.log(response);
+      if (response.messageId) {
+        console.log("Correo enviado exitosamente");
+        return true;
+      } else {
+        console.error("Error al enviar el correo");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al enviar el correo:", error);
+      return false;
+    }
+  }
+
 }
