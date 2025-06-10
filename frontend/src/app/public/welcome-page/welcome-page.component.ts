@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class WelcomePageComponent {
   constructor(private router: Router) {}
 
-  continueToLanding(): void {
-    this.router.navigate(['/home']);
+  continueToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }
