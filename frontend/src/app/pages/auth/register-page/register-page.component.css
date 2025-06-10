@@ -1,0 +1,176 @@
+/* Colores de la App (referencia)
+   Fondo de la app: #C8E6F0
+   Primario: #9ED2C5 (para el contenedor del formulario)
+   Secundario: #FBF8F0
+   Acento Amarillo: #FFD700
+   Acento Naranja: #FF7F50
+   Texto Oscuro: #3A3A3A
+   Texto Claro: #6B6B6B
+   Blanco: #FFFFFF
+*/
+
+@keyframes slideInFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: #c8e6f0;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.register-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  width: 80%;
+  max-width: 1000px;
+  background-color: #9ed2c5;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: slideInFadeIn 0.8s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.page-title {
+  font-size: 2.5em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.profile-picture-section {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 10px;
+}
+
+.file-input {
+  display: none;
+}
+
+.profile-picture-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #fbf8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  border: 4px solid #fbf8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.profile-picture-placeholder:hover {
+  transform: translateY(-2px);
+  border-color: #ffd700;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-icon {
+  font-size: 2em;
+  color: #6b6b6b;
+}
+
+.profile-tip {
+  font-size: 0.9em;
+  color: #fbf8f0;
+  margin-top: 10px;
+}
+
+.register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group label {
+  font-size: 0.9em;
+  color: #fbf8f0;
+  font-weight: 500;
+}
+
+.input-group input {
+  padding: 12px 15px;
+  border: 1px solid #fbf8f0;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #3a3a3a;
+  background-color: #ffffff;
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #9b9b9b;
+}
+
+.input-group input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.error-message {
+  color: #ff7f50;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: -10px;
+}
+
+.submit-button {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #3a3a3a;
+  background-color: #ffd700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+
+  transition: background-color 1s ease, color 1s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #ff7f50;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

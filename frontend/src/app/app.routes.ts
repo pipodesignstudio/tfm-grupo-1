@@ -5,11 +5,13 @@ import { RegisterPageComponent } from './pages/auth/register-page/register-page.
 import { CalendarPageComponent } from './pages/routines/calendar-page/calendar-page.component';
 import { WelcomePageComponent } from './public/welcome-page/welcome-page.component';
 import { DashboardPageComponent } from './pages/dashboard/dashboard-page/dashboard-page.component';
+import { CreateFamilyComponent } from './pages/auth/create-family/create-family.component';
 
 export const routes: Routes = [
   { path: '', component: WelcomePageComponent, title: 'Bienvenido a Nido' },
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
+  { path: 'create-family', component: CreateFamilyComponent },
   { path: 'dashboard', component: DashboardPageComponent },
   { path: 'calendar', component: CalendarPageComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },

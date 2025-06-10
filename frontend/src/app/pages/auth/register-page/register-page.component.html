@@ -1,1 +1,84 @@
-<p>register-page works!</p>
+<div class="register-container">
+  <div class="register-content">
+    <h1 class="page-title">Regístrate</h1>
+
+    <div class="profile-picture-section">
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="file-input"
+      />
+      <div class="profile-picture-placeholder" (click)="fileInput.click()">
+        <ng-container *ngIf="profileImageUrl; else cameraIcon">
+          <img
+            [src]="profileImageUrl"
+            alt="Foto de Perfil"
+            class="profile-image"
+          />
+        </ng-container>
+        <ng-template #cameraIcon>
+          <img
+            src="https://img.icons8.com/?size=50&id=89803&format=png&color=000000"
+            alt=""
+          />
+        </ng-template>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="register-form">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="username"
+          placeholder="nombredeusuario"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="tu.email@ejemplo.com"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="********"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPassword">Confirmar Contraseña</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          placeholder="********"
+          required
+        />
+      </div>
+
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+      <button type="submit" class="submit-button">Enviar</button>
+    </form>
+  </div>
+</div>
