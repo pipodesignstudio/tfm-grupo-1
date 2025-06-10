@@ -11,19 +11,19 @@
         class="file-input"
       />
       <div class="profile-picture-placeholder" (click)="fileInput.click()">
-        <ng-container *ngIf="profileImageUrl; else cameraIcon">
-          <img
-            [src]="profileImageUrl"
-            alt="Foto de Perfil"
-            class="profile-image"
-          />
-        </ng-container>
-        <ng-template #cameraIcon>
-          <img
-            src="https://img.icons8.com/?size=50&id=89803&format=png&color=000000"
-            alt=""
-          />
-        </ng-template>
+        @if (profileImageUrl) {
+        <img
+          [src]="profileImageUrl"
+          alt="Foto de Perfil"
+          class="profile-image"
+        />
+        } @else {
+        <img
+          src="https://img.icons8.com/?size=50&id=89803&format=png&color=000000"
+          alt="Icono de cámara"
+          class="camera-icon"
+        />
+        }
       </div>
     </div>
 
@@ -76,7 +76,9 @@
         />
       </div>
 
-      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+      }
 
       <button type="submit" class="submit-button">Enviar</button>
     </form>
