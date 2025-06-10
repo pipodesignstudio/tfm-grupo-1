@@ -5,17 +5,23 @@
       <p class="app-slogan">Cuidando tu familia, simplificando tu vida.</p>
     </div>
 
-    <form (ngSubmit)="onLogin()" class="login-form">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
       <div class="input-group">
         <label for="email">Email</label>
         <input
           type="email"
           id="email"
           name="email"
-          [(ngModel)]="email"
+          formControlName="email"
           placeholder="tu.email@ejemplo.com"
-          required
         />
+        @if (loginForm.get('email'); as emailControl) { @if
+        (emailControl.invalid && (emailControl.dirty || emailControl.touched)) {
+        <p class="error-message">
+          @if (emailControl.errors?.['required']) { El email es obligatorio. }
+          @if (emailControl.errors?.['email']) { Introduce un email válido. }
+        </p>
+        } }
       </div>
 
       <div class="input-group">
@@ -24,10 +30,20 @@
           type="password"
           id="password"
           name="password"
-          [(ngModel)]="password"
+          formControlName="password"
           placeholder="********"
-          required
         />
+        @if (loginForm.get('password'); as passwordControl) { @if
+        (passwordControl.invalid && (passwordControl.dirty ||
+        passwordControl.touched)) {
+        <p class="error-message">
+          @if (passwordControl.errors?.['required']) { La contraseña es
+          obligatoria. } @if (passwordControl.errors?.['minlength']) { La
+          contraseña debe tener al menos
+          {{ passwordControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </p>
+        } }
       </div>
 
       @if (errorMessage) {
@@ -38,8 +54,8 @@
     </form>
 
     <div class="register-link-section">
-      <p class="register-text">¿No tienes cuenta aún?</p>
-      <p>
+      <p class="register-text">
+        ¿No tienes cuenta aún?
         <a (click)="goToRegister()" class="register-link">¡Créala ahora!</a>
       </p>
     </div>

@@ -19,25 +19,37 @@
         />
         } @else {
         <img
-          src="https://img.icons8.com/?size=50&id=89803&format=png&color=000000"
-          alt="Icono de cámara"
-          class="camera-icon"
+          src="https://img.icons8.com/?size=40&id=85103&format=png&color=000000"
         />
         }
       </div>
     </div>
 
-    <form (ngSubmit)="onSubmit()" class="register-form">
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      class="register-form"
+    >
       <div class="input-group">
         <label for="username">Username</label>
         <input
           type="text"
           id="username"
           name="username"
-          [(ngModel)]="username"
+          formControlName="username"
           placeholder="nombredeusuario"
-          required
         />
+        @if (registerForm.get('username'); as usernameControl) { @if
+        (usernameControl.invalid && (usernameControl.dirty ||
+        usernameControl.touched)) {
+        <p class="error-message">
+          @if (usernameControl.errors?.['required']) { El username es
+          obligatorio. } @if (usernameControl.errors?.['minlength']) { El
+          username debe tener al menos
+          {{ usernameControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </p>
+        } }
       </div>
 
       <div class="input-group">
@@ -46,10 +58,16 @@
           type="email"
           id="email"
           name="email"
-          [(ngModel)]="email"
+          formControlName="email"
           placeholder="tu.email@ejemplo.com"
-          required
         />
+        @if (registerForm.get('email'); as emailControl) { @if
+        (emailControl.invalid && (emailControl.dirty || emailControl.touched)) {
+        <p class="error-message">
+          @if (emailControl.errors?.['required']) { El email es obligatorio. }
+          @if (emailControl.errors?.['email']) { Introduce un email válido. }
+        </p>
+        } }
       </div>
 
       <div class="input-group">
@@ -58,10 +76,20 @@
           type="password"
           id="password"
           name="password"
-          [(ngModel)]="password"
+          formControlName="password"
           placeholder="********"
-          required
         />
+        @if (registerForm.get('password'); as passwordControl) { @if
+        (passwordControl.invalid && (passwordControl.dirty ||
+        passwordControl.touched)) {
+        <p class="error-message">
+          @if (passwordControl.errors?.['required']) { La contraseña es
+          obligatoria. } @if (passwordControl.errors?.['minlength']) { La
+          contraseña debe tener al menos
+          {{ passwordControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </p>
+        } }
       </div>
 
       <div class="input-group">
@@ -70,13 +98,22 @@
           type="password"
           id="confirmPassword"
           name="confirmPassword"
-          [(ngModel)]="confirmPassword"
+          formControlName="confirmPassword"
           placeholder="********"
-          required
         />
+        @if (registerForm.get('confirmPassword'); as confirmPasswordControl) {
+        @if (confirmPasswordControl.invalid && (confirmPasswordControl.dirty ||
+        confirmPasswordControl.touched)) {
+        <p class="error-message">
+          @if (confirmPasswordControl.errors?.['required']) { Confirma la
+          contraseña. }
+        </p>
+        } }
       </div>
 
-      @if (errorMessage) {
+      @if (registerForm.errors?.['mismatch'] && registerForm.touched) {
+      <p class="error-message">Las contraseñas no coinciden.</p>
+      } @if (errorMessage) {
       <p class="error-message">{{ errorMessage }}</p>
       }
 

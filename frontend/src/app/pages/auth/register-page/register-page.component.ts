@@ -1,23 +1,56 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register-page',
-  imports: [FormsModule, CommonModule],
   templateUrl: './register-page.component.html',
-  styleUrl: './register-page.component.css',
+  styleUrls: ['./register-page.component.css'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
 })
-export class RegisterPageComponent {
-  username: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
+export class RegisterPageComponent implements OnInit {
+  registerForm!: FormGroup;
   profileImageUrl: string | ArrayBuffer | null = null;
   errorMessage: string = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private fb: FormBuilder) {}
+
+  ngOnInit(): void {
+    this.registerForm = this.fb.group(
+      {
+        username: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', [Validators.required]],
+      },
+      {
+        validators: this.passwordMatchValidator,
+      }
+    );
+  }
+
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+
+    if (
+      password &&
+      confirmPassword &&
+      password.value !== confirmPassword.value
+    ) {
+      return { mismatch: true };
+    }
+    return null;
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -36,20 +69,14 @@ export class RegisterPageComponent {
   }
 
   onSubmit(): void {
-    // Validaciones básicas
-    if (
-      !this.username ||
-      !this.email ||
-      !this.password ||
-      !this.confirmPassword
-    ) {
-      this.errorMessage = 'Todos los campos son obligatorios.';
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
-    if (this.password !== this.confirmPassword) {
-      this.errorMessage = 'Las contraseñas no coinciden.';
-      return;
-    }
-    this.router.navigate(['/create-family']);
+
+    const { username, email, password } = this.registerForm.value;
+    console.log('Registrando usuario:', username, email);
+
+    this.router.navigate(['/onboarding/create-family']);
   }
 }

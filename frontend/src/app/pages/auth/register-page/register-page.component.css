@@ -164,3 +164,11 @@
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.error-message {
+  color: #ff7f50;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: 5px;
+  text-align: right;
+}
