@@ -56,6 +56,17 @@ CREATE TABLE `ninos` (
   CONSTRAINT `fk_ninos_perfiles_aprendizaje1` FOREIGN KEY (`perfiles_aprendizaje_id`) REFERENCES `perfiles_aprendizaje`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+
+CREATE TABLE `objetivos` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `ninos_id` INT NOT NULL,
+  `color` VARCHAR(45) DEFAULT NULL,
+  `tipo` VARCHAR(45) DEFAULT NULL,
+  `fecha_fin` DATE NULL,
+  CONSTRAINT `fk_objetivos_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE `rutinas` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `ninos_id` INT NOT NULL,
@@ -63,18 +74,10 @@ CREATE TABLE `rutinas` (
   `descripcion` TEXT DEFAULT NULL,
   `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `frecuencia` JSON DEFAULT NULL,
-  `fecha_fin` DATE DEFAULT NULL,
+  `fecha_fin` TIMESTAMP DEFAULT NULL,
   CONSTRAINT `fk_rutinas_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE `objetivos` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `rutinas_id` INT NOT NULL,
-  `nombre` VARCHAR(45) NOT NULL,
-  `color` VARCHAR(45) DEFAULT NULL,
-  `tipo` VARCHAR(45) DEFAULT NULL,
-  CONSTRAINT `fk_objetivos_rutinas1` FOREIGN KEY (`rutinas_id`) REFERENCES `rutinas`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 CREATE TABLE `actividades` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -82,6 +85,7 @@ CREATE TABLE `actividades` (
   `ninos_id` INT NOT NULL,
   `titulo` VARCHAR(100) DEFAULT NULL,
   `descripcion` TEXT DEFAULT NULL,
+  `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `dia_semana` TINYINT UNSIGNED DEFAULT NULL,
   `hora_inicio` TIME DEFAULT NULL,
   `hora_fin` TIME DEFAULT NULL,
@@ -89,6 +93,7 @@ CREATE TABLE `actividades` (
   `tipo` ENUM('Tarea', 'Evento', 'Habito') NOT NULL,
   `ubicacion` JSON DEFAULT NULL,
   `usuario_responsable` INT DEFAULT NULL,
+  `completado` BOOLEAN DEFAULT FALSE,
   CONSTRAINT `fk_actividad_rutina` FOREIGN KEY (`rutina_id`) REFERENCES `rutinas`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_actividades_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -98,7 +103,7 @@ CREATE TABLE `recordatorios` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `actividad_id` INT NOT NULL,
   `usuario_id` INT NOT NULL,
-  `periodicidad` ENUM('daily', 'weekly', 'monthly') DEFAULT ('daily') NOT NULL,
+  `periodicidad` ENUM('daily', 'weekly', 'monthly') NOT NULL DEFAULT 'daily',
   `activo` BOOLEAN NOT NULL DEFAULT TRUE,
   `ultimo_envio` TIMESTAMP DEFAULT NULL,
   CONSTRAINT `fk_recordatorio_actividad` FOREIGN KEY (`actividad_id`) REFERENCES `actividades`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -143,13 +148,18 @@ CREATE TABLE `invitacion_usuario_familia` (
   CONSTRAINT `fk_invitacion_usuario_familia_familia1` FOREIGN KEY (`familia_id`) REFERENCES `familia`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE `objetivos_has_actividades` (
+  `objetivo_id` INT NOT NULL,
+  `actividad_id` INT NOT NULL,
+  PRIMARY KEY (`objetivo_id`, `actividad_id`),
+  CONSTRAINT `fk_actividad_objetivo_objetivo_id` FOREIGN KEY (`objetivo_id`) REFERENCES `objetivos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_actividad_objetivo_actividad_id` FOREIGN KEY (`actividad_id`) REFERENCES `actividades`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- Índices
 
 CREATE UNIQUE INDEX `usuarios_index_0` ON `usuarios` (`email`);
 CREATE INDEX `fk_ninos_perfiles_aprendizaje1_idx` ON `ninos` (`perfiles_aprendizaje_id`);
-CREATE INDEX `fk_rutinas_ninos1_idx` ON `rutinas` (`ninos_id`);
-CREATE INDEX `fk_objetivos_rutinas1_idx` ON `objetivos` (`rutinas_id`);
-CREATE INDEX `fk_actividad_rutina` ON `actividades` (`rutina_id`);
 CREATE INDEX `fk_actividades_ninos1_idx` ON `actividades` (`ninos_id`);
 CREATE INDEX `fk_recordatorio_actividad` ON `recordatorios` (`actividad_id`);
 CREATE INDEX `fk_recordatorio_usuario` ON `recordatorios` (`usuario_id`);
@@ -158,3 +168,5 @@ CREATE INDEX `fk_notas_ninos1_idx` ON `notas` (`ninos_id`);
 CREATE INDEX `fk_familia_usuarios_usuarios_idx` ON `familia_usuarios` (`usuarios_id`);
 CREATE INDEX `fk_familia_usuarios_familia_idx` ON `familia_usuarios` (`familia_id`);
 CREATE INDEX `fk_invitacion_usuario_familia_familia1_idx` ON `invitacion_usuario_familia` (`familia_id`);
+CREATE INDEX `idx_actividad_objetivo_objetivo_id` ON `objetivos_has_actividades` (`objetivo_id`);
+CREATE INDEX `idx_actividad_objetivo_actividad_id` ON `objetivos_has_actividades` (`actividad_id`);
