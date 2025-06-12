@@ -8,21 +8,24 @@ datasource db {
 }
 
 model actividades {
-  id                  Int              @id @default(autoincrement())
-  rutina_id           Int
-  ninos_id            Int
-  titulo              String?          @db.VarChar(100)
-  descripcion         String?          @db.Text
-  dia_semana          Int?             @db.UnsignedTinyInt
-  hora_inicio         DateTime?        @db.Time(0)
-  hora_fin            DateTime?        @db.Time(0)
-  color               String?          @db.VarChar(45)
-  tipo                actividades_tipo
-  ubicacion           Json?
-  usuario_responsable Int?
-  rutinas             rutinas          @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
-  ninos               ninos            @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_actividades_ninos1")
-  recordatorios       recordatorios[]
+  id                        Int                         @id @default(autoincrement())
+  rutina_id                 Int
+  ninos_id                  Int
+  titulo                    String?                     @db.VarChar(100)
+  descripcion               String?                     @db.Text
+  fecha_creacion            DateTime                    @default(now()) @db.Timestamp(0)
+  dia_semana                Int?                        @db.UnsignedTinyInt
+  hora_inicio               DateTime?                   @db.Time(0)
+  hora_fin                  DateTime?                   @db.Time(0)
+  color                     String?                     @db.VarChar(45)
+  tipo                      actividades_tipo
+  ubicacion                 Json?
+  usuario_responsable       Int?
+  completado                Boolean?                    @default(false)
+  rutinas                   rutinas                     @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
+  ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_actividades_ninos1")
+  objetivos_has_actividades objetivos_has_actividades[]
+  recordatorios             recordatorios[]
 
   @@index([rutina_id], map: "fk_actividad_rutina")
   @@index([ninos_id], map: "fk_actividades_ninos1_idx")
@@ -71,6 +74,7 @@ model ninos {
   alergias                alergias[]
   perfiles_aprendizaje    perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
   notas                   notas[]
+  objetivos               objetivos[]
   rutinas                 rutinas[]
 
   @@index([perfiles_aprendizaje_id], map: "fk_ninos_perfiles_aprendizaje1_idx")
@@ -88,14 +92,16 @@ model notas {
 }
 
 model objetivos {
-  id         Int     @id @default(autoincrement())
-  rutinas_id Int
-  nombre     String  @db.VarChar(45)
-  color      String? @db.VarChar(45)
-  tipo       String? @db.VarChar(45)
-  rutinas    rutinas @relation(fields: [rutinas_id], references: [id], onDelete: Cascade, map: "fk_objetivos_rutinas1")
+  id                        Int                         @id @default(autoincrement())
+  nombre                    String                      @db.VarChar(45)
+  ninos_id                  Int
+  color                     String?                     @db.VarChar(45)
+  tipo                      String?                     @db.VarChar(45)
+  fecha_fin                 DateTime?                   @db.Date
+  ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_objetivos_ninos1")
+  objetivos_has_actividades objetivos_has_actividades[]
 
-  @@index([rutinas_id], map: "fk_objetivos_rutinas1_idx")
+  @@index([ninos_id], map: "fk_objetivos_ninos1")
 }
 
 model perfiles_aprendizaje {
@@ -109,7 +115,7 @@ model recordatorios {
   id           Int                        @id @default(autoincrement())
   actividad_id Int
   usuario_id   Int
-  periodicidad recordatorios_periodicidad @default(dbgenerated("(_latin1\\'daily\\')"))
+  periodicidad recordatorios_periodicidad @default(daily)
   activo       Boolean                    @default(true)
   ultimo_envio DateTime?                  @db.Timestamp(0)
   actividades  actividades                @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_actividad")
@@ -126,12 +132,11 @@ model rutinas {
   descripcion    String?       @db.Text
   fecha_creacion DateTime      @default(now()) @db.Timestamp(0)
   frecuencia     Json?
-  fecha_fin      DateTime?     @db.Date
+  fecha_fin      DateTime?     @db.Timestamp(0)
   actividades    actividades[]
-  objetivos      objetivos[]
   ninos          ninos         @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_rutinas_ninos1")
 
-  @@index([ninos_id], map: "fk_rutinas_ninos1_idx")
+  @@index([ninos_id], map: "fk_rutinas_ninos1")
 }
 
 model usuarios {
@@ -162,6 +167,17 @@ model invitacion_usuario_familia {
   familia            familia                        @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_invitacion_usuario_familia_familia1")
 
   @@index([familia_id], map: "fk_invitacion_usuario_familia_familia1_idx")
+}
+
+model objetivos_has_actividades {
+  objetivo_id  Int
+  actividad_id Int
+  actividades  actividades @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_actividad_objetivo_actividad_id")
+  objetivos    objetivos   @relation(fields: [objetivo_id], references: [id], onDelete: Cascade, map: "fk_actividad_objetivo_objetivo_id")
+
+  @@id([objetivo_id, actividad_id])
+  @@index([actividad_id], map: "idx_actividad_objetivo_actividad_id")
+  @@index([objetivo_id], map: "idx_actividad_objetivo_objetivo_id")
 }
 
 enum familia_usuarios_rol {
