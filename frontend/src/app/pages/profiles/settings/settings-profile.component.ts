@@ -1,7 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormsModule } from '@angular/forms';
 import { ThemeService } from '../../../service/theme.service';
@@ -20,9 +18,10 @@ interface SettingItem {
 
 @Component({
   selector: 'app-settings',
+  imports: [FormsModule, InputSwitchModule],
   templateUrl: './settings-profile.component.html',
   styleUrls: ['./settings-profile.component.css'],
-  imports: [FormsModule, InputSwitchModule]
+  
 })
 export class SettingsComponent {
 
