@@ -18,10 +18,10 @@ INSERT INTO familia_usuarios (familia_id, usuarios_id, rol) VALUES
 (1, 1, 'admin'),
 (2, 2, 'admin');
 
--- Insertar niños
-INSERT INTO ninos (perfiles_aprendizaje_id, nombre, apellido, fecha_nacimiento, genero, peso, altura) VALUES
-(1, 'Mateo', 'Gómez', DATE_SUB(CURDATE(), INTERVAL 4 YEAR), 'masculino', 18, 105),
-(2, 'Sofía', 'Pérez', DATE_SUB(CURDATE(), INTERVAL 5 YEAR), 'femenino', 16, 100);
+-- Insertar niños con referencia a familia
+INSERT INTO ninos (perfiles_aprendizaje_id, familia_id, nombre, apellido, fecha_nacimiento, genero, peso, altura) VALUES
+(1, 1, 'Mateo', 'Gómez', DATE_SUB(CURDATE(), INTERVAL 4 YEAR), 'masculino', 18, 105),
+(2, 2, 'Sofía', 'Pérez', DATE_SUB(CURDATE(), INTERVAL 5 YEAR), 'femenino', 16, 100);
 
 -- Insertar rutinas
 INSERT INTO rutinas (ninos_id, nombre, descripcion) VALUES

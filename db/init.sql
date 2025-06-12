@@ -45,6 +45,7 @@ CREATE TABLE `perfiles_aprendizaje` (
 CREATE TABLE `ninos` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `perfiles_aprendizaje_id` INT NOT NULL,
+  `familia_id` INT NOT NULL,
   `nombre` VARCHAR(100) NOT NULL,
   `apellido` VARCHAR(100) NOT NULL,
   `img_perfil` MEDIUMBLOB DEFAULT NULL,
@@ -53,9 +54,9 @@ CREATE TABLE `ninos` (
   `genero` VARCHAR(45) DEFAULT NULL,
   `peso` INT DEFAULT NULL,
   `altura` INT DEFAULT NULL,
-  CONSTRAINT `fk_ninos_perfiles_aprendizaje1` FOREIGN KEY (`perfiles_aprendizaje_id`) REFERENCES `perfiles_aprendizaje`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT `fk_ninos_perfiles_aprendizaje1` FOREIGN KEY (`perfiles_aprendizaje_id`) REFERENCES `perfiles_aprendizaje`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_ninos_familia1` FOREIGN KEY (`familia_id`) REFERENCES `familia`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
 
 CREATE TABLE `objetivos` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
