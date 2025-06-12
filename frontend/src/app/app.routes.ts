@@ -6,6 +6,9 @@ import { CalendarPageComponent } from './pages/routines/calendar-page/calendar-p
 import { WelcomePageComponent } from './public/welcome-page/welcome-page.component';
 import { DashboardPageComponent } from './pages/dashboard/dashboard-page/dashboard-page.component';
 import { CreateFamilyComponent } from './pages/auth/create-family/create-family.component';
+import { UserProfileComponent } from './pages/profiles/user-profile/user-profile.component';
+import { ChildProfileComponent } from './pages/profiles/child-profile/child-profile.component';
+import { SettingsComponent } from './pages/profiles/settings/settings-profile.component';
 
 export const routes: Routes = [
   { path: '', component: WelcomePageComponent, title: 'Bienvenido a Nido' },
@@ -14,6 +17,9 @@ export const routes: Routes = [
   { path: 'create-family', component: CreateFamilyComponent },
   { path: 'dashboard', component: DashboardPageComponent },
   { path: 'calendar', component: CalendarPageComponent },
+  { path: 'child-profile', component: ChildProfileComponent },
+  { path: 'user-profile', component: UserProfileComponent },
+  { path: 'settings', component: SettingsComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
