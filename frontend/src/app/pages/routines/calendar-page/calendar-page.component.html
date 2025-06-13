@@ -14,60 +14,21 @@
 
   <!-- Eventos listados -->
   <div class="mt-6 space-y-4 px-4 w-full">
-    <p class="text-sm font-semibold text-gray-700">February, 15th, Thu</p>
-    <div
+    <p class="text-sm font-semibold text-gray-700">{{ selectedDate }}</p>
+    @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent) {
+      <div
       class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
     >
       <div class="flex items-center gap-3">
-        <i class="pi pi-book text-xl text-purple-800"></i>
-        <span class="text-gray-800 font-medium">Read</span>
+        <i class="{{ selectedDateEvent.icon }} text-xl text-purple-800"></i>
+        <span class="text-gray-800 font-medium">{{ selectedDateEvent.title }}</span>
       </div>
       <input
         type="checkbox"
         class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
       />
     </div>
-
-    <p class="text-sm font-semibold text-gray-700">February, 16th, Fri</p>
-    <div
-      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
-    >
-      <div class="flex items-center gap-3">
-        <i class="pi pi-book text-xl text-purple-800"></i>
-        <span class="text-gray-800 font-medium">Read</span>
-      </div>
-      <input
-        type="checkbox"
-        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
-      />
-    </div>
-
-    <p class="text-sm font-semibold text-gray-700">This week</p>
-    <div
-      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
-    >
-      <div class="flex items-center gap-3">
-        <i class="pi pi-book text-xl text-purple-800"></i>
-        <span class="text-gray-800 font-medium">Read</span>
-      </div>
-      <input
-        type="checkbox"
-        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
-      />
-    </div>
-
-    <div
-      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
-    >
-      <div class="flex items-center gap-3">
-        <i class="pi pi-book text-xl text-purple-800"></i>
-        <span class="text-gray-800 font-medium">Read</span>
-      </div>
-      <input
-        type="checkbox"
-        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
-      />
-    </div>
+    } 
 
     <!-- Botón flotante -->
     <button
