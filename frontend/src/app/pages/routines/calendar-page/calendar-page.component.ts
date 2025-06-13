@@ -46,7 +46,7 @@ export class CalendarPageComponent {
     { title: 'event 6', date: '2025-06-14', icon: 'pi pi-book' },
   ];
 
-  selectedDate = format(new Date('2025-02-15'), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
+  selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
 
   calendarOptions = signal<CalendarOptions>({
     plugins: [interactionPlugin, dayGridPlugin],
@@ -88,6 +88,8 @@ export class CalendarPageComponent {
     this.selectedDateEvents = this.allEvents.filter((event) => {
       return event.date === clickedDate;
     });
+
+    this.selectedDate = format(new Date(clickedDate), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
 
     console.log(this.selectedDateEvents, clickedDate);
   }
