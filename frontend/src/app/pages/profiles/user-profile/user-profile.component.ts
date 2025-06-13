@@ -12,16 +12,34 @@ export class UserProfileComponent {
 
 constructor(public router: Router) {}
 
+  user = {
+    name: 'Juan',
+    surname: 'Pérez',
+    nick: 'jperez',
+    rol: 'Administrador',
+    avatar: 'https://www.primefaces.org/cdn/primevue/images/avatar/amyelsner.png'
+  };
+
   children = [
-    { name: 'Emilio', value: '1', selected: true },
-    { name: 'Ramon', value: '2' },
+    {
+      name: 'Emilio',
+      age: '2 años, 8 meses',
+      height: 90,
+      weight: 12,
+      image: 'https://picsum.photos/536/354'
+    },
+    {
+      name: 'Lucía',
+      age: '5 años, 1 mes',
+      height: 110,
+      weight: 18,
+      image: 'https://picsum.photos/536/354'
+    }
   ];
 
-  user = {
-    nick: 'Maxito',
-    name: 'Max',
-    surname: 'Mustermann',
-    avatar: 'https://gravatar.com/avatar/7156d0abbfcc494cf10e4adab6a8884d?s=400&d=robohash&r=x',
-    rol: 'admin',
-  };
+  selectedChild = this.children[0]; // selecciona por defecto el primero
+
+  selectChild(child: any) {
+    this.selectedChild = child;
+  }
 }

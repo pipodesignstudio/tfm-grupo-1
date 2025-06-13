@@ -8,7 +8,7 @@
         <!-- Avatar -->
         <div class="w-32 h-32 rounded-full overflow-hidden">
           <img
-            src="https://www.primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+            [src]="user.avatar"
             alt="User Avatar"
             class="w-full h-full object-cover"
           />
@@ -28,52 +28,55 @@
       <!-- Childrens -->
       <div class="flex items-center justify-center space-x-4">
         @for (child of children; track child) {
-            @if(child.selected) {
-        <div
-          class="bg-pink-100 rounded-full w-16 h-16 flex items-center justify-center"
+        <button
+          (click)="selectChild(child)"
+          [class.bg-pink-100]="child === selectedChild"
+          [class.text-pink-700]="child === selectedChild"
+          [class.bg-gray-200]="child !== selectedChild"
+          class="rounded-full w-16 h-16 flex items-center justify-center hover:cursor-pointer transition-colors duration-200"
         >
-          <span class="text-xs font-medium text-pink-700">{{
-            child.name
-          }}</span>
-        </div>
-        } 
-        @else {
-        <div
-          class="bg-gray-200 rounded-full w-16 h-16 flex items-center justify-center"
-        >
-          <span class="text-xs font-medium text-gray-700">{{
-            child.name
-          }}</span>
-        </div>
-        }
+          <span class="text-xs font-medium">
+            {{ child.name }}
+          </span>
+        </button>
         }
         <button
-          class="bg-gray-200 hover:bg-gray-300 rounded-full w-14 h-14 flex items-center justify-center"
+          class="bg-gray-200 hover:bg-gray-300 rounded-full w-14 h-14 flex items-center justify-center hover:cursor-pointer"
         >
           <i class="pi pi-plus text-gray-700 text-lg"></i>
         </button>
       </div>
     </div>
 
-    <!-- Children -->
+    <!-- Selected Child Card -->
+    @if (selectedChild) {
     <div class="bg-white rounded-2xl shadow">
       <div class="p-4">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Emilio</h2>
-        <div class="relative">
-          <img
-            src="data:image/jpeg;base64,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"
-            alt="Daily moment"
-            class="w-full h-48 object-cover rounded-xl"
-          />
-          
-        </div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 ml-2">
+          {{ selectedChild.name }}
+        </h2>
         <div class="mt-3 flex items-center justify-between ml-2 mr-2">
-          <p class="text-sm font-medium text-gray-900">2 years, 8 months</p>
-          <button>
+          <p class="text-sm font-medium text-gray-900">
+            {{ selectedChild.age }}
+          </p>
+          <button class="hover:cursor-pointer" >
             <i class="pi pi-search text-gray-600 text-sm"></i>
           </button>
         </div>
+
+        <div class="relative mt-4">
+          <img
+            [src]="selectedChild.image"
+            alt="Foto del niño"
+            class="w-full rounded-xl object-cover"
+          />
+        </div>
+        <div class="mt-3 flex items-center justify-between ml-2 mr-2 ">
+          <p><strong>Altura:</strong> {{ selectedChild.height }} cm</p>
+          <p><strong>Peso:</strong> {{ selectedChild.weight }} kg</p>
+        </div>
       </div>
     </div>
+    }
   </div>
 </div>
