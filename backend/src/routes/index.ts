@@ -5,6 +5,7 @@ import userRoutes from "./users.route";
 import suggestionsRoute from "./suggestions.route";
 import invitationsRoute from "./invitations.route";
 import remindersRoute from "./reminders.route";
+import alergiaRoutes from "./alergia.router";
 
 
 const apiRouter = Router();
@@ -14,5 +15,6 @@ apiRouter.use("/users", userRoutes);
 apiRouter.use("/suggestions", suggestionsRoute);
 apiRouter.use("/invitations", invitationsRoute);
 apiRouter.use("/reminders", remindersRoute);
+apiRouter.use("/ninos/:id_nino/alergias", alergiaRoutes);
 
 export default apiRouter;
