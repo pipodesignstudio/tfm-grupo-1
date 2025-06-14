@@ -1,4 +1,15 @@
 <div class="flex flex-col items-center bg-gray-100 min-h-screen pt-6 pb-20">
+  <div class="w-[90%] max-w-md mb-4">
+    <p-dropdown
+      [options]="filtroOpciones"
+      [(ngModel)]="filtroSeleccionado"
+      optionLabel="label"
+      placeholder="Filtrar por niño o actividad"
+      class="w-full"
+      (onChange)="filtrarEventos()"
+    ></p-dropdown>
+  </div>
+
   <!-- Calendario -->
   <div class="w-[90%] max-w-md">
     <full-calendar
@@ -16,19 +27,21 @@
   <div class="mt-6 space-y-4 px-4 w-full">
     <p class="text-sm font-semibold text-gray-700">{{ selectedDate }}</p>
     @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent) {
-      <div
+    <div
       class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
     >
       <div class="flex items-center gap-3">
         <i class="{{ selectedDateEvent.icon }} text-xl text-purple-800"></i>
-        <span class="text-gray-800 font-medium">{{ selectedDateEvent.title }}</span>
+        <span class="text-gray-800 font-medium">{{
+          selectedDateEvent.title
+        }}</span>
       </div>
       <input
         type="checkbox"
         class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
       />
     </div>
-    } 
+    }
 
     <!-- Botón flotante -->
     <button

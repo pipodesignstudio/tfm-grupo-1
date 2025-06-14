@@ -13,18 +13,20 @@ import {
 import {
   CalendarOptions,
   DateSelectArg,
-  EventClickArg,
   EventApi,
 } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import { FormsModule } from '@angular/forms';
+
+import { DropdownModule } from 'primeng/dropdown';
 
 import { format } from 'date-fns';
 
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule],
+  imports: [CommonModule, FullCalendarModule, DropdownModule, FormsModule],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -34,19 +36,39 @@ export class CalendarPageComponent {
 
   calendarVisible = signal(true);
 
-  allEvents =[
-    { title: 'event 1', date: '2025-06-14', icon: 'pi pi-book' },
-    { title: 'event 4', date: '2025-06-14', icon: 'pi pi-book' },
-    { title: 'event 2', date: '2025-06-16', icon: 'pi pi-book' },
+  allEvents = [
+    { title: 'event 1', date: '2025-06-14', icon: 'pi pi-book', nino_id: 1 },
+    { title: 'event 4', date: '2025-06-14', icon: 'pi pi-book', nino_id: 2 },
+    { title: 'event 2', date: '2025-06-16', icon: 'pi pi-book', nino_id: 1 },
   ];
 
   currentEvents = signal<EventApi[]>([]);
 
-  selectedDateEvents = [
-    { title: 'event 6', date: '2025-06-14', icon: 'pi pi-book' },
-  ];
+  selectedDateEvents: any[] = [...this.allEvents];
 
   selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
+
+  filtroOpciones = [
+    { label: 'Todos', value: null },
+    { label: 'Lucas', value: 1 },
+    { label: 'Sofía', value: 2 }
+  ];
+
+  filtroSeleccionado: number | null = null;
+
+
+  filtrarEventos() {
+    const filterValue: { label: string; value: number } | any = this.filtroSeleccionado;
+    if (!filterValue) {
+      this.selectedDateEvents = [...this.allEvents];
+      
+    } else {
+      console.log(filterValue.value);
+      this.selectedDateEvents = this.allEvents.filter((evento) =>
+        evento.nino_id === filterValue.value ? evento.nino_id : null
+      );
+    }
+  }
 
   calendarOptions = signal<CalendarOptions>({
     plugins: [interactionPlugin, dayGridPlugin],
@@ -79,11 +101,7 @@ export class CalendarPageComponent {
     }
   }
 
-
-  
-
   handleDateSelect(selectInfo: DateSelectArg) {
-
     const clickedDate = selectInfo.startStr.split('T')[0]; // YYYY-MM-DD
     this.selectedDateEvents = this.allEvents.filter((event) => {
       return event.date === clickedDate;
@@ -93,8 +111,6 @@ export class CalendarPageComponent {
 
     console.log(this.selectedDateEvents, clickedDate);
   }
-
-
 
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
