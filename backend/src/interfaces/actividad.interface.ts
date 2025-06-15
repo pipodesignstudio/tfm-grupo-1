@@ -6,12 +6,13 @@ export interface IActividad {
   ninos_id: number;
   titulo: string | null;
   descripcion: string | null;
+  fechas_realizacion: Date | null;
   dia_semana: number | null;
   hora_inicio: Date | null;
   hora_fin: Date | null;
   color: string | null;
   tipo: string;
-  ubicacion: Prisma.JsonValue | null;
+  ubicacion: JSON | null;
   usuario_responsable: number | null;
 }
 export interface Ubicacion {
@@ -24,5 +25,5 @@ export interface IActividadSuggestion {
   dia_semana: number;
   hora_inicio: Date;
   color: string;
-  tipo: 'Hábito' | 'Tarea' | 'Evento';
+  tipo: 'Objetivo' | 'Rutina' | 'Evento';
 }

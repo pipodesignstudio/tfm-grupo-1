@@ -28,10 +28,46 @@ INSERT INTO rutinas (ninos_id, nombre, descripcion) VALUES
 (1, 'Rutina de mañana', 'Despertarse, vestirse, desayunar'),
 (2, 'Rutina de noche', 'Cena, cepillado y lectura');
 
--- Insertar actividades
-INSERT INTO actividades (rutina_id, ninos_id, titulo, descripcion, dia_semana, hora_inicio, hora_fin, tipo, completado) VALUES
-(1, 1, 'Colorear dibujos', 'Usar crayones para colorear', 1, '10:00:00', '10:30:00', 'Habito', FALSE),
-(2, 2, 'Cepillarse los dientes', 'Después de cenar', 7, '20:00:00', '20:15:00', 'Tarea', FALSE);
+-- Insertar diferente tipos de actividades
+-- Actividad tipo "Rutina"
+INSERT INTO actividades (
+  rutina_id, ninos_id, titulo, descripcion, fechas_realizacion,
+  dia_semana, hora_inicio, hora_fin, color, tipo,
+  ubicacion, usuario_responsable, completado
+)
+VALUES (
+  1, 1, 'Hora de Dormir', 'Rutina diaria para acostarse',
+  JSON_ARRAY('2025-06-15', '2025-06-16'), 0, '20:00:00', '20:30:00', '#3498db',
+  'Rutina',
+  JSON_OBJECT('lugar', 'Habitación', 'piso', '2'), 10, FALSE
+);
+
+-- Actividad tipo "Evento"
+INSERT INTO actividades (
+  rutina_id, ninos_id, titulo, descripcion, fechas_realizacion,
+  dia_semana, hora_inicio, hora_fin, color, tipo,
+  ubicacion, usuario_responsable, completado
+)
+VALUES (
+  2, 1, 'Cita con el pediatra', 'Control de salud mensual',
+  JSON_ARRAY('2025-06-18'), NULL, '10:00:00', '11:00:00', '#e74c3c',
+  'Evento',
+  JSON_OBJECT('direccion', 'Calle Falsa 123', 'ciudad', 'Madrid'), 10, FALSE
+);
+
+-- Actividad tipo "Objetivo"
+INSERT INTO actividades (
+  rutina_id, ninos_id, titulo, descripcion, fechas_realizacion,
+  dia_semana, hora_inicio, hora_fin, color, tipo,
+  ubicacion, usuario_responsable, completado
+)
+VALUES (
+  3, 2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+  JSON_ARRAY('2025-06-15', '2025-06-22'), 2, '17:00:00', '17:30:00', '#2ecc71',
+  'Objetivo',
+  JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE
+);
+
 
 -- Insertar objetivos
 INSERT INTO objetivos (nombre, ninos_id, color, tipo, fecha_fin) VALUES

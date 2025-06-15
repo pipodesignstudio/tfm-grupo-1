@@ -18,10 +18,11 @@ model actividades {
   hora_inicio               DateTime?                   @db.Time(0)
   hora_fin                  DateTime?                   @db.Time(0)
   color                     String?                     @db.VarChar(45)
-  tipo                      actividades_tipo
+  tipo                      actividades_tipo            
   ubicacion                 Json?
   usuario_responsable       Int?
   completado                Boolean?                    @default(false)
+  fechas_realizacion        Json?                       @db.Json
   rutinas                   rutinas                     @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
   ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_actividades_ninos1")
   objetivos_has_actividades objetivos_has_actividades[]
@@ -187,9 +188,9 @@ enum familia_usuarios_rol {
 }
 
 enum actividades_tipo {
-  Tarea
+  Objetivo
+  Rutina
   Evento
-  Habito
 }
 
 enum invitacion_usuario_familia_rol {
