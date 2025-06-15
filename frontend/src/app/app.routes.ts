@@ -9,12 +9,14 @@ import { CreateFamilyComponent } from './pages/auth/create-family/create-family.
 import { UserProfileComponent } from './pages/profiles/user-profile/user-profile.component';
 import { ChildProfileComponent } from './pages/profiles/child-profile/child-profile.component';
 import { SettingsComponent } from './pages/profiles/settings/settings-profile.component';
+import { MyFamilyComponent } from './pages/auth/my-family/my-family.component';
 
 export const routes: Routes = [
   { path: '', component: WelcomePageComponent, title: 'Bienvenido a Nido' },
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
   { path: 'create-family', component: CreateFamilyComponent },
+  { path: 'my-family', component: MyFamilyComponent },
   { path: 'dashboard', component: DashboardPageComponent },
   { path: 'calendar', component: CalendarPageComponent },
   { path: 'child-profile', component: ChildProfileComponent },

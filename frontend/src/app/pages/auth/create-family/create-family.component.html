@@ -1,1 +1,123 @@
-<p>create-family works!</p>
+<div class="create-family-container">
+  <div class="create-family-content">
+    <h1 class="page-title">Perfil del Niño</h1>
+
+    <div class="profile-picture-section">
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="file-input"
+      />
+      <div class="profile-picture-placeholder" (click)="fileInput.click()">
+        @if (profileImageUrl) {
+        <img
+          [src]="profileImageUrl"
+          alt="Foto de Perfil del Niño"
+          class="profile-image"
+        />
+        } @else {
+        <img
+          src="https://img.icons8.com/?size=40&id=85103&format=png&color=000000"
+          alt="Cargar foto"
+          class="camera-png-icon"
+        />
+        }
+      </div>
+      <p class="profile-tip"></p>
+    </div>
+
+    <form
+      [formGroup]="childProfileForm"
+      (ngSubmit)="onSubmit()"
+      class="child-profile-form"
+    >
+      <div class="input-group">
+        <label for="name"
+          >Nombre <span class="required-asterisk">*</span></label
+        >
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Nombre del niño/a"
+        />
+        @if (childProfileForm.get('name'); as nameControl) { @if
+        (nameControl.invalid && (nameControl.dirty || nameControl.touched)) {
+        <p class="error-message">
+          @if (nameControl.errors?.['required']) { El nombre es obligatorio. }
+        </p>
+        } }
+      </div>
+
+      <div class="input-group">
+        <label for="dob"
+          >Fecha de Nacimiento <span class="required-asterisk">*</span></label
+        >
+        <input type="date" id="dob" formControlName="dob" [max]="maxDate" />
+        @if (childProfileForm.get('dob'); as dobControl) { @if
+        (dobControl.invalid && (dobControl.dirty || dobControl.touched)) {
+        <p class="error-message">
+          @if (dobControl.errors?.['required']) { La fecha de nacimiento es
+          obligatoria. }
+        </p>
+        } }
+      </div>
+
+      <div class="input-group">
+        <label for="gender">Género (Opcional)</label>
+        <select id="gender" formControlName="gender">
+          @for (option of genderOptions; track option.value) {
+          <option [value]="option.value">{{ option.viewValue }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="heightCm">Altura (cm - Opcional)</label>
+        <input
+          type="number"
+          id="heightCm"
+          formControlName="heightCm"
+          placeholder="Ej: 90"
+        />
+        @if (childProfileForm.get('heightCm'); as heightCmControl) { @if
+        (heightCmControl.invalid && (heightCmControl.dirty ||
+        heightCmControl.touched)) {
+        <p class="error-message">
+          @if (heightCmControl.errors?.['min'] ||
+          heightCmControl.errors?.['max']) { Introduce una altura válida (1-300
+          cm). }
+        </p>
+        } }
+      </div>
+
+      <div class="input-group">
+        <label for="weightKg">Peso (kg - Opcional)</label>
+        <input
+          type="number"
+          step="0.1"
+          id="weightKg"
+          formControlName="weightKg"
+          placeholder="Ej: 15.5"
+        />
+        @if (childProfileForm.get('weightKg'); as weightKgControl) { @if
+        (weightKgControl.invalid && (weightKgControl.dirty ||
+        weightKgControl.touched)) {
+        <p class="error-message">
+          @if (weightKgControl.errors?.['min'] ||
+          weightKgControl.errors?.['max']) { Introduce un peso válido (0.1-200
+          kg). }
+        </p>
+        } }
+      </div>
+
+      @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" class="submit-button">Enviar</button>
+    </form>
+  </div>
+</div>
