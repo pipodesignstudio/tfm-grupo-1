@@ -23,3 +23,29 @@
  .fc-daygrid-day-top {
   justify-content: center;
 }
+
+/* Añade un punto rojo en las celdas con eventos */
+.has-event-dot {
+  position: relative;
+}
+
+.has-event-dot::after {
+  content: '';
+  position: absolute;
+  top: 75%;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: red;
+  border-radius: 50%;
+  
+
+  
+}
+
+/* Ocultar text de evento en el calendario */
+.fc-daygrid-more-link, .fc-daygrid-day-events {
+  display: none !important;
+}
