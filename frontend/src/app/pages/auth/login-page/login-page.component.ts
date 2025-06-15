@@ -35,7 +35,7 @@ export class LoginPageComponent implements OnInit {
 
     const { email, password } = this.loginForm.value;
 
-    // --- LÓGICA DE AUTENTICACIÓN REAL ---
+    // --- LÓGICA DE AUTENTICACIÓN REAL PARA TEST ---
     if (email === 'test@nido.com' && password === 'password123') {
       console.log('Login exitoso!');
       this.router.navigate(['/dashboard']);

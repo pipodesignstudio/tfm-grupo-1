@@ -77,6 +77,6 @@ export class RegisterPageComponent implements OnInit {
     const { username, email, password } = this.registerForm.value;
     console.log('Registrando usuario:', username, email);
 
-    this.router.navigate(['/onboarding/create-family']);
+    this.router.navigate(['/create-family']);
   }
 }
