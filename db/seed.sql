@@ -31,7 +31,7 @@ INSERT INTO rutinas (ninos_id, nombre, descripcion) VALUES
 -- Insertar diferente tipos de actividades
 -- Actividad tipo "Rutina"
 INSERT INTO actividades (
-  rutina_id, ninos_id, titulo, descripcion, fechas_realizacion,
+  rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
   dia_semana, hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
 )
@@ -44,7 +44,7 @@ VALUES (
 
 -- Actividad tipo "Evento"
 INSERT INTO actividades (
-  rutina_id, ninos_id, titulo, descripcion, fechas_realizacion,
+  rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
   dia_semana, hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
 )
@@ -57,7 +57,7 @@ VALUES (
 
 -- Actividad tipo "Objetivo"
 INSERT INTO actividades (
-  rutina_id, ninos_id, titulo, descripcion, fechas_realizacion,
+  rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
   dia_semana, hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
 )

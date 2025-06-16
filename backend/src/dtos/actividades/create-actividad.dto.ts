@@ -1,16 +1,67 @@
 import { JsonValue } from "@prisma/client/runtime/library";
 
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsJSON,
+  IsDate,
+} from "class-validator";
 export class CreateActividadDto {
-  titulo!: string | null;
-  descripcion?: string | null;
-  fechas_realizacion?: JsonValue | null;
-  dia_semana?: number | null; // 0-6 (Domingo-Sábado)
-  hora_inicio?: Date | null;
-  hora_fin?: Date | null;
-  color?: string | null; // Color en formato hexadecimal
-  ubicacion?: JsonValue | null; // Ubicación en formato JSON
-  usuario_responsable?: number | null; // ID del usuario responsable
-  rutina_id?: number | null; // ID de la rutina asociada, puede ser nulo
-  completado?: boolean; // Indica si la actividad está completada
-  tipo!: 'Objetivo' | 'Rutina' | 'Evento'; // Tipo de actividad, puede ser nulo
+
+    @IsNumber({}, { message: "El ID de la actividad debe ser un número." })
+    @IsPositive({ message: "El ID de la actividad debe ser un número positivo." })
+    @IsNotEmpty({ message: "El ID de la actividad es obligatorio." })
+    nino_id!: number; 
+  
+    @IsOptional()
+    @IsNumber({}, { message: "El ID de la actividad debe ser un número." })
+    @IsPositive({ message: "El ID de la actividad debe ser un número positivo." })
+    rutina_id?: number; 
+  
+    @IsString({ message: "El título debe ser una cadena de texto." })
+    @IsNotEmpty({ message: "El título es obligatorio." })
+    titulo!: string;
+  
+    @IsString({ message: "La descripción debe ser una cadena de texto." })
+    @IsOptional()
+    descripcion?: string;
+  
+    @IsDate({ message: "La fecha de realización debe ser una fecha válida." })
+    @IsNotEmpty({ message: "La fecha de realización es obligatoria." })
+    fecha_realizacion!: Date;
+  
+    @IsDate({ message: "La hora de inicio debe ser una fecha válida." })
+    @IsNotEmpty({ message: "La hora de inicio es obligatoria." })
+    hora_inicio!: Date;
+  
+    @IsDate({ message: "La hora de finalización debe ser una fecha válida." })
+    @IsNotEmpty({ message: "La hora de finalización es obligatoria." })
+    hora_fin!: Date;
+  
+    @IsOptional()
+    @IsString({ message: "El color debe ser una cadena de texto." })
+    color?: string; 
+  
+    @IsOptional()
+    @IsJSON({ message: "La ubicación debe ser un objeto JSON válido." })
+    ubicacion?: JsonValue; 
+  
+    @IsNumber({}, { message: "El ID del usuario responsable debe ser un número." })
+    @IsPositive({ message: "El ID del usuario responsable debe ser un número positivo." })
+    @IsNotEmpty({ message: "El ID del usuario responsable es obligatorio." })
+    usuario_responsable!: number; 
+    
+    @IsOptional()
+    @IsBoolean()
+    completado?: boolean; 
+  
+    @IsIn(['Objetivo', 'Rutina', 'Evento'], { message: 'El tipo de actividad debe ser "Objetivo", "Rutina" o "Evento".' })
+    @IsString({ message: 'El tipo de actividad debe ser una cadena de texto.' })
+    @IsNotEmpty({ message: 'El tipo de actividad es obligatorio.' })
+    tipo!: 'Objetivo' | 'Rutina' | 'Evento';
 }

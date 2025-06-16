@@ -87,7 +87,7 @@ CREATE TABLE `actividades` (
   `titulo` VARCHAR(100) DEFAULT NULL,
   `descripcion` TEXT DEFAULT NULL,
   `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `fechas_realizacion` JSON DEFAULT NULL,
+  `fecha_realizacion` JSON DEFAULT NULL,
   `dia_semana` TINYINT UNSIGNED DEFAULT NULL,
   `hora_inicio` TIME DEFAULT NULL,
   `hora_fin` TIME DEFAULT NULL,

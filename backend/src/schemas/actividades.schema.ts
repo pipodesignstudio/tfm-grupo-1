@@ -1,127 +1,23 @@
-export const createActividadEventoDtoSchema = {
+export const createActividadDtoSchema = {
   type: 'object',
-  required: ['titulo', 'tipo'],
+  required: [
+    'nino_id',
+    'titulo',
+    'tipo',
+    'fecha_realizacion',
+    'hora_inicio',
+    'hora_fin',
+    'usuario_responsable'
+  ],
   properties: {
-    titulo: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 100,
-      description: 'Título del evento',
-      example: 'Reunión con pediatra',
-    },
-    descripcion: {
-      type: 'string',
-      description: 'Descripción opcional del evento',
-      example: 'Visita médica en el centro de salud',
-    },
-    fechas_realizacion: {
-      type: 'array',
-      description: 'Fechas específicas en que ocurre el evento',
-      items: { type: 'string', format: 'date' },
-      example: ['2025-06-18'],
-    },
-    hora_inicio: {
-      type: 'string',
-      format: 'time',
-      example: '09:30',
-    },
-    hora_fin: {
-      type: 'string',
-      format: 'time',
-      example: '10:30',
-    },
-    color: {
-      type: 'string',
-      example: '#FF5733',
-    },
-    ubicacion: {
-      type: 'object',
-      description: 'Ubicación en formato JSON',
-      example: { lugar: 'Centro de salud', direccion: 'Calle Falsa 123' },
-    },
-    usuario_responsable: {
+    nino_id: {
       type: 'integer',
-      description: 'ID del usuario responsable',
-    },
-    completado: {
-      type: 'boolean',
-      default: false,
-    },
-    tipo: {
-      type: 'string',
-      enum: ['Evento'],
-      example: 'Evento',
+      minimum: 1
     },
     rutina_id: {
       type: ['integer', 'null'],
+      minimum: 1
     },
-    dia_semana: {
-      type: ['integer', 'null'],
-    },
-  },
-  additionalProperties: false
-};
-export const createActividadRutinaDtoSchema = {
-  type: 'object',
-  required: ['titulo', 'tipo', 'rutina_id', 'dia_semana', 'hora_inicio', 'hora_fin'],
-  properties: {
-    titulo: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 100,
-      example: 'Cepillarse los dientes',
-    },
-    descripcion: {
-      type: 'string',
-    },
-    rutina_id: {
-      type: 'integer',
-    },
-    dia_semana: {
-      type: 'integer',
-      minimum: 0,
-      maximum: 6,
-      description: 'Día de la semana (0=Domingo, 6=Sábado)',
-    },
-    hora_inicio: {
-      type: 'string',
-      format: 'time',
-      example: '07:00',
-    },
-    hora_fin: {
-      type: 'string',
-      format: 'time',
-      example: '07:15',
-    },
-    color: {
-      type: 'string',
-    },
-    fechas_realizacion: {
-      type: 'array',
-      items: { type: 'string', format: 'date' },
-    },
-    ubicacion: {
-      type: 'object',
-    },
-    usuario_responsable: {
-      type: 'integer',
-    },
-    completado: {
-      type: 'boolean',
-      default: false,
-    },
-    tipo: {
-      type: 'string',
-      enum: ['Rutina'],
-      example: 'Rutina',
-    },
-  },
-  additionalProperties: false
-};
-export const createActividadObjetivoDtoSchema = {
-  type: 'object',
-  required: ['titulo', 'tipo'],
-  properties: {
     titulo: {
       type: 'string',
       minLength: 1,
@@ -131,18 +27,27 @@ export const createActividadObjetivoDtoSchema = {
     descripcion: {
       type: 'string',
     },
+    fecha_realizacion: {
+      type: 'string',
+      format: 'date',
+    },
+    hora_inicio: {
+      type: 'string',
+      format: 'date-time', // Cambiado a date-time porque usas Date, no solo hora
+    },
+    hora_fin: {
+      type: 'string',
+      format: 'date-time',
+    },
     color: {
       type: 'string',
-    },
-    fechas_realizacion: {
-      type: 'array',
-      items: { type: 'string', format: 'date' },
     },
     ubicacion: {
       type: 'object',
     },
     usuario_responsable: {
       type: 'integer',
+      minimum: 1
     },
     completado: {
       type: 'boolean',
@@ -150,47 +55,71 @@ export const createActividadObjetivoDtoSchema = {
     },
     tipo: {
       type: 'string',
-      enum: ['Objetivo'],
+      enum: ['Objetivo', 'Rutina', 'Evento'],
       example: 'Objetivo',
-    },
-    rutina_id: {
-      type: ['integer', 'null'],
-    },
-    dia_semana: {
-      type: ['integer', 'null'],
-    },
-    hora_inicio: {
-      type: ['string', 'null'],
-      format: 'time',
-    },
-    hora_fin: {
-      type: ['string', 'null'],
-      format: 'time',
     },
   },
   additionalProperties: false
 };
-export const updateActividadDtoSchema = {
+
+
+export const UpdateActividadDtoSchema = {
   type: 'object',
+  required: [
+    'nino_id',
+    'titulo',
+    'tipo',
+    'fecha_realizacion',
+    'hora_inicio',
+    'hora_fin',
+    'usuario_responsable'
+  ],
   properties: {
-    titulo: { type: 'string', minLength: 1, maxLength: 100 },
-    descripcion: { type: 'string' },
-    rutina_id: { type: 'integer' },
-    fechas_realizacion: {
-      type: 'array',
-      items: { type: 'string', format: 'date' },
+    nino_id: {
+      type: 'integer',
+      minimum: 1
     },
-    dia_semana: { type: 'integer', minimum: 0, maximum: 6 },
-    hora_inicio: { type: 'string', format: 'time' },
-    hora_fin: { type: 'string', format: 'time' },
-    color: { type: 'string' },
+    rutina_id: {
+      type: ['integer', 'null'],
+      minimum: 1
+    },
+    titulo: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+    },
+    descripcion: {
+      type: 'string',
+    },
+    fecha_realizacion: {
+      type: 'string',
+      format: 'date',
+    },
+    hora_inicio: {
+      type: 'string',
+      format: 'date-time',
+    },
+    hora_fin: {
+      type: 'string',
+      format: 'date-time',
+    },
+    color: {
+      type: 'string',
+    },
+    ubicacion: {
+      type: 'object',
+    },
+    usuario_responsable: {
+      type: 'integer',
+      minimum: 1
+    },
+    completado: {
+      type: 'boolean',
+    },
     tipo: {
       type: 'string',
       enum: ['Objetivo', 'Rutina', 'Evento'],
     },
-    ubicacion: { type: 'object' },
-    usuario_responsable: { type: 'integer' },
-    completado: { type: 'boolean' },
   },
   additionalProperties: false,
   minProperties: 1

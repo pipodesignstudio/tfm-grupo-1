@@ -12,14 +12,13 @@ export class ActividadService {
         ninos_id: id_nino,
         titulo: dto.titulo ?? undefined,
         descripcion: dto.descripcion ?? undefined,
-        fechas_realizacion: dto.fechas_realizacion ?? undefined,
+        fecha_realizacion: dto.fecha_realizacion ?? undefined,
         hora_inicio: dto.hora_inicio ?? undefined,
         hora_fin: dto.hora_fin ?? undefined,
         color: dto.color ?? undefined,
         ubicacion: dto.ubicacion ?? undefined,
         usuario_responsable: dto.usuario_responsable ?? undefined,
         completado: dto.completado ?? false,
-        dia_semana: dto.dia_semana ?? undefined
       };
 
       if (dto.rutina_id != null) {
@@ -60,8 +59,7 @@ export class ActividadService {
         rutina_id: dto.rutina_id ?? undefined, // puede ser null
         titulo: dto.titulo,
         descripcion: dto.descripcion,
-        fechas_realizacion: dto.fechas_realizacion ?? undefined,
-        dia_semana: dto.dia_semana,
+        fecha_realizacion: dto.fecha_realizacion ?? undefined,
         hora_inicio: dto.hora_inicio,
         hora_fin: dto.hora_fin,
         color: dto.color,
