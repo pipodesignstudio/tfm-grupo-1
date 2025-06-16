@@ -32,41 +32,43 @@ INSERT INTO rutinas (ninos_id, nombre, descripcion) VALUES
 -- Actividad tipo "Rutina"
 INSERT INTO actividades (
   rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
-  dia_semana, hora_inicio, hora_fin, color, tipo,
+  hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
-)
-VALUES (
-  1, 1, 'Hora de Dormir', 'Rutina diaria para acostarse',
-  JSON_ARRAY('2025-06-15', '2025-06-16'), 0, '20:00:00', '20:30:00', '#3498db',
-  'Rutina',
-  JSON_OBJECT('lugar', 'Habitación', 'piso', '2'), 10, FALSE
-);
+) VALUES
+(1, 1, 'Hora de Dormir', 'Rutina diaria para acostarse',
+  '2025-06-15', '20:00:00', '20:30:00', '#3498db',
+  'Rutina', JSON_OBJECT('lugar', 'Habitación', 'piso', '2'), 10, FALSE),
+(1, 1, 'Hora de Dormir', 'Rutina diaria para acostarse',
+  '2025-06-16', '20:00:00', '20:30:00', '#3498db',
+  'Rutina', JSON_OBJECT('lugar', 'Habitación', 'piso', '2'), 10, FALSE);
+
 
 -- Actividad tipo "Evento"
 INSERT INTO actividades (
   rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
-  dia_semana, hora_inicio, hora_fin, color, tipo,
+  hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
 )
 VALUES (
   2, 1, 'Cita con el pediatra', 'Control de salud mensual',
-  JSON_ARRAY('2025-06-18'), NULL, '10:00:00', '11:00:00', '#e74c3c',
-  'Evento',
-  JSON_OBJECT('direccion', 'Calle Falsa 123', 'ciudad', 'Madrid'), 10, FALSE
+  '2025-06-18', '10:00:00', '11:00:00', '#e74c3c',
+  'Evento', JSON_OBJECT('direccion', 'Calle Falsa 123', 'ciudad', 'Madrid'), 10, FALSE
 );
+
 
 -- Actividad tipo "Objetivo"
 INSERT INTO actividades (
   rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
-  dia_semana, hora_inicio, hora_fin, color, tipo,
+  hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
-)
-VALUES (
-  3, 2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
-  JSON_ARRAY('2025-06-15', '2025-06-22'), 2, '17:00:00', '17:30:00', '#2ecc71',
-  'Objetivo',
-  JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE
-);
+) VALUES
+(3, 2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+  '2025-06-15', '17:00:00', '17:30:00', '#2ecc71',
+  'Objetivo', JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE),
+(3, 2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+  '2025-06-22', '17:00:00', '17:30:00', '#2ecc71',
+  'Objetivo', JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE);
+
 
 
 -- Insertar objetivos

@@ -42,7 +42,7 @@ export class ActividadController {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);
-      await actividadService.update(id_nino, id, req.body);
+      await actividadService.updateActividad(id_nino, id, req.body);
       ApiCorrectResponse.genericSuccess(res, null, true, 'Actividad actualizada', 200);
     } catch (err) {
       next(err);
@@ -53,7 +53,7 @@ export class ActividadController {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);
-      await actividadService.delete(id_nino, id);
+      await actividadService.deleteActividad(id_nino, id);
       ApiCorrectResponse.genericSuccess(res, null, true, 'Actividad borrada', 204);
     } catch (err) {
       next(err);

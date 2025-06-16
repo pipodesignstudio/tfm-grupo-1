@@ -51,7 +51,7 @@ export class ActividadService {
     }
   });
 }
-  public async update(id_nino: number, id: number, dto: UpdateActividadDto) {
+  public async updateActividad(id_nino: number, id: number, dto: UpdateActividadDto) {
     const result = await prisma.actividades.updateMany({
       where: { id, ninos_id: id_nino },
       data: {
@@ -80,7 +80,7 @@ export class ActividadService {
     return;
   }
 
-  public async delete(id_nino: number, id: number) {
+  public async deleteActividad(id_nino: number, id: number) {
     const result = await prisma.actividades.deleteMany({
       where: { id, ninos_id: id_nino }
     });
