@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   ViewChild,
   ViewEncapsulation,
+  Inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -22,6 +23,7 @@ import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 
 import { format } from 'date-fns';
+import { ActivityService } from '../../../service/activity.service';
 
 @Component({
   selector: 'app-calendar-page',
@@ -36,11 +38,9 @@ export class CalendarPageComponent {
 
   calendarVisible = signal(true);
 
-  allEvents = [
-    { title: 'event 1', date: '2025-06-14', icon: 'pi pi-book', nino_id: 1 },
-    { title: 'event 4', date: '2025-06-14', icon: 'pi pi-book', nino_id: 2 },
-    { title: 'event 2', date: '2025-06-16', icon: 'pi pi-book', nino_id: 1 },
-  ];
+  activityService = Inject(ActivityService)
+
+  allEvents = this.activityService.getActivitiesNino('1');
 
   currentEvents = signal<EventApi[]>([]);
 
@@ -64,7 +64,7 @@ export class CalendarPageComponent {
       
     } else {
       console.log(filterValue.value);
-      this.selectedDateEvents = this.allEvents.filter((evento) =>
+      this.selectedDateEvents = this.allEvents.filter((evento: any) =>
         evento.nino_id === filterValue.value ? evento.nino_id : null
       );
     }
@@ -103,7 +103,7 @@ export class CalendarPageComponent {
 
   handleDateSelect(selectInfo: DateSelectArg) {
     const clickedDate = selectInfo.startStr.split('T')[0]; // YYYY-MM-DD
-    this.selectedDateEvents = this.allEvents.filter((event) => {
+    this.selectedDateEvents = this.allEvents.filter((event: any) => {
       return event.date === clickedDate;
     });
 
