@@ -2,7 +2,7 @@ import { JsonValue } from "@prisma/client/runtime/library";
 
 export interface IActividad {
   id: number;
-  rutina_id: number;
+  rutina_id: number | null;
   ninos_id: number;
   titulo: string;
   descripcion: string | null;
