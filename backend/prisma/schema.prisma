@@ -9,7 +9,7 @@ datasource db {
 
 model actividades {
   id                        Int                         @id @default(autoincrement())
-  rutina_id                 Int
+  rutina_id                 Int?
   ninos_id                  Int
   titulo                    String                      @db.VarChar(100)
   descripcion               String?                     @db.Text
@@ -191,9 +191,9 @@ enum familia_usuarios_rol {
 }
 
 enum actividades_tipo {
-  Tarea
+  Objetivo
+  Rutina
   Evento
-  Habito
 }
 
 enum invitacion_usuario_familia_rol {

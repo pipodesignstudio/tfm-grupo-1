@@ -91,7 +91,7 @@ CREATE TABLE `actividades` (
   `hora_inicio` TIME NOT NULL,
   `hora_fin` TIME NOT NULL,
   `color` VARCHAR(45) DEFAULT NULL,
-  `tipo` ENUM('Tarea', 'Evento', 'Habito') NOT NULL,
+  `tipo` ENUM('Objetivo', 'Rutina', 'Evento') NOT NULL,
   `ubicacion` JSON DEFAULT NULL,
   `usuario_responsable` INT NOT NULL,
   `completado` BOOLEAN DEFAULT FALSE,
