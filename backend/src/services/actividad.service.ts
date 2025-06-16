@@ -37,12 +37,21 @@ export class ActividadService {
 
 
 
-  public async findAllByNino(id_nino: number) {
+  public async getAllActivitiesByNino(id_nino: number) {
     return await prisma.actividades.findMany({
       where: { ninos_id: id_nino }
     });
   }
 
+  public async getAllActivitiesByFamily(id_familia: number) {
+  return await prisma.actividades.findMany({
+    where: {
+      ninos: {
+        perfiles_aprendizaje_id: id_familia
+      }
+    }
+  });
+}
   public async update(id_nino: number, id: number, dto: UpdateActividadDto) {
     const result = await prisma.actividades.updateMany({
       where: { id, ninos_id: id_nino },

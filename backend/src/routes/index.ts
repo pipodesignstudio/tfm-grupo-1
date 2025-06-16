@@ -17,6 +17,6 @@ apiRouter.use("/suggestions", suggestionsRoute);
 apiRouter.use("/invitations", invitationsRoute);
 apiRouter.use("/reminders", remindersRoute);
 apiRouter.use("/ninos/:id_nino/alergias", alergiaRoutes);
-apiRouter.use("/ninos/:id_nino/actividades", actividadRoutes);
+apiRouter.use("/actividades", actividadRoutes);
 
 export default apiRouter;

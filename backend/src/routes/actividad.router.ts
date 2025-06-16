@@ -32,7 +32,7 @@ const router = Router({ mergeParams: true });
  *         description: Actividad creada exitosamente
  */
 router.post(
-  '/',
+  '/ninos/:id_nino',
   validationMiddleware(CreateActividadDto),
   asyncMiddlewareWrapper(controller.crearActividad.bind(controller))
 );
@@ -55,8 +55,30 @@ router.post(
  *         description: Listado de actividades
  */
 router.get(
-  '/',
-  asyncMiddlewareWrapper(controller.listar.bind(controller))
+  '/ninos/:id_nino',
+  asyncMiddlewareWrapper(controller.listarActividadesPorNino.bind(controller))
+);
+
+/**
+ * @openapi
+ * /api/familias/{id_familia}/actividades:
+ *   get:
+ *     summary: Lista todas las actividades de la familia
+ *     tags:
+ *       - Actividades
+ *     parameters:
+ *       - in: path
+ *         name: id_familia
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Listado de actividades de la familia
+ */
+router.get(
+  '/familias/:id_familia',
+  asyncMiddlewareWrapper(controller.listarActividadesPorFamilia.bind(controller))
 );
 
 /**
@@ -88,9 +110,9 @@ router.get(
  *         description: Actividad actualizada exitosamente
  */
 router.put(
-  '/:id',
+  '/ninos/:id_nino/:id',
   validationMiddleware(UpdateActividadDto, true),
-  asyncMiddlewareWrapper(controller.actualizar.bind(controller))
+  asyncMiddlewareWrapper(controller.actualizarActividad.bind(controller))
 );
 
 /**
@@ -116,8 +138,8 @@ router.put(
  *         description: Actividad eliminada exitosamente
  */
 router.delete(
-  '/:id',
-  asyncMiddlewareWrapper(controller.borrar.bind(controller))
+  '/ninos/:id_nino/:id',
+  asyncMiddlewareWrapper(controller.borrarActividad.bind(controller))
 );
 
 export default router;

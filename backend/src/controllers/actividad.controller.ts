@@ -18,17 +18,27 @@ export class ActividadController {
 
 
 
-  public async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async listarActividadesPorNino(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
-      const lista = await actividadService.findAllByNino(id_nino);
-      ApiCorrectResponse.genericSuccess(res, lista, true, 'Listado de actividades', 200);
+      const lista = await actividadService.getAllActivitiesByNino(id_nino);
+      ApiCorrectResponse.genericSuccess(res, lista, true, 'Listado de actividades por Niño', 200);
     } catch (err) {
       next(err);
     }
   }
 
-  public async actualizar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async listarActividadesPorFamilia(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id_familia = Number(req.params.id_familia);
+      const lista = await actividadService.getAllActivitiesByFamily(id_familia);
+      ApiCorrectResponse.genericSuccess(res, lista, true, 'Listado de actividades por Familia', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async actualizarActividad(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);
@@ -39,7 +49,7 @@ export class ActividadController {
     }
   }
 
-  public async borrar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async borrarActividad(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);
