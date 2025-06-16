@@ -82,23 +82,22 @@ CREATE TABLE `rutinas` (
 
 CREATE TABLE `actividades` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `rutina_id` INT NOT NULL,
+  `rutina_id` INT DEFAULT NULL,
   `ninos_id` INT NOT NULL,
   `titulo` VARCHAR(100) DEFAULT NULL,
   `descripcion` TEXT DEFAULT NULL,
   `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `dia_semana` TINYINT UNSIGNED DEFAULT NULL,
-  `hora_inicio` TIME DEFAULT NULL,
-  `hora_fin` TIME DEFAULT NULL,
+  `fecha_realizacion` TIMESTAMP NOT NULL,
+  `hora_inicio` TIME NOT NULL,
+  `hora_fin` TIME NOT NULL,
   `color` VARCHAR(45) DEFAULT NULL,
   `tipo` ENUM('Tarea', 'Evento', 'Habito') NOT NULL,
   `ubicacion` JSON DEFAULT NULL,
-  `usuario_responsable` INT DEFAULT NULL,
+  `usuario_responsable` INT NOT NULL,
   `completado` BOOLEAN DEFAULT FALSE,
   CONSTRAINT `fk_actividad_rutina` FOREIGN KEY (`rutina_id`) REFERENCES `rutinas`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_actividades_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
 
 CREATE TABLE `recordatorios` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,

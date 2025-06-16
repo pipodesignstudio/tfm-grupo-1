@@ -28,10 +28,48 @@ INSERT INTO rutinas (ninos_id, nombre, descripcion) VALUES
 (1, 'Rutina de mañana', 'Despertarse, vestirse, desayunar'),
 (2, 'Rutina de noche', 'Cena, cepillado y lectura');
 
--- Insertar actividades
-INSERT INTO actividades (rutina_id, ninos_id, titulo, descripcion, dia_semana, hora_inicio, hora_fin, tipo, completado) VALUES
-(1, 1, 'Colorear dibujos', 'Usar crayones para colorear', 1, '10:00:00', '10:30:00', 'Habito', FALSE),
-(2, 2, 'Cepillarse los dientes', 'Después de cenar', 7, '20:00:00', '20:15:00', 'Tarea', FALSE);
+-- Insertar diferente tipos de actividades
+-- Actividad tipo "Rutina"
+INSERT INTO actividades (
+  rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
+  hora_inicio, hora_fin, color, tipo,
+  ubicacion, usuario_responsable, completado
+) VALUES
+(1, 1, 'Hora de Dormir', 'Rutina diaria para acostarse',
+  '2025-06-15', '20:00:00', '20:30:00', '#3498db',
+  'Rutina', JSON_OBJECT('lugar', 'Habitación', 'piso', '2'), 10, FALSE),
+(1, 1, 'Hora de Dormir', 'Rutina diaria para acostarse',
+  '2025-06-16', '20:00:00', '20:30:00', '#3498db',
+  'Rutina', JSON_OBJECT('lugar', 'Habitación', 'piso', '2'), 10, FALSE);
+
+
+-- Actividad tipo "Evento"
+INSERT INTO actividades (
+  ninos_id, titulo, descripcion, fecha_realizacion,
+  hora_inicio, hora_fin, color, tipo,
+  ubicacion, usuario_responsable, completado
+)
+VALUES (
+  1, 'Cita con el pediatra', 'Control de salud mensual',
+  '2025-06-18', '10:00:00', '11:00:00', '#e74c3c',
+  'Evento', JSON_OBJECT('direccion', 'Calle Falsa 123', 'ciudad', 'Madrid'), 10, FALSE
+);
+
+
+-- Actividad tipo "Objetivo"
+INSERT INTO actividades (
+  ninos_id, titulo, descripcion, fecha_realizacion,
+  hora_inicio, hora_fin, color, tipo,
+  ubicacion, usuario_responsable, completado
+) VALUES
+(2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+  '2025-06-15', '17:00:00', '17:30:00', '#2ecc71',
+  'Objetivo', JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE),
+(2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+  '2025-06-22', '17:00:00', '17:30:00', '#2ecc71',
+  'Objetivo', JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE);
+
+
 
 -- Insertar objetivos
 INSERT INTO objetivos (nombre, ninos_id, color, tipo, fecha_fin) VALUES
@@ -52,11 +90,12 @@ INSERT INTO recordatorios (actividad_id, usuario_id, periodicidad, activo) VALUE
 INSERT INTO notas (ninos_id, titulo, texto) VALUES
 (1, 'Observación del día', 'Mateo ha mejorado en la identificación de colores');
 
--- Insertar alergias
-INSERT INTO alergias (ninos_id, nombre) VALUES
-(2, 'Lácteos');
-
 -- Insertar invitaciones
 INSERT INTO invitacion_usuario_familia (familia_id, usuario_emisor, email_destinatario, rol) VALUES
 (1, 1, 'tio@example.com', 'cuidador'),
 (2, 2, 'abuela@example.com', 'cuidador');
+
+-- Insertar Alergias Niños
+INSERT INTO alergias (ninos_id, nombre) VALUES
+(1, 'Polen'),
+(2, 'Gluten');
