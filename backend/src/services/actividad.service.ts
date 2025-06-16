@@ -5,86 +5,37 @@ import { NotFoundError, InternalServerError } from '../utils';
 
 
 export class ActividadService {
-  public async createActividadEvento(id_nino: number, dto: CreateActividadDto) {
+  public async createActividad(id_nino: number, dto: CreateActividadDto) {
     try {
-      return await prisma.actividades.create({
-        data: {
-          tipo: 'Evento',
-          ninos_id: id_nino,
-          titulo: dto.titulo,
-          descripcion: dto.descripcion,
-          fechas_realizacion: dto.fechas_realizacion,
-          hora_inicio: dto.hora_inicio,
-          hora_fin: dto.hora_fin,
-          color: dto.color,
-          ubicacion: dto.ubicacion,
-          usuario_responsable: dto.usuario_responsable,
-          completado: dto.completado ?? false,
-          rutina_id: dto.rutina_id ?? null, // puede ser null
-          dia_semana: dto.dia_semana ?? null
-        }
-      });
+      const data: any = {
+        tipo: dto.tipo,
+        ninos_id: id_nino,
+        titulo: dto.titulo ?? undefined,
+        descripcion: dto.descripcion ?? undefined,
+        fechas_realizacion: dto.fechas_realizacion ?? undefined,
+        hora_inicio: dto.hora_inicio ?? undefined,
+        hora_fin: dto.hora_fin ?? undefined,
+        color: dto.color ?? undefined,
+        ubicacion: dto.ubicacion ?? undefined,
+        usuario_responsable: dto.usuario_responsable ?? undefined,
+        completado: dto.completado ?? false,
+        dia_semana: dto.dia_semana ?? undefined
+      };
+
+      if (dto.rutina_id != null) {
+        data.rutina_id = dto.rutina_id;
+      }
+
+      return await prisma.actividades.create({ data });
     } catch (error) {
-      throw new InternalServerError(
-        'Error interno al crear el evento',
-        { error: 'INTERNAL_SERVER_ERROR', detalle: error }
-      );
+      throw new InternalServerError('Error interno al crear el evento', {
+        error: 'INTERNAL_SERVER_ERROR',
+        detalle: error,
+      });
     }
   }
 
-  public async createActividadRutina(id_nino: number, dto: CreateActividadDto) {
-    try {
-      return await prisma.actividades.create({
-        data: {
-          tipo: 'Rutina',
-          ninos_id: id_nino,
-          rutina_id: dto.rutina_id,
-          titulo: dto.titulo,
-          descripcion: dto.descripcion,
-          dia_semana: dto.dia_semana,
-          hora_inicio: dto.hora_inicio,
-          hora_fin: dto.hora_fin,
-          color: dto.color,
-          usuario_responsable: dto.usuario_responsable,
-          completado: dto.completado ?? false,
-          fechas_realizacion: dto.fechas_realizacion ?? null,
-          ubicacion: dto.ubicacion ?? null
-        }
-      });
-    } catch (error) {
-      throw new InternalServerError(
-        'Error interno al crear la rutina',
-        { error: 'INTERNAL_SERVER_ERROR', detalle: error }
-      );
-    }
-  }
 
-  public async createActividadObjetivo(id_nino: number, dto: CreateActividadDto) {
-    try {
-      return await prisma.actividades.create({
-        data: {
-          tipo: 'Objetivo',
-          ninos_id: id_nino,
-          titulo: dto.titulo,
-          descripcion: dto.descripcion,
-          color: dto.color,
-          usuario_responsable: dto.usuario_responsable,
-          completado: dto.completado ?? false,
-          fechas_realizacion: dto.fechas_realizacion ?? null,
-          rutina_id: dto.rutina_id ?? null,
-          hora_inicio: dto.hora_inicio ?? null,
-          hora_fin: dto.hora_fin ?? null,
-          dia_semana: dto.dia_semana ?? null,
-          ubicacion: dto.ubicacion ?? null
-        }
-      });
-    } catch (error) {
-      throw new InternalServerError(
-        'Error interno al crear el objetivo',
-        { error: 'INTERNAL_SERVER_ERROR', detalle: error }
-      );
-    }
-  }
 
   public async findAllByNino(id_nino: number) {
     return await prisma.actividades.findMany({
@@ -96,15 +47,16 @@ export class ActividadService {
     const result = await prisma.actividades.updateMany({
       where: { id, ninos_id: id_nino },
       data: {
-        rutina_id: dto.rutina_id,
+        tipo: dto.tipo, // Asignar tipo por defecto si no se proporciona
+        rutina_id: dto.rutina_id ?? undefined, // puede ser null
         titulo: dto.titulo,
         descripcion: dto.descripcion,
-        fechas_realizacion: dto.fechas_realizacion,
+        fechas_realizacion: dto.fechas_realizacion ?? undefined,
         dia_semana: dto.dia_semana,
         hora_inicio: dto.hora_inicio,
         hora_fin: dto.hora_fin,
         color: dto.color,
-        ubicacion: dto.ubicacion,
+        ubicacion: dto.ubicacion ?? undefined,
         usuario_responsable: dto.usuario_responsable,
         completado: dto.completado,
       }

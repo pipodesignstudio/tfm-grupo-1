@@ -9,7 +9,7 @@ datasource db {
 
 model actividades {
   id                        Int                         @id @default(autoincrement())
-  rutina_id                 Int
+  rutina_id                 Int?
   ninos_id                  Int
   titulo                    String?                     @db.VarChar(100)
   descripcion               String?                     @db.Text
@@ -23,7 +23,7 @@ model actividades {
   usuario_responsable       Int?
   completado                Boolean?                    @default(false)
   fechas_realizacion        Json?                       @db.Json
-  rutinas                   rutinas                     @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
+  rutinas                   rutinas?                    @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
   ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_actividades_ninos1")
   objetivos_has_actividades objetivos_has_actividades[]
   recordatorios             recordatorios[]

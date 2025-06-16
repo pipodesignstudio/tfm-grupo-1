@@ -10,9 +10,9 @@ const router = Router({ mergeParams: true });
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/actividades/evento:
+ * /api/ninos/{id_nino}/actividades:
  *   post:
- *     summary: Crea una actividad de tipo Evento
+ *     summary: Crea una actividad 
  *     tags:
  *       - Actividades
  *     parameters:
@@ -29,70 +29,12 @@ const router = Router({ mergeParams: true });
  *             $ref: '#/components/schemas/CreateActividadDto'
  *     responses:
  *       '201':
- *         description: Evento creado exitosamente
+ *         description: Actividad creada exitosamente
  */
 router.post(
-  '/evento',
+  '/',
   validationMiddleware(CreateActividadDto),
-  asyncMiddlewareWrapper(controller.crearEvento.bind(controller))
-);
-
-/**
- * @openapi
- * /api/ninos/{id_nino}/actividades/rutina:
- *   post:
- *     summary: Crea una actividad de tipo Rutina
- *     tags:
- *       - Actividades
- *     parameters:
- *       - in: path
- *         name: id_nino
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateActividadDto'
- *     responses:
- *       '201':
- *         description: Rutina creada exitosamente
- */
-router.post(
-  '/rutina',
-  validationMiddleware(CreateActividadDto),
-  asyncMiddlewareWrapper(controller.crearRutina.bind(controller))
-);
-
-/**
- * @openapi
- * /api/ninos/{id_nino}/actividades/objetivo:
- *   post:
- *     summary: Crea una actividad de tipo Objetivo
- *     tags:
- *       - Actividades
- *     parameters:
- *       - in: path
- *         name: id_nino
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateActividadDto'
- *     responses:
- *       '201':
- *         description: Objetivo creado exitosamente
- */
-router.post(
-  '/objetivo',
-  validationMiddleware(CreateActividadDto),
-  asyncMiddlewareWrapper(controller.crearObjetivo.bind(controller))
+  asyncMiddlewareWrapper(controller.crearActividad.bind(controller))
 );
 
 /**

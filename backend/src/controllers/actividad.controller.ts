@@ -5,38 +5,18 @@ import { ApiCorrectResponse } from '../utils';
 const actividadService = new ActividadService();
 
 export class ActividadController {
-  public async crearEvento(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async crearActividad(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const dto = req.body;
-      const nueva = await actividadService.createActividadEvento(id_nino, dto);
-      ApiCorrectResponse.genericSuccess(res, nueva, true, 'Evento creado', 201);
+      const nueva = await actividadService.createActividad(id_nino, dto);
+      ApiCorrectResponse.genericSuccess(res, nueva, true, 'Actividad creada', 201);
     } catch (err) {
       next(err);
     }
   }
 
-  public async crearRutina(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const id_nino = Number(req.params.id_nino);
-      const dto = req.body;
-      const nueva = await actividadService.createActividadRutina(id_nino, dto);
-      ApiCorrectResponse.genericSuccess(res, nueva, true, 'Actividad de rutina creada', 201);
-    } catch (err) {
-      next(err);
-    }
-  }
 
-  public async crearObjetivo(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const id_nino = Number(req.params.id_nino);
-      const dto = req.body;
-      const nueva = await actividadService.createActividadObjetivo(id_nino, dto);
-      ApiCorrectResponse.genericSuccess(res, nueva, true, 'Objetivo creado', 201);
-    } catch (err) {
-      next(err);
-    }
-  }
 
   public async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
