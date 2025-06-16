@@ -46,7 +46,7 @@ export class ActividadService {
   return await prisma.actividades.findMany({
     where: {
       ninos: {
-        perfiles_aprendizaje_id: id_familia
+        familia_id: id_familia
       }
     }
   });

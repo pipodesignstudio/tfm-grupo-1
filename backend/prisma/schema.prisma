@@ -45,6 +45,8 @@ model familia {
   descripcion                String?                      @db.Text
   familia_usuarios           familia_usuarios[]
   invitacion_usuario_familia invitacion_usuario_familia[]
+
+  ninos ninos[] 
 }
 
 model familia_usuarios {
@@ -62,6 +64,7 @@ model familia_usuarios {
 model ninos {
   id                      Int                  @id @default(autoincrement())
   perfiles_aprendizaje_id Int
+  familia_id              Int
   nombre                  String               @db.VarChar(100)
   apellido                String               @db.VarChar(100)
   img_perfil              Bytes?               @db.MediumBlob
@@ -73,6 +76,7 @@ model ninos {
   actividades             actividades[]
   alergias                alergias[]
   perfiles_aprendizaje    perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
+  familia                familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_ninos_familia1")
   notas                   notas[]
   objetivos               objetivos[]
   rutinas                 rutinas[]

@@ -45,12 +45,12 @@ INSERT INTO actividades (
 
 -- Actividad tipo "Evento"
 INSERT INTO actividades (
-  rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
+  ninos_id, titulo, descripcion, fecha_realizacion,
   hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
 )
 VALUES (
-  2, 1, 'Cita con el pediatra', 'Control de salud mensual',
+  1, 'Cita con el pediatra', 'Control de salud mensual',
   '2025-06-18', '10:00:00', '11:00:00', '#e74c3c',
   'Evento', JSON_OBJECT('direccion', 'Calle Falsa 123', 'ciudad', 'Madrid'), 10, FALSE
 );
@@ -58,14 +58,14 @@ VALUES (
 
 -- Actividad tipo "Objetivo"
 INSERT INTO actividades (
-  rutina_id, ninos_id, titulo, descripcion, fecha_realizacion,
+  ninos_id, titulo, descripcion, fecha_realizacion,
   hora_inicio, hora_fin, color, tipo,
   ubicacion, usuario_responsable, completado
 ) VALUES
-(3, 2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+(2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
   '2025-06-15', '17:00:00', '17:30:00', '#2ecc71',
   'Objetivo', JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE),
-(3, 2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
+(2, 'Aprender a atarse los zapatos', 'Desarrollar autonomía personal',
   '2025-06-22', '17:00:00', '17:30:00', '#2ecc71',
   'Objetivo', JSON_OBJECT('entorno', 'Casa', 'zona', 'Salón'), 11, FALSE);
 
@@ -90,11 +90,12 @@ INSERT INTO recordatorios (actividad_id, usuario_id, periodicidad, activo) VALUE
 INSERT INTO notas (ninos_id, titulo, texto) VALUES
 (1, 'Observación del día', 'Mateo ha mejorado en la identificación de colores');
 
--- Insertar alergias
-INSERT INTO alergias (ninos_id, nombre) VALUES
-(2, 'Lácteos');
-
 -- Insertar invitaciones
 INSERT INTO invitacion_usuario_familia (familia_id, usuario_emisor, email_destinatario, rol) VALUES
 (1, 1, 'tio@example.com', 'cuidador'),
 (2, 2, 'abuela@example.com', 'cuidador');
+
+-- Insertar Alergias Niños
+INSERT INTO alergias (ninos_id, nombre) VALUES
+(1, 'Polen'),
+(2, 'Gluten');
