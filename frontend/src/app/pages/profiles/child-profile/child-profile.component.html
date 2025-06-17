@@ -1,1 +1,81 @@
-<p>child-profile works!</p>
+<div class="min-h-screen bg-[#C8E6F0] p-4">
+    <div class="max-w-4xl mx-auto grid gap-6 lg:grid-cols-3">
+      <!-- Card de información del niño -->
+      <div class="lg:col-span-2 bg-[#9ED2C5] rounded-2xl shadow p-6">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6">
+          <!-- Nombre del niño como título -->
+          <div class="w-full lg:hidden text-center">
+            <h2 class="text-xl font-bold text-[#3A3A3A]">{{ child.nombre }} {{ child.apellido }}</h2>
+          </div>
+  
+          <!-- Imagen -->
+          <div class="relative flex flex-col items-center">
+            <div class="hidden lg:block mb-2">
+              <h2 class="text-xl font-bold text-[#3A3A3A]">{{ child.nombre }} {{ child.apellido }}</h2>
+            </div>
+            <div class="w-32 h-32 rounded-full overflow-hidden mt-2 lg:mt-4">
+              <img
+                [src]="child.imgPerfil"
+                alt="Foto del niño"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <label class="absolute bottom-0 right-0 bg-[#FF7F50] p-1 rounded-full cursor-pointer">
+              <i class="pi pi-camera text-white text-xs"></i>
+              <input type="file" hidden (change)="onFileSelected($event)" />
+            </label>
+          </div>
+  
+          <!-- Datos del niño -->
+          <div class="flex-1 text-[#3A3A3A]">
+            <div [hidden]="editProfile" class="space-y-2 mt-4">
+              <p><i class="pi pi-calendar"></i> Cumpleaños: {{ child.fechaNacimiento }} ({{ edadCalculada }})</p>
+              <p><i class="pi pi-weight"></i> Peso: {{ child.peso }} kg</p>
+              <p><i class="pi pi-arrows-v"></i> Altura: {{ child.altura }} cm</p>
+              <p><i class="pi pi-user"></i> Género: {{ child.genero }}</p>
+            </div>
+  
+            <div [hidden]="!editProfile" class="space-y-2 mt-4">
+              <input type="text" class="$dt('blue.500').value" pInputText [(ngModel)]="child.fechaNacimiento" placeholder="Fecha Nacimiento" />
+              <input type="number" pInputText [(ngModel)]="child.peso" placeholder="Peso (kg)" />
+              <input type="number" pInputText [(ngModel)]="child.altura" placeholder="Altura (cm)" />
+              <input type="text" pInputText [(ngModel)]="child.genero" placeholder="Género" />
+            </div>
+  
+            <button pButton class="mt-4" label="{{ editProfile ? 'Guardar' : 'Editar' }}" (click)="editProfile ? saveProfile() : editProfile = true"></button>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Card de salud -->
+      <div class="bg-[#FBF8F0] rounded-2xl shadow p-4">
+        <h3 class="text-lg font-semibold mb-2 text-[#3A3A3A]">Salud</h3>
+        <div [hidden]="editHealth">
+          <ul class="text-sm text-[#6B6B6B] space-y-1">
+            <li><strong>Alergias:</strong> Ninguna</li>
+            <li><strong>Enfermedades:</strong> Asma</li>
+            <li><strong>Pediatra:</strong> Dra. López</li>
+          </ul>
+        </div>
+        <div [hidden]="!editHealth" class="space-y-2">
+          <input type="text" pInputText placeholder="Alergias" />
+          <input type="text" pInputText placeholder="Enfermedades" />
+          <input type="text" pInputText placeholder="Pediatra" />
+        </div>
+        <button pButton class="mt-4" label="{{ editHealth ? 'Guardar' : 'Editar' }}" (click)="editHealth ? saveHealth() : editHealth = true"></button>
+      </div>
+  
+      <!-- Card de descripción -->
+      <div class="bg-[#FBF8F0] rounded-2xl shadow p-4 lg:col-span-3">
+        <h3 class="text-lg font-semibold mb-2 text-[#3A3A3A]">Descripción</h3>
+        <div [hidden]="editDescription">
+          <p class="text-sm text-[#6B6B6B]">{{ child.descripcion }}</p>
+        </div>
+        <div [hidden]="!editDescription">
+          <textarea [(ngModel)]="child.descripcion" pInputText rows="3" class="w-full"></textarea>
+        </div>
+        <button pButton class="mt-4" label="{{ editDescription ? 'Guardar' : 'Editar' }}" (click)="editDescription ? saveDescription() : editDescription = true"></button>
+      </div>
+    </div>
+  </div>
+  
