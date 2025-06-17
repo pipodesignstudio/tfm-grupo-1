@@ -13,6 +13,7 @@
   <!-- Calendario -->
   <div class="w-[90%] max-w-md">
     <full-calendar
+      #fullCalendarRef
       [options]="calendarOptions()"
       class="rounded-xl shadow-md bg-white p-4"
     >
@@ -26,12 +27,12 @@
   <!-- Eventos listados -->
   <div class="mt-6 space-y-4 px-4 w-full">
     <p class="text-sm font-semibold text-gray-700">{{ selectedDate }}</p>
-    @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent) {
+    @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent.id) {
     <div
       class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
     >
       <div class="flex items-center gap-3">
-        <i class="{{ selectedDateEvent.icon }} text-xl text-purple-800"></i>
+        <i class="text-xl text-purple-800"></i>
         <span class="text-gray-800 font-medium">{{
           selectedDateEvent.title
         }}</span>

@@ -4,18 +4,14 @@ import {
   ChangeDetectorRef,
   ViewChild,
   ViewEncapsulation,
-  Inject,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FullCalendarModule,
   FullCalendarComponent,
 } from '@fullcalendar/angular';
-import {
-  CalendarOptions,
-  DateSelectArg,
-  EventApi,
-} from '@fullcalendar/core';
+import { CalendarOptions, DateSelectArg, EventApi } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +20,10 @@ import { DropdownModule } from 'primeng/dropdown';
 
 import { format } from 'date-fns';
 import { ActivityService } from '../../../service/activity.service';
+
+import { IActivity } from '../../../interfaces/iactivity.interface';
+
+import { EventInput } from '@fullcalendar/core';
 
 @Component({
   selector: 'app-calendar-page',
@@ -38,34 +38,53 @@ export class CalendarPageComponent {
 
   calendarVisible = signal(true);
 
-  activityService = Inject(ActivityService)
+  activityService = inject(ActivityService);
 
-  allEvents = this.activityService.getActivitiesNino('1');
+  allEvents: IActivity[] = [];
 
-  currentEvents = signal<EventApi[]>([]);
+  currentEvents: EventInput[] = [];
 
-  selectedDateEvents: any[] = [...this.allEvents];
+  selectedDateEvents: EventInput[] = [];
+
+  async ngOnInit() {
+    // Cargar los eventos de la familia con id '1'
+    try {
+      const activities = await this.activityService.getActivitiesFamily('1');
+      console.log(activities);
+      this.allEvents = activities;
+      console.log(this.allEvents);
+      const eventInputs = this.mapActivitiesToEvents(activities);
+      this.currentEvents = eventInputs;
+      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
+
+      // También actualiza el calendario si usas signal
+      const calendarApi = this.calendarComponent.getApi();
+      calendarApi.removeAllEvents(); // Limpia los eventos anteriores
+      calendarApi.addEventSource(eventInputs);
+    } catch (error) {
+      console.error('Error al cargar los eventos:', error);
+    }
+  }
 
   selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
 
   filtroOpciones = [
     { label: 'Todos', value: null },
     { label: 'Lucas', value: 1 },
-    { label: 'Sofía', value: 2 }
+    { label: 'Sofía', value: 2 },
   ];
 
   filtroSeleccionado: number | null = null;
 
-
   filtrarEventos() {
-    const filterValue: { label: string; value: number } | any = this.filtroSeleccionado;
+    const filterValue: { label: string; value: number } | any =
+      this.filtroSeleccionado;
     if (!filterValue) {
-      this.selectedDateEvents = [...this.allEvents];
-      
+      this.selectedDateEvents = [...this.currentEvents];
     } else {
       console.log(filterValue.value);
-      this.selectedDateEvents = this.allEvents.filter((evento: any) =>
-        evento.nino_id === filterValue.value ? evento.nino_id : null
+      this.selectedDateEvents = this.currentEvents.filter((evento: any) =>
+        evento.id_nino === filterValue.value ? evento.id_nino : null
       );
     }
   }
@@ -78,15 +97,15 @@ export class CalendarPageComponent {
       right: 'next',
     },
     initialView: 'dayGridMonth',
-    initialEvents: this.allEvents,
+    initialEvents: [],
     weekends: true,
     editable: true,
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
-    eventsSet: this.handleEvents.bind(this),
-    eventDidMount: this.eventDidMount.bind(this),
+    /*     eventsSet: this.handleEvents.bind(this),
+     */ eventDidMount: this.eventDidMount.bind(this),
   });
 
   constructor(private changeDetector: ChangeDetectorRef) {}
@@ -102,20 +121,25 @@ export class CalendarPageComponent {
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
-    const clickedDate = selectInfo.startStr.split('T')[0]; // YYYY-MM-DD
-    this.selectedDateEvents = this.allEvents.filter((event: any) => {
-      return event.date === clickedDate;
-    });
-
-    this.selectedDate = format(new Date(clickedDate), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
-
-    console.log(this.selectedDateEvents, clickedDate);
+    const clickedDate = selectInfo.startStr.split('T')[0];
+    this.filtrarEventosPorFecha(clickedDate);
   }
 
-  handleEvents(events: EventApi[]) {
+  private filtrarEventosPorFecha(fecha: string) {
+    const filtrados = this.currentEvents.filter(
+      (event: any) => event.start === fecha
+    );
+
+    this.selectedDateEvents = filtrados;
+    this.selectedDate = format(new Date(fecha), 'MMMM, do, EEE');
+
+    console.log(`Eventos filtrados para la fecha ${fecha}:`, filtrados);
+  }
+
+  /*  handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
     this.changeDetector.detectChanges();
-  }
+  } */
 
   agregarEventoRapido() {
     const title = prompt('Título del nuevo evento');
@@ -128,5 +152,19 @@ export class CalendarPageComponent {
         allDay: true,
       });
     }
+  }
+
+  private mapActivitiesToEvents(activities: IActivity[]): EventInput[] {
+    return activities.map((activity) => ({
+      id: String(activity.id),
+      title: activity.titulo,
+      start: format(
+        new Date(activity.fecha_realizacion),
+        'yyyy-MM-dd'
+      ), // asegúrate que `fecha` sea en formato ISO o YYYY-MM-DD
+      allDay: true,
+      color: activity.color ?? undefined, // evita pasar null
+      actividadInfo: activity, // Puedes agregar información adicional si es necesario
+    }));
   }
 }

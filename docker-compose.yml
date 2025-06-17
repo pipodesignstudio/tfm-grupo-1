@@ -1,16 +1,42 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:latest
-    container_name: todoapp_mysql
+    container_name: nidodb_mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: todoapp
+      MYSQL_DATABASE: nidodb
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/1_init.sql
       - ./db/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: nidodb_phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3307
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 64M
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+  # Nueva instancia de MongoDB
+  mongodb:
+    image: mongo:8.0.10-noble
+    container_name: nidodb_mongo 
+    restart: always 
+    ports:
+      - "27017:27017" 
+    volumes:
+      - ./db/data/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root_mongo_password
+      MONGO_INITDB_DATABASE: nidodb_mongo 

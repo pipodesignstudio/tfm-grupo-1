@@ -5,6 +5,7 @@ import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
 import { NidoTheme } from './shared/theme/nido-theme';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,4 +26,5 @@ export const appConfig: ApplicationConfig = {
       },
     }),
   ],
+    provideHttpClient()
 };
