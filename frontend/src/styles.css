@@ -1,1 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  color: #3a3a3a;
+  line-height: 1.5;
+}

@@ -1,0 +1,123 @@
+<div class="register-container">
+  <div class="register-content">
+    <h1 class="page-title">Regístrate</h1>
+
+    <div class="profile-picture-section">
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="file-input"
+      />
+      <div class="profile-picture-placeholder" (click)="fileInput.click()">
+        @if (profileImageUrl) {
+        <img
+          [src]="profileImageUrl"
+          alt="Foto de Perfil"
+          class="profile-image"
+        />
+        } @else {
+        <img
+          src="https://img.icons8.com/?size=40&id=85103&format=png&color=000000"
+        />
+        }
+      </div>
+    </div>
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      class="register-form"
+    >
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          formControlName="username"
+          placeholder="nombredeusuario"
+        />
+        @if (registerForm.get('username'); as usernameControl) { @if
+        (usernameControl.invalid && (usernameControl.dirty ||
+        usernameControl.touched)) {
+        <p class="error-message">
+          @if (usernameControl.errors?.['required']) { El username es
+          obligatorio. } @if (usernameControl.errors?.['minlength']) { El
+          username debe tener al menos
+          {{ usernameControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </p>
+        } }
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          formControlName="email"
+          placeholder="tu.email@ejemplo.com"
+        />
+        @if (registerForm.get('email'); as emailControl) { @if
+        (emailControl.invalid && (emailControl.dirty || emailControl.touched)) {
+        <p class="error-message">
+          @if (emailControl.errors?.['required']) { El email es obligatorio. }
+          @if (emailControl.errors?.['email']) { Introduce un email válido. }
+        </p>
+        } }
+      </div>
+
+      <div class="input-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          formControlName="password"
+          placeholder="********"
+        />
+        @if (registerForm.get('password'); as passwordControl) { @if
+        (passwordControl.invalid && (passwordControl.dirty ||
+        passwordControl.touched)) {
+        <p class="error-message">
+          @if (passwordControl.errors?.['required']) { La contraseña es
+          obligatoria. } @if (passwordControl.errors?.['minlength']) { La
+          contraseña debe tener al menos
+          {{ passwordControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </p>
+        } }
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPassword">Confirmar Contraseña</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          formControlName="confirmPassword"
+          placeholder="********"
+        />
+        @if (registerForm.get('confirmPassword'); as confirmPasswordControl) {
+        @if (confirmPasswordControl.invalid && (confirmPasswordControl.dirty ||
+        confirmPasswordControl.touched)) {
+        <p class="error-message">
+          @if (confirmPasswordControl.errors?.['required']) { Confirma la
+          contraseña. }
+        </p>
+        } }
+      </div>
+
+      @if (registerForm.errors?.['mismatch'] && registerForm.touched) {
+      <p class="error-message">Las contraseñas no coinciden.</p>
+      } @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" class="submit-button">Enviar</button>
+    </form>
+  </div>
+</div>

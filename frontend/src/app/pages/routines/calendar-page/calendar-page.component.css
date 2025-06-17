@@ -1,0 +1,51 @@
+/* Quitar bordes de la tabla del calendario */
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-theme-standard .fc-scrollgrid {
+  border: none !important;
+}
+
+/* Cambiar el color y forma del dia de hoy */
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: rgb(38, 161, 231); /* o var(--fc-today-bg-color) */
+  color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 0;
+}
+
+/* Centrar el texto del dia */
+ .fc-daygrid-day-top {
+  justify-content: center;
+}
+
+/* Añade un punto rojo en las celdas con eventos */
+.has-event-dot {
+  position: relative;
+}
+
+.has-event-dot::after {
+  content: '';
+  position: absolute;
+  top: 75%;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: red;
+  border-radius: 50%;
+  
+
+  
+}
+
+/* Ocultar text de evento en el calendario */
+.fc-daygrid-more-link, .fc-daygrid-day-events {
+  display: none !important;
+}

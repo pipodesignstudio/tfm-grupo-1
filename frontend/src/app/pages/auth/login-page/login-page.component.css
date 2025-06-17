@@ -1,0 +1,180 @@
+/* Variables de Colores de la Aplicación Nido (para referencia, si no usas SCSS)
+   Fondo de la app: #C8E6F0
+   Primario: #9ED2C5 (para el contenedor del formulario)
+   Secundario: #FBF8F0
+   Acento Amarillo: #FFD700
+   Acento Naranja: #FF7F50
+   Texto Oscuro: #3A3A3A
+   Texto Claro: #6B6B6B
+   Blanco: #FFFFFF
+*/
+
+@keyframes slideInFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: #c8e6f0;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 400px;
+  background-color: #9ed2c5;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+
+  animation: slideInFadeIn 0.8s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.brand-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.brand-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.app-name {
+  font-family: "Poppins", sans-serif;
+  font-size: 3em;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+}
+
+.app-slogan {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8em;
+  color: #fbf8f0;
+  margin-top: 5px;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.form-title {
+  font-size: 1.8em;
+  color: #ffffff;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group label {
+  font-size: 0.9em;
+  color: #fbf8f0;
+  font-weight: 500;
+}
+
+.input-group input {
+  padding: 12px 15px;
+  border: 1px solid #fbf8f0;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #3a3a3a;
+  background-color: #ffffff;
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #9b9b9b;
+}
+
+.input-group input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.error-message {
+  color: #ff7f50;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: -10px;
+}
+
+.login-button {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #3a3a3a;
+  background-color: #ffd700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+
+  transition: background-color 1s ease, color 1s ease, transform 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #ff7f50;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.register-link-section {
+  margin-top: 20px;
+}
+
+.register-text {
+  font-size: 0.95em;
+  color: #fbf8f0;
+}
+
+.register-link {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: darken(#ffd700, 60%);
+  text-decoration: underline;
+}

@@ -1,0 +1,54 @@
+<div class="flex flex-col items-center bg-gray-100 min-h-screen pt-6 pb-20">
+  <div class="w-[90%] max-w-md mb-4">
+    <p-dropdown
+      [options]="filtroOpciones"
+      [(ngModel)]="filtroSeleccionado"
+      optionLabel="label"
+      placeholder="Filtrar por niño o actividad"
+      class="w-full"
+      (onChange)="filtrarEventos()"
+    ></p-dropdown>
+  </div>
+
+  <!-- Calendario -->
+  <div class="w-[90%] max-w-md">
+    <full-calendar
+      [options]="calendarOptions()"
+      class="rounded-xl shadow-md bg-white p-4"
+    >
+      <ng-template #eventContent let-arg>
+        <b class="text-sm text-gray-800">{{ arg.timeText }}</b>
+        <i class="text-sm text-gray-500 ml-1">{{ arg.event.title }}</i>
+      </ng-template>
+    </full-calendar>
+  </div>
+
+  <!-- Eventos listados -->
+  <div class="mt-6 space-y-4 px-4 w-full">
+    <p class="text-sm font-semibold text-gray-700">{{ selectedDate }}</p>
+    @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent) {
+    <div
+      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <i class="{{ selectedDateEvent.icon }} text-xl text-purple-800"></i>
+        <span class="text-gray-800 font-medium">{{
+          selectedDateEvent.title
+        }}</span>
+      </div>
+      <input
+        type="checkbox"
+        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
+      />
+    </div>
+    }
+
+    <!-- Botón flotante -->
+    <button
+      class="fixed bottom-20 right-5 bg-purple-500 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-2xl"
+      (click)="agregarEventoRapido()"
+    >
+      +
+    </button>
+  </div>
+</div>

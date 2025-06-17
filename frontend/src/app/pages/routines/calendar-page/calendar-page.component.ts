@@ -1,0 +1,132 @@
+import {
+  Component,
+  signal,
+  ChangeDetectorRef,
+  ViewChild,
+  ViewEncapsulation,
+  Inject,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FullCalendarModule,
+  FullCalendarComponent,
+} from '@fullcalendar/angular';
+import {
+  CalendarOptions,
+  DateSelectArg,
+  EventApi,
+} from '@fullcalendar/core';
+import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import { FormsModule } from '@angular/forms';
+
+import { DropdownModule } from 'primeng/dropdown';
+
+import { format } from 'date-fns';
+import { ActivityService } from '../../../service/activity.service';
+
+@Component({
+  selector: 'app-calendar-page',
+  standalone: true,
+  imports: [CommonModule, FullCalendarModule, DropdownModule, FormsModule],
+  templateUrl: './calendar-page.component.html',
+  styleUrl: './calendar-page.component.css',
+  encapsulation: ViewEncapsulation.None,
+})
+export class CalendarPageComponent {
+  @ViewChild('fullCalendarRef') calendarComponent!: FullCalendarComponent;
+
+  calendarVisible = signal(true);
+
+  activityService = Inject(ActivityService)
+
+  allEvents = this.activityService.getActivitiesNino('1');
+
+  currentEvents = signal<EventApi[]>([]);
+
+  selectedDateEvents: any[] = [...this.allEvents];
+
+  selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
+
+  filtroOpciones = [
+    { label: 'Todos', value: null },
+    { label: 'Lucas', value: 1 },
+    { label: 'Sofía', value: 2 }
+  ];
+
+  filtroSeleccionado: number | null = null;
+
+
+  filtrarEventos() {
+    const filterValue: { label: string; value: number } | any = this.filtroSeleccionado;
+    if (!filterValue) {
+      this.selectedDateEvents = [...this.allEvents];
+      
+    } else {
+      console.log(filterValue.value);
+      this.selectedDateEvents = this.allEvents.filter((evento: any) =>
+        evento.nino_id === filterValue.value ? evento.nino_id : null
+      );
+    }
+  }
+
+  calendarOptions = signal<CalendarOptions>({
+    plugins: [interactionPlugin, dayGridPlugin],
+    headerToolbar: {
+      left: 'prev',
+      center: 'title',
+      right: 'next',
+    },
+    initialView: 'dayGridMonth',
+    initialEvents: this.allEvents,
+    weekends: true,
+    editable: true,
+    selectable: true,
+    selectMirror: true,
+    dayMaxEvents: true,
+    select: this.handleDateSelect.bind(this),
+    eventsSet: this.handleEvents.bind(this),
+    eventDidMount: this.eventDidMount.bind(this),
+  });
+
+  constructor(private changeDetector: ChangeDetectorRef) {}
+
+  // Metodo para añadir el dot
+  eventDidMount(info: any) {
+    const dateStr = info.event.startStr.split('T')[0]; // Formato YYYY-MM-DD
+    const dayCell = document.querySelector(`[data-date="${dateStr}"]`);
+
+    if (dayCell && !dayCell.classList.contains('has-event-dot')) {
+      dayCell.classList.add('has-event-dot');
+    }
+  }
+
+  handleDateSelect(selectInfo: DateSelectArg) {
+    const clickedDate = selectInfo.startStr.split('T')[0]; // YYYY-MM-DD
+    this.selectedDateEvents = this.allEvents.filter((event: any) => {
+      return event.date === clickedDate;
+    });
+
+    this.selectedDate = format(new Date(clickedDate), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
+
+    console.log(this.selectedDateEvents, clickedDate);
+  }
+
+  handleEvents(events: EventApi[]) {
+    this.currentEvents.set(events);
+    this.changeDetector.detectChanges();
+  }
+
+  agregarEventoRapido() {
+    const title = prompt('Título del nuevo evento');
+    if (title && this.calendarComponent) {
+      const calendarApi = this.calendarComponent.getApi();
+      const date = new Date();
+      calendarApi.addEvent({
+        title,
+        start: date.toISOString().slice(0, 10),
+        allDay: true,
+      });
+    }
+  }
+}
