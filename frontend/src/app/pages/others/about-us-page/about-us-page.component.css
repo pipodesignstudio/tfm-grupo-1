@@ -1,0 +1,65 @@
+.about-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #c8e6f0;
+  box-sizing: border-box;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ← CENTRA horizontalmente los hijos */
+  background-color: #9ed2c5;
+  padding: 40px;
+  border-radius: 15px;
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  width: 80px;
+  height: auto;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.about-title {
+  font-size: 2.5em;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.about-text {
+  font-size: 1.1em;
+  color: #ffffff;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.about-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.about-card {
+  background-color: #fbf8f0;
+  border-radius: 12px;
+  padding: 20px;
+  color: #3a3a3a;
+  text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #ff7f50;
+  font-size: 1.3em;
+}

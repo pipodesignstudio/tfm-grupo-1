@@ -4,16 +4,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormsModule } from '@angular/forms';
 import { ThemeService } from '../../../service/theme.service';
 
-
-interface SettingItem {
-  icon: string;
-  label: string;
-  hasArrow?: boolean;
-  hasToggle?: boolean;
-  toggleValue?: boolean;
-  onToggle?: () => void;
-  onClick?: () => void;
-}
+import { ISettingItem } from '../../../interfaces/isetting-item.interface';
 
 
 @Component({
@@ -29,7 +20,7 @@ export class SettingsComponent {
   isDarkMode = this.themeService.darkTheme;
 
   darkMode = false;
-  sounds = true;
+  notifications = true;
   vacationMode = false;
 
   constructor(private router: Router) {}
@@ -43,58 +34,64 @@ export class SettingsComponent {
     this.themeService.toggleDarkMode();
   }
 
-  settingsItems: SettingItem[] = [
+  toggleNotifications() {
+    this.notifications = !this.notifications;
+    console.log(`Notifications are now ${this.notifications ? 'enabled' : 'disabled'}`);
+  }
+
+  settingsItems: ISettingItem[] = [
     {
       icon: 'pi pi-user',
-      label: 'Account',
+      label: 'Editar Perfil',
       hasArrow: true,
-      onClick: () => console.log('Navigate to General settings'),
+      onClick: () =>  this.router.navigate(['/settings/edit-profile']),
+    },
+    {
+      icon: 'pi pi-cog',
+      label: 'Familia',
+      hasArrow: true,
+      onClick: () => this.router.navigate(['/user-profile']),
     },
     {
       icon: 'pi pi-moon',
-      label: 'Dark Mode',
+      label: 'Modo Oscuro',
       hasToggle: true,
       toggleValue: this.darkMode,
       onToggle: () => this.toggleDarkMode(),
     },
     {
-      icon: 'pi pi-shield',
-      label: 'Security',
-      hasArrow: true,
-      onClick: () => console.log('Navigate to Security settings'),
-    },
-    {
       icon: 'pi pi-bell',
-      label: 'Notifications',
-      hasArrow: true,
-      onClick: () => console.log('Navigate to Notifications settings'),
+      label: 'Notificaciones',
+      hasToggle: true,
+      toggleValue: this.notifications,
+      onToggle: () => this.toggleNotifications(),
     }
   ];
 
-  aboutItems: SettingItem[] = [
+  aboutItems: ISettingItem[] = [
     {
       icon: 'pi pi-star',
-      label: 'Rate Nido',
+      label: 'Calificar Nido',
       hasArrow: true,
-      onClick: () => console.log('Navigate to Rate app'),
+      onClick: () => window.open('https://github.com/pipodesignstudio/tfm-grupo-1', '_blank'),
     },
     {
       icon: 'pi pi-share-alt',
-      label: 'Share with Friends',
+      label: 'Compartir con Amigos',
       hasArrow: true,
-      onClick: () => console.log('Share app'),
+      onClick: () => window.open('https://github.com/pipodesignstudio/tfm-grupo-1', '_blank'),
     },
     {
       icon: 'pi pi-info-circle',
-      label: 'About Us',
+      label: 'Sobre Nosotros',
       hasArrow: true,
-      onClick: () => console.log('Navigate to About Us'),
+      onClick: () => this.router.navigate(['/about-us']),
     },
     {
       icon: 'pi pi-question-circle',
-      label: 'Support',
+      label: 'Soporte',
       hasArrow: true,
-      onClick: () => console.log('Navigate to Support'),
+      onClick: () => console.log('Soporte clicked'),
     },
   ];
 }
