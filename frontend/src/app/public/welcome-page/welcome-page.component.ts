@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-welcome-page',
-  imports: [],
+  imports: [ButtonModule],
   templateUrl: './welcome-page.component.html',
   styleUrl: './welcome-page.component.css',
 })
