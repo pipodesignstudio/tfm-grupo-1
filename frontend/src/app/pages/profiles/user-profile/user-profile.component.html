@@ -17,10 +17,17 @@
         <!-- User info -->
         <div class="leading-tight text-left">
           <p class="text-base font-semibold text-gray-900">
-            {{ user.name }} {{ user.surname }}
+            {{ user.nick }}
+            
           </p>
+          @if (user.name && user.surname) {
           <p class="text-sm text-gray-500">
-            {{ user.nick }}<span> · {{ user.rol }}</span>
+            {{ user.name }} {{ user.surname }}
+            
+          </p>
+          }
+          <p class="text-sm text-gray-500">
+            {{ user.rol }}
           </p>
         </div>
       </div>
@@ -40,7 +47,7 @@
           </span>
         </button>
         }
-        <button
+        <button 
           class="bg-gray-200 hover:bg-gray-300 rounded-full w-14 h-14 flex items-center justify-center hover:cursor-pointer"
         >
           <i class="pi pi-plus text-gray-700 text-lg"></i>
@@ -59,7 +66,8 @@
           <p class="text-sm font-medium text-gray-900">
             {{ selectedChild.age }}
           </p>
-          <button class="hover:cursor-pointer" >
+          <button  (click)="router.navigate(['/child-profile/{{selectedChild.id}}'])"
+          class="hover:cursor-pointer">
             <i class="pi pi-search text-gray-600 text-sm"></i>
           </button>
         </div>
@@ -71,12 +79,29 @@
             class="w-full rounded-xl object-cover"
           />
         </div>
-        <div class="mt-3 flex items-center justify-between ml-2 mr-2 ">
+        <div class="mt-3 flex items-center justify-between ml-2 mr-2">
           <p><strong>Altura:</strong> {{ selectedChild.height }} cm</p>
           <p><strong>Peso:</strong> {{ selectedChild.weight }} kg</p>
         </div>
       </div>
     </div>
     }
+    <div class="bg-white rounded-2xl shadow p-6 space-y-6 text-center">
+    <h2 class="text-lg font-semibold text-center text-gray-900 mb-2">
+      INTEGRANTES DE LA FAMILIA
+    </h2>
+    @for (member of familyMembers; track member) {
+    <div
+      class="flex justify-between items-center px-4 py-3 rounded-xl"
+      [ngClass]="getBgColor(member)"
+    >
+      <span class="text-sm font-medium text-gray-800">
+        {{ member.name }} – {{ member.role }}
+      </span>
+      <div class="w-8 h-8 rounded-full bg-gray-700"></div>
+    </div>
+    }
   </div>
+  </div>
+  
 </div>

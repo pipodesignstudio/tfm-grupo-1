@@ -1,10 +1,11 @@
+import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [AvatarModule],
+  imports: [AvatarModule, NgClass],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
@@ -22,6 +23,7 @@ constructor(public router: Router) {}
 
   children = [
     {
+      id: 1,
       name: 'Emilio',
       age: '2 años, 8 meses',
       height: 90,
@@ -29,6 +31,7 @@ constructor(public router: Router) {}
       image: 'https://picsum.photos/536/354'
     },
     {
+      id: 2,
       name: 'Lucía',
       age: '5 años, 1 mes',
       height: 110,
@@ -36,6 +39,26 @@ constructor(public router: Router) {}
       image: 'https://picsum.photos/536/354'
     }
   ];
+
+  familyMembers = [
+  { name: 'María', role: 'Administrador', color: 'pink' },
+  { name: 'Carlos', role: 'Cuidador', color: 'green' },
+  { name: 'Lucía', role: 'Cuidador', color: 'blue' }
+];
+
+getBgColor(member: any) {
+  switch (member.color) {
+    case 'pink':
+      return 'bg-pink-100';
+    case 'green':
+      return 'bg-green-100';
+    case 'blue':
+      return 'bg-blue-100';
+    default:
+      return 'bg-gray-100';
+  }
+}
+
 
   selectedChild = this.children[0]; // selecciona por defecto el primero
 
