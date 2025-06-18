@@ -30,7 +30,13 @@ import { CreateActivityComponent } from '../../../components/activity/create-act
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, DropdownModule, FormsModule, CreateActivityComponent],
+  imports: [
+    CommonModule,
+    FullCalendarModule,
+    DropdownModule,
+    FormsModule,
+    CreateActivityComponent,
+  ],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -49,7 +55,6 @@ export class CalendarPageComponent {
   selectedDateEvents: EventInput[] = [];
 
   mostrarModalNuevoEvento = false;
-
 
   async ngOnInit() {
     // Cargar los eventos de la familia con id '1'
@@ -108,6 +113,8 @@ export class CalendarPageComponent {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
+    contentHeight: 'auto',
+    longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
     /*     eventsSet: this.handleEvents.bind(this),
      */ eventDidMount: this.eventDidMount.bind(this),
@@ -146,16 +153,11 @@ export class CalendarPageComponent {
     this.changeDetector.detectChanges();
   } */
 
-
-
   private mapActivitiesToEvents(activities: IActivity[]): EventInput[] {
     return activities.map((activity) => ({
       id: String(activity.id),
       title: activity.titulo,
-      start: format(
-        new Date(activity.fecha_realizacion),
-        'yyyy-MM-dd'
-      ), // asegúrate que `fecha` sea en formato ISO o YYYY-MM-DD
+      start: format(new Date(activity.fecha_realizacion), 'yyyy-MM-dd'), // asegúrate que `fecha` sea en formato ISO o YYYY-MM-DD
       allDay: true,
       color: activity.color ?? undefined, // evita pasar null
       actividadInfo: activity, // Puedes agregar información adicional si es necesario
@@ -166,29 +168,30 @@ export class CalendarPageComponent {
   nuevaFechaEvento = new Date().toISOString().slice(0, 10);
 
   agregarEventoRapido() {
-  this.nuevoTituloEvento = '';
-  this.nuevaFechaEvento = new Date().toISOString().slice(0, 10);
-  this.mostrarModalNuevoEvento = true;
-}
+    this.nuevoTituloEvento = '';
+    this.nuevaFechaEvento = new Date().toISOString().slice(0, 10);
+    this.mostrarModalNuevoEvento = true;
+  }
 
   cerrarModalNuevoEvento() {
-  this.mostrarModalNuevoEvento = false;
-}
+    this.mostrarModalNuevoEvento = false;
+  }
 
-guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
-  console.log(nuevaActividad)
-  console.log(nuevaActividad.fecha_realizacion!.toISOString().slice(0, 10))
-  const calendarApi = this.calendarComponent.getApi();
-  const fecha = new Date(nuevaActividad.fecha_realizacion!.toISOString().slice(0, 10)).toISOString().slice(0, 10);
-  console.log(nuevaActividad.fecha_realizacion, fecha);
+  guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+    console.log(nuevaActividad);
+    console.log(nuevaActividad.fecha_realizacion!.toISOString().slice(0, 10));
+    const calendarApi = this.calendarComponent.getApi();
+  const fecha = nuevaActividad.fecha_realizacion!.toLocaleDateString('sv-SE');
 
-  calendarApi.addEvent({
-    title: nuevaActividad.titulo || 'Sin título',
-    start: fecha,
-    allDay: true,
-    color: nuevaActividad.color || '#7c3aed',
-  });
+    console.log(nuevaActividad.fecha_realizacion, fecha);
 
-  this.mostrarModalNuevoEvento = false;
-}
+    calendarApi.addEvent({
+      title: nuevaActividad.titulo || 'Sin título',
+      start: fecha,
+      allDay: true,
+      color: nuevaActividad.color || '#7c3aed',
+    });
+
+    this.mostrarModalNuevoEvento = false;
+  }
 }
