@@ -2,7 +2,7 @@ import { IsInt, IsOptional, IsString, MaxLength, IsDateString, Min } from 'class
 
 export class UpdateNinoDto {
   @IsOptional() @IsInt() perfiles_aprendizaje_id?: number;
-  @IsOptional() @IsInt() familia_Id?: number;
+  @IsOptional() @IsInt() familia_id?: number;
 
   @IsOptional() @IsString() @MaxLength(100) nombre?: string;
   @IsOptional() @IsString() @MaxLength(100) apellido?: string;

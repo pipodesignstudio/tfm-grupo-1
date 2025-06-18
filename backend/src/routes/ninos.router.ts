@@ -24,7 +24,7 @@ const router = Router();
  *             ejemplo:
  *               value:
  *                 perfiles_aprendizaje_id: 2
- *                 familia_Id: 3
+ *                 familia_id: 3
  *                 nombre: "Lucas"
  *                 apellido: "García"
  *                 fecha_nacimiento: "2015-06-17"

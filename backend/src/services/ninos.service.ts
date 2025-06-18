@@ -84,7 +84,7 @@ export class NinosService {
   /** Lista los niños pertenecientes a una familia. */
   async listByFamilia(familiaId: number) {
     try {
-      return await prisma.ninos.findMany({ where: { familia_Id: familiaId } });
+      return await prisma.ninos.findMany({ where: { familia_id: familiaId } });
     } catch (error) {
       console.error('Error real al listar niños:', error);
       throw new InternalServerError('Error al listar niños', { error: 'INTERNAL_SERVER_ERROR' });

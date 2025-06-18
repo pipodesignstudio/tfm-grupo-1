@@ -63,7 +63,7 @@ model familia_usuarios {
 model ninos {
   id                      Int                  @id @default(autoincrement())
   perfiles_aprendizaje_id Int
-  familia_Id              Int                  
+  familia_id              Int                  
   nombre                  String               @db.VarChar(100)
   apellido                String               @db.VarChar(100)
   img_perfil              Bytes?               @db.MediumBlob

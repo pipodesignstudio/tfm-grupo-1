@@ -2,7 +2,7 @@ import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, IsDateString, Min }
 
 export class CreateNinoDto {
   @IsInt() perfiles_aprendizaje_id!: number;
-  @IsInt() familia_Id!: number;
+  @IsInt() familia_id!: number;
 
   @IsString() @MaxLength(100) @IsNotEmpty() nombre!: string;
   @IsString() @MaxLength(100) @IsNotEmpty() apellido!: string;
