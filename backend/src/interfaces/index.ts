@@ -5,3 +5,4 @@ export * from './reminder.interface';
 export * from './request-user.interface';
 export * from './user.interface';
 export * from './alergia.interface';
+export * from './objetivo.interface';

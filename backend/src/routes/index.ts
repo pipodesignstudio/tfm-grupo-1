@@ -9,6 +9,7 @@ import alergiaRoutes from "./alergia.router";
 import actividadRoutes from "./actividad.router";
 
 import ninoRoutes from "./ninos.router";
+import objetivosRouter from "./objetivos.router";
 
 const apiRouter = Router();
 
@@ -20,5 +21,6 @@ apiRouter.use("/reminders", remindersRoute);
 apiRouter.use("/ninos", ninoRoutes);
 apiRouter.use("/ninos/:id_nino/alergias", alergiaRoutes);
 apiRouter.use("/actividades", actividadRoutes);
+apiRouter.use('/ninos/:id_nino/objetivos', objetivosRouter);
 
 export default apiRouter;

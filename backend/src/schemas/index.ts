@@ -5,3 +5,4 @@ export * from './reminders.schema';
 export * from './success.schema';
 export * from './users.schema';
 export * from './alergias.schema';
+export * from './objetivos.schema';
