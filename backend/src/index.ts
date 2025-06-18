@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
@@ -9,6 +11,8 @@ import { NotFoundError } from './utils';
 import apiRouter from './routes';
 import apiDocsConfig from './config/api-docs.config';
 import './types/express';
+
+
 
 const app = express();
 
