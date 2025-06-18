@@ -7,3 +7,4 @@ export * from './printer.service';
 export * from './reminders.service';
 export * from './suggestions.service';
 export * from './user.service';
+export * from './ninos.service';

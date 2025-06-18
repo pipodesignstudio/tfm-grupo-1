@@ -1,0 +1,52 @@
+import { Request, Response, NextFunction } from 'express';
+import { NinosService } from '../services/ninos.service';
+import { ApiCorrectResponse } from '../utils/success-api-response.util';
+
+const ninosService = new NinosService();
+
+export class NinosController {
+  public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const nuevo = await ninosService.create(req.body);
+      ApiCorrectResponse.genericSuccess(res, nuevo, true, 'Niño creado', 201);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const nino = await ninosService.getById(Number(req.params.id));
+      ApiCorrectResponse.genericSuccess(res, nino, true, 'Niño obtenido', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      await ninosService.update(Number(req.params.id), req.body);
+      ApiCorrectResponse.genericSuccess(res, null, true, 'Niño actualizado', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await ninosService.delete(Number(req.params.id));
+      ApiCorrectResponse.genericSuccess(res, result, true, 'Niño eliminado', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async listByFamilia(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const lista = await ninosService.listByFamilia(Number(req.params.familiaId));
+      ApiCorrectResponse.genericSuccess(res, lista, true, 'Listado de niños', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+}
