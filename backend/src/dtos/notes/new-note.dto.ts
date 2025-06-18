@@ -1,13 +1,10 @@
-import { IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 /**
  * DTO para crear una nueva nota
+ * El ID del niño se pasa por la URL, no por el body
  */
-
 export class NewNoteDto {
-  @IsInt({ message: "El ID del niño debe ser un número entero" })
-  ninos_id!: number;
-
   @IsString({ message: "El título debe ser un texto" })
   @IsNotEmpty({ message: "El título no puede estar vacío" })
   titulo!: string;

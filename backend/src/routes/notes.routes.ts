@@ -1,85 +1,32 @@
-import { Router } from "express";
-import { asyncMiddlewareWrapper } from "../utils";
-import { authMiddleware, validationMiddleware } from "../middlewares";
-import { validateIdParam } from "../middlewares/validate-id.middleware";
-import { NewNoteDto, UpdateNoteDto } from "../dtos/notes";
-import { NotesController } from "../controllers/notes.controller";
-
+import { Router } from 'express';
+import { NotesController } from '../controllers/notes.controller';
+import { asyncMiddlewareWrapper } from '../utils';
+import { authMiddleware, validationMiddleware } from '../middlewares';
+import { validateIdParam } from '../middlewares/validate-id.middleware';
+import { NewNoteDto, UpdateNoteDto } from '../dtos/notes';
 
 const notesRoute = Router();
 const notesController = new NotesController();
 
 /**
- * @openapi
- * /api/notes:
- *   get:
- *     summary: Obtener todas las notas de los niños asociados al usuario
- *     tags:
- *       - Notas
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       '200':
- *         description: Notas obtenidas con éxito
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
- *       '401':
- *         description: No autorizado
+ * POST - Crear nueva nota
  */
-// GET todas las notas del usuario (asociado a sus niños)
-notesRoute.get(
-  '/',
-  asyncMiddlewareWrapper(authMiddleware),
-  notesController.getAllNotas
-);
-
 /**
  * @openapi
- * /api/notes/{id}:
- *   get:
- *     summary: Obtener una nota por su ID
+ * /api/notes/{id_nino}:
+ *   post:
+ *     summary: Crear una nueva nota para un niño
  *     tags:
  *       - Notas
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: id_nino
  *         in: path
  *         required: true
- *         description: ID de la nota a obtener
+ *         description: ID del niño
  *         schema:
  *           type: integer
- *     responses:
- *       '200':
- *         description: Nota obtenida con éxito
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
- *       '401':
- *         description: No autorizado
- *       '404':
- *         description: Nota no encontrada
- */
-// GET nota por ID
-notesRoute.get(
-  '/:id',
-  asyncMiddlewareWrapper(authMiddleware),
-  validateIdParam,
-  notesController.getNotaById
-);
-
-/**
- * @openapi
- * /api/notes:
- *   post:
- *     summary: Crear una nueva nota
- *     tags:
- *       - Notas
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -95,29 +42,118 @@ notesRoute.get(
  *               $ref: '#/components/schemas/SuccessResponse'
  *       '400':
  *         description: Datos inválidos
+ *       '401':
+ *         description: No autorizado
  */
-// POST crear nota
 notesRoute.post(
-  '/',
+  '/:id_nino',
   asyncMiddlewareWrapper(authMiddleware),
+  validateIdParam,
   validationMiddleware(NewNoteDto),
-  notesController.createNota
+  notesController.crear
 );
 
 /**
+ * GET - Listar todas las notas de un niño
+ */
+/**
  * @openapi
- * /api/notes/{id}:
- *   put:
- *     summary: Actualizar una nota existente
+ * /api/notes/{id_nino}:
+ *   get:
+ *     summary: Obtener todas las notas de un niño
  *     tags:
  *       - Notas
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - name: id_nino
+ *         in: path
+ *         required: true
+ *         description: ID del niño
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Notas obtenidas con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '401':
+ *         description: No autorizado
+ */
+notesRoute.get(
+  '/:id_nino',
+  asyncMiddlewareWrapper(authMiddleware),
+  validateIdParam,
+  notesController.listar
+);
+
+/**
+ * GET - Obtener una nota específica
+ */
+/**
+ * @openapi
+ * /api/notes/{id_nino}/{id}:
+ *   get:
+ *     summary: Obtener una nota específica de un niño
+ *     tags:
+ *       - Notas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id_nino
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
  *       - name: id
  *         in: path
  *         required: true
- *         description: ID de la nota a actualizar
+ *         description: ID de la nota
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Nota obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '404':
+ *         description: Nota no encontrada
+ *       '401':
+ *         description: No autorizado
+ */
+notesRoute.get(
+  '/:id_nino/:id',
+  asyncMiddlewareWrapper(authMiddleware),
+  validateIdParam,
+  notesController.obtener
+);
+
+/**
+ * PUT - Actualizar una nota
+ */
+/**
+ * @openapi
+ * /api/notes/{id_nino}/{id}:
+ *   put:
+ *     summary: Actualizar una nota específica de un niño
+ *     tags:
+ *       - Notas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id_nino
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID de la nota
  *         schema:
  *           type: integer
  *     requestBody:
@@ -128,57 +164,64 @@ notesRoute.post(
  *             $ref: '#/components/schemas/UpdateNoteDto'
  *     responses:
  *       '200':
- *         description: Nota actualizada exitosamente
+ *         description: Nota actualizada con éxito
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/SuccessResponse'
- *       '400':
- *         description: Datos inválidos
  *       '404':
  *         description: Nota no encontrada
+ *       '400':
+ *         description: Datos inválidos
+ *       '401':
+ *         description: No autorizado
  */
-// PUT actualizar nota
+
 notesRoute.put(
-  '/:id',
+  '/:id_nino/:id',
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
   validationMiddleware(UpdateNoteDto),
-  notesController.updateNota
+  notesController.actualizar
 );
 
 /**
+ * DELETE - Eliminar una nota
+ */
+/**
  * @openapi
- * /api/notes/{id}:
+ * /api/notes/{id_nino}/{id}:
  *   delete:
- *     summary: Eliminar una nota por su ID
+ *     summary: Eliminar una nota específica de un niño
  *     tags:
  *       - Notas
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - name: id_nino
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
  *       - name: id
  *         in: path
  *         required: true
- *         description: ID de la nota a eliminar
+ *         description: ID de la nota
  *         schema:
  *           type: integer
  *     responses:
- *       '200':
+ *       '204':
  *         description: Nota eliminada exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
  *       '404':
  *         description: Nota no encontrada
+ *       '401':
+ *         description: No autorizado
  */
-// DELETE nota
 notesRoute.delete(
-  '/:id',
+  '/:id_nino/:id',
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
-  notesController.deleteNota
+  notesController.borrar
 );
 
 export default notesRoute;
