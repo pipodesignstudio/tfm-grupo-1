@@ -176,10 +176,11 @@ export class CalendarPageComponent {
 }
 
 guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+  console.log(nuevaActividad)
+  console.log(nuevaActividad.fecha_realizacion!.toISOString().slice(0, 10))
   const calendarApi = this.calendarComponent.getApi();
-  const fecha = new Date(nuevaActividad.fecha_realizacion || new Date())
-    .toISOString()
-    .slice(0, 10);
+  const fecha = new Date(nuevaActividad.fecha_realizacion!.toISOString().slice(0, 10)).toISOString().slice(0, 10);
+  console.log(nuevaActividad.fecha_realizacion, fecha);
 
   calendarApi.addEvent({
     title: nuevaActividad.titulo || 'Sin título',
