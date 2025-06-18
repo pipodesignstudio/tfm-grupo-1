@@ -25,10 +25,12 @@ import { IActivity } from '../../../interfaces/iactivity.interface';
 
 import { EventInput } from '@fullcalendar/core';
 
+import { CreateActivityComponent } from '../../../components/activity/create-activity.component';
+
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, DropdownModule, FormsModule],
+  imports: [CommonModule, FullCalendarModule, DropdownModule, FormsModule, CreateActivityComponent],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -45,6 +47,9 @@ export class CalendarPageComponent {
   currentEvents: EventInput[] = [];
 
   selectedDateEvents: EventInput[] = [];
+
+  mostrarModalNuevoEvento = false;
+
 
   async ngOnInit() {
     // Cargar los eventos de la familia con id '1'
@@ -141,18 +146,7 @@ export class CalendarPageComponent {
     this.changeDetector.detectChanges();
   } */
 
-  agregarEventoRapido() {
-    const title = prompt('Título del nuevo evento');
-    if (title && this.calendarComponent) {
-      const calendarApi = this.calendarComponent.getApi();
-      const date = new Date();
-      calendarApi.addEvent({
-        title,
-        start: date.toISOString().slice(0, 10),
-        allDay: true,
-      });
-    }
-  }
+
 
   private mapActivitiesToEvents(activities: IActivity[]): EventInput[] {
     return activities.map((activity) => ({
@@ -167,4 +161,33 @@ export class CalendarPageComponent {
       actividadInfo: activity, // Puedes agregar información adicional si es necesario
     }));
   }
+
+  nuevoTituloEvento = '';
+  nuevaFechaEvento = new Date().toISOString().slice(0, 10);
+
+  agregarEventoRapido() {
+  this.nuevoTituloEvento = '';
+  this.nuevaFechaEvento = new Date().toISOString().slice(0, 10);
+  this.mostrarModalNuevoEvento = true;
+}
+
+  cerrarModalNuevoEvento() {
+  this.mostrarModalNuevoEvento = false;
+}
+
+guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+  const calendarApi = this.calendarComponent.getApi();
+  const fecha = new Date(nuevaActividad.fecha_realizacion || new Date())
+    .toISOString()
+    .slice(0, 10);
+
+  calendarApi.addEvent({
+    title: nuevaActividad.titulo || 'Sin título',
+    start: fecha,
+    allDay: true,
+    color: nuevaActividad.color || '#7c3aed',
+  });
+
+  this.mostrarModalNuevoEvento = false;
+}
 }

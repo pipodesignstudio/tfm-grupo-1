@@ -5,9 +5,29 @@
   border: none !important;
 }
 
-/* Cambiar el color y forma del dia de hoy */
+/* Asegurar altura y alineación uniforme del número del día */
+.fc-daygrid-day-top {
+  min-height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Centrar el texto del día */
+.fc-daygrid-day-number {
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Estilo solo al número del día actual (hoy) */
 .fc .fc-daygrid-day.fc-day-today {
-  background-color: rgb(38, 161, 231); /* o var(--fc-today-bg-color) */
+  background-color: transparent;
+  color: inherit;
+}
+
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: rgb(38, 161, 231);
   color: white;
   border-radius: 50%;
   width: 30px;
@@ -16,15 +36,9 @@
   justify-content: center;
   align-items: center;
   margin: auto;
-  padding: 0;
 }
 
-/* Centrar el texto del dia */
- .fc-daygrid-day-top {
-  justify-content: center;
-}
-
-/* Añade un punto rojo en las celdas con eventos */
+/* Añadir un punto rojo en las celdas con eventos */
 .has-event-dot {
   position: relative;
 }
@@ -32,20 +46,17 @@
 .has-event-dot::after {
   content: '';
   position: absolute;
-  top: 75%;
-  bottom: 4px;
+  top: 75%; /* Puedes ajustar esto si el punto está muy bajo o alto */
   left: 50%;
   transform: translateX(-50%);
   width: 6px;
   height: 6px;
   background-color: red;
   border-radius: 50%;
-  
-
-  
 }
 
-/* Ocultar text de evento en el calendario */
-.fc-daygrid-more-link, .fc-daygrid-day-events {
+/* Ocultar texto de evento en el calendario */
+.fc-daygrid-more-link,
+.fc-daygrid-day-events {
   display: none !important;
 }

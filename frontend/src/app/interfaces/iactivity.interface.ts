@@ -11,7 +11,13 @@ export interface IActivity {
   hora_fin: Date;
   color: string | null;
   tipo: 'Objetivo' | 'Rutina' | 'Evento';
-  ubicacion: JSON | null;
+  ubicacion: IUbicacion | null;
   usuario_responsable: number;
   completado: boolean | null;
+}
+
+interface IUbicacion {
+  direccion: string;
+  lat: number;
+  lng: number;
 }
