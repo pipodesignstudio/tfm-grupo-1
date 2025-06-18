@@ -12,6 +12,7 @@
     <!-- Contenido con scroll -->
     <form
       [formGroup]="form"
+      (ngSubmit)="guardarEvento()"
       class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
     >
       <input
@@ -32,11 +33,14 @@
       <p-select
         [options]="filtroOpciones"
         formControlName="nino_id"
+        [optionValue]="'value'"
         optionLabel="label"
         placeholder="Filtrar por niño o actividad"
       ></p-select>
       <div class="flex align-middle">
-        <span class="flex items-center justify-center">Fecha de realización:</span>
+        <span class="flex items-center justify-center"
+          >Fecha de realización:</span
+        >
         <p-datepicker
           formControlName="fecha_realizacion"
           class="border-0 rounded-md"
@@ -44,7 +48,7 @@
           [showIcon]="true"
         ></p-datepicker>
       </div>
-      <div class="flex justify-between align-middle ">
+      <div class="flex justify-between align-middle">
         <span class="flex items-center justify-center">Hora de inicio:</span>
         <p-datepicker
           [iconDisplay]="'input'"
@@ -66,6 +70,7 @@
         [options]="usuariosResponsables"
         formControlName="usuario_responsable"
         optionLabel="label"
+        [optionValue]="'value'"
         placeholder="Responsable"
       ></p-select>
       <div>
@@ -73,28 +78,29 @@
 
         <p-colorpicker
           formControlName="color"
+          [inline]="isMobile"
           class="w-full h-12 border-0 rounded-md p-1"
         ></p-colorpicker>
       </div>
       <app-ubicacion formControlName="ubicacion"></app-ubicacion>
+      <div class="flex justify-end gap-2 mt-4 shrink-0">
+        <button
+          type="button"
+          (click)="cerrarModal()"
+          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="form.invalid"
+          class="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+        >
+          Guardar
+        </button>
+      </div>
     </form>
 
     <!-- Botones fijos -->
-    <div class="flex justify-end gap-2 mt-4 shrink-0">
-      <button
-        type="button"
-        (click)="cerrarModal()"
-        class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
-      >
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        (click)="guardarEvento()"
-        class="px-4 py-2 rounded-md bg-purple-500 text-white hover:bg-purple-600"
-      >
-        Guardar
-      </button>
-    </div>
   </div>
 </div>

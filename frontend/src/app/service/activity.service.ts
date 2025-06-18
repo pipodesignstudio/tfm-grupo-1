@@ -19,24 +19,24 @@ export class ActivityService {
   ).then(response => response.data);
 }
 
-  getActivitiesNino(id_nino: string): Promise<IActivity[]> {
+  getActivitiesNino(nino_id: string): Promise<IActivity[]> {
     return lastValueFrom(
-      this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/ninos/${id_nino}`)
+      this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/ninos/${nino_id}`)
     ).then(response => response.data);
   }
 
-  deleteActivity(id: string, id_nino: string): Promise<IActivity> {
-    return lastValueFrom(this.httpClient.delete<IActivity>(`${this.apiUrl}/actividades/ninos/${id_nino}/${id}`));
+  deleteActivity(id: string, nino_id: string): Promise<IActivity> {
+    return lastValueFrom(this.httpClient.delete<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}/${id}`));
   }
 
   updateActivity(activity: IActivity): Promise<IActivity> {
-    let { id, id_nino , ...activityBody } = activity;
-    return lastValueFrom(this.httpClient.put<IActivity>(`${this.apiUrl}/actividades/ninos/${id_nino}/${id}`, activityBody));
+    let { id, nino_id , ...activityBody } = activity;
+    return lastValueFrom(this.httpClient.put<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}/${id}`, activityBody));
   }
 
   createActivity(activity: IActivity): Promise<IActivity> {
-    let { id_nino, ...activityBody } = activity;
-    return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${id_nino}`, activityBody));
+    let { nino_id, ...activityBody } = activity;
+    return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}`, activityBody));
   }
   
 }
