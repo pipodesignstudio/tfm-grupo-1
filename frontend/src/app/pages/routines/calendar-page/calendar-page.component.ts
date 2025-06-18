@@ -178,20 +178,34 @@ export class CalendarPageComponent {
   }
 
   guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
-    console.log(nuevaActividad);
-    console.log(nuevaActividad.fecha_realizacion!.toISOString().slice(0, 10));
-    const calendarApi = this.calendarComponent.getApi();
-  const fecha = nuevaActividad.fecha_realizacion!.toLocaleDateString('sv-SE');
 
-    console.log(nuevaActividad.fecha_realizacion, fecha);
+  // Asegurar que estas propiedades son instancias de Date
+  const actividadConFechas: IActivity = {
+    ...nuevaActividad,
+    fecha_realizacion: new Date(nuevaActividad.fecha_realizacion!),
+    hora_inicio: nuevaActividad.hora_inicio ? new Date(nuevaActividad.hora_inicio) : undefined,
+    hora_fin: nuevaActividad.hora_fin ? new Date(nuevaActividad.hora_fin) : undefined,
+  } as IActivity;
 
-    calendarApi.addEvent({
-      title: nuevaActividad.titulo || 'Sin título',
-      start: fecha,
-      allDay: true,
-      color: nuevaActividad.color || '#7c3aed',
+  const calendarApi = this.calendarComponent.getApi();
+  const fecha = actividadConFechas.fecha_realizacion.toLocaleDateString('en-CA');
+
+
+  try {
+    this.activityService.createActivity(actividadConFechas).then((actividadCreada) => {
+      console.log('Actividad creada:', actividadCreada);
+      calendarApi.addEvent({
+        title: actividadConFechas.titulo || 'Sin título',
+        start: fecha,
+        allDay: true,
+        color: actividadConFechas.color || '#7c3aed',
+      });
     });
-
+  } catch (error) {
+    console.error('Error al crear la actividad:', error);
+  } finally {
     this.mostrarModalNuevoEvento = false;
   }
+}
+
 }

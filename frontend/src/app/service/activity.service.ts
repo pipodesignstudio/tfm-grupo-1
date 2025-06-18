@@ -35,6 +35,7 @@ export class ActivityService {
   }
 
   createActivity(activity: IActivity): Promise<IActivity> {
+    console.log("activity", activity);
     let { nino_id, ...activityBody } = activity;
     return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}`, activityBody));
   }
