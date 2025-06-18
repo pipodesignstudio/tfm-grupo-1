@@ -46,10 +46,17 @@
 
     <!-- Botón flotante -->
     <button
-      class="fixed bottom-20 right-5 bg-purple-500 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-2xl"
+      class="fixed bottom-10 right-5 bg-purple-500 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-2xl"
       (click)="agregarEventoRapido()"
     >
       +
     </button>
   </div>
+  <!-- Modal de agregar evento -->
+  @if (mostrarModalNuevoEvento) {
+   <app-create-activity
+    (cerrar)="cerrarModalNuevoEvento()"
+    (guardar)="guardarNuevaActividad($event)"
+  />
+  }
 </div>

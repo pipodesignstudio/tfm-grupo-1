@@ -1,0 +1,9 @@
+/* Oculta el scroll pero permite hacer scroll */
+.scroll-invisible {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.scroll-invisible::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Edge */
+}
