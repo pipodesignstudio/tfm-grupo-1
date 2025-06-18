@@ -29,12 +29,12 @@
           class="p-3 rounded-md w-full h-24"
         ></textarea>
       </div>
-      <p-dropdown
+      <p-select
         [options]="filtroOpciones"
         formControlName="nino_id"
         optionLabel="label"
         placeholder="Filtrar por niño o actividad"
-      ></p-dropdown>
+      ></p-select>
       <div class="flex align-middle">
         <span class="flex items-center justify-center">Fecha de realización:</span>
         <p-datepicker
@@ -62,12 +62,12 @@
           class="border-0 rounded-md"
         />
       </div>
-      <p-dropdown
+      <p-select
         [options]="usuariosResponsables"
         formControlName="usuario_responsable"
         optionLabel="label"
         placeholder="Responsable"
-      ></p-dropdown>
+      ></p-select>
       <div>
         <span>Seleccione color del evento:</span>
 

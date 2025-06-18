@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
 
 
 
@@ -16,7 +17,7 @@ import { UbicacionComponent } from '../ubicacion/ubicacion.component';
 @Component({
   selector: 'app-create-activity',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePickerModule, DropdownModule, UbicacionComponent,ColorPickerModule,TextareaModule, InputTextModule],
+  imports: [CommonModule, FormsModule, SelectModule, ReactiveFormsModule, DatePickerModule, DropdownModule, UbicacionComponent,ColorPickerModule,TextareaModule, InputTextModule],
   templateUrl: './create-activity.component.html',
   styleUrl: './create-activity.component.css',
 })
