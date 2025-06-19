@@ -1,14 +1,28 @@
-<div class="flex items-center justify-between p-4 bg-green-500 dark:bg-gray-800 dark:text-black text-white">
-  <h1 class="text-xl font-bold">Nido</h1>
+<div
+  class="grid grid-cols-3 items-center p-4 bg-[#9ed2c5] dark:bg-gray-800 dark:text-white"
+>
+  <!-- Aparece solo en pantallas grandes -->
+  <h1 class="hidden md:block text-xl font-bold">Nido</h1>
 
+  <!-- Aparece solo en pantallas pequeñas y medianas -->
   <button
-    (click)="toggleDarkMode()"
-    class="bg-green-600 dark:bg-gray-700 text-white dark:text-black px-4 py-2 rounded"
+    (click)="goBack()"
+    class="block md:hidden text-2xl text-white"
+    aria-label="Volver"
   >
-    @if (isDarkMode()) {
-      🌙 Modo oscuro
-    } @else {
-      ☀️ Modo claro
-    }
+    ←
   </button>
+  <!-- Centro -->
+  <h1 class="text-xl font-bold text-center">{{ pageTitle }}</h1>
+
+  <!-- Derecha -->
+  <div class="text-right">
+    <button
+      pButton
+      (click)="toggleDarkMode()"
+      class="bg-[#ff7f50] dark:bg-gray-700 dark:text-white px-4 py-2 rounded"
+    >
+      @if (isDarkMode()) { 🌙 Modo oscuro } @else { ☀️ Modo claro }
+    </button>
+  </div>
 </div>
