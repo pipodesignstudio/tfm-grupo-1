@@ -6,7 +6,6 @@ import { NotFoundError, InternalServerError } from '../utils';
 
 export class ActividadService {
   public async createActividad(id_nino: number, dto: CreateActividadDto) {
-    console.log('aaaa');
     try {
       const data: any = {
         tipo: dto.tipo,
@@ -25,8 +24,6 @@ export class ActividadService {
       if (dto.rutina_id != null) {
         data.rutina_id = dto.rutina_id;
       }
-
-      console.log('Datos de la actividad a crear:', data);
 
       return await prisma.actividades.create({ data });
     } catch (error) {
