@@ -1,34 +1,23 @@
 <div class="min-h-screen">
-  <div class="bg-white border-b border-gray-200">
-    <div class="flex items-center justify-between px-4 py-4">
-      <button
-        class="p-2 hover:bg-gray-100 rounded"
-      
-      >
-        <i class="pi pi-arrow-left text-gray-700 text-lg"></i>
-      </button>
-      <h1 class="text-lg font-semibold text-gray-900">Ajustes</h1>
-      <div class="w-9"></div>
-    </div>
-  </div>
+  
 
-  <div class="max-w-md mx-auto bg-white mt-4 rounded-lg shadow-sm">
+  <div class="max-w-md mx-auto dark:bg-gray-700 bg-[#9ed2c5] mt-4 rounded-lg shadow-sm">
     <!-- General Section -->
     <div class="p-6">
-      <h2 class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-4">
+      <h2 class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4">
         General
       </h2>
 
       @for (item of settingsItems; track item; let idx = $index) {
         <div
-          class="flex items-center justify-between py-4  cursor-pointer  hover:bg-gray-50 -mx-2 px-2 rounded-md transition-colors "
+          class="flex items-center justify-between py-4  cursor-pointer   hover:bg-gray-50 -mx-2 px-2 rounded-md transition-colors "
           (click)="!item.hasToggle && item.onClick?.()"
         >
           <div class="flex items-center space-x-3">
             <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
               <i [class]="item.icon + ' text-gray-600 text-sm'"></i>
             </div>
-            <span class="text-sm font-medium text-gray-900">{{ item.label }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ item.label }}</span>
           </div>
 
           <div class="flex items-center space-x-2">
@@ -54,7 +43,7 @@
 
     <!-- About Section -->
     <div class="px-6 pb-6">
-      <h2 class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-4">
+      <h2 class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4">
         About Us
       </h2>
 
@@ -64,10 +53,10 @@
           (click)="item.onClick?.()"
         >
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+            <div class="w-8 h-8 flex items-center justify-center rounded-full  bg-gray-100">
               <i [class]="item.icon + ' text-gray-600 text-sm'"></i>
             </div>
-            <span class="text-sm font-medium text-gray-900">{{ item.label }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ item.label }}</span>
           </div>
           <i class="pi pi-chevron-right text-gray-400 text-sm"></i>
         </div>

@@ -5,13 +5,11 @@
   <h1 class="hidden md:block text-xl font-bold">Nido</h1>
 
   <!-- Aparece solo en pantallas pequeñas y medianas -->
-  <button
-    (click)="goBack()"
-    class="block md:hidden text-2xl text-white"
-    aria-label="Volver"
-  >
-    ←
-  </button>
+  <div class="flex justify-start md:hidden px-4 pt-2">
+    <button (click)="goBack()" class="text-white text-base" aria-label="Volver">
+      <i class="pi pi-arrow-left text-gray-700 dark:text-white text-sm"></i>
+    </button>
+  </div>
   <!-- Centro -->
   <h1 class="text-xl font-bold text-center">{{ pageTitle }}</h1>
 
