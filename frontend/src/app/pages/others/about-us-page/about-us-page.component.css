@@ -11,7 +11,6 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* ← CENTRA horizontalmente los hijos */
-  background-color: #9ed2c5;
   padding: 40px;
   border-radius: 15px;
   max-width: 800px;
@@ -48,10 +47,8 @@
 }
 
 .about-card {
-  background-color: #fbf8f0;
   border-radius: 12px;
   padding: 20px;
-  color: #3a3a3a;
   text-align: left;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
