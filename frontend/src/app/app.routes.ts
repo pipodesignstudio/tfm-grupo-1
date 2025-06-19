@@ -10,6 +10,8 @@ import { UserProfileComponent } from './pages/profiles/user-profile/user-profile
 import { ChildProfileComponent } from './pages/profiles/child-profile/child-profile.component';
 import { SettingsComponent } from './pages/profiles/settings/settings-profile.component';
 import { MyFamilyComponent } from './pages/auth/my-family/my-family.component';
+import { AboutUsPageComponent } from './pages/others/about-us-page/about-us-page.component';
+import { EditProfileComponent } from './pages/profiles/edit-profile/edit-profile.component';
 
 export const routes: Routes = [
   { path: '', component: WelcomePageComponent, title: 'Bienvenido a Nido' },
@@ -22,6 +24,8 @@ export const routes: Routes = [
   { path: 'child-profile', component: ChildProfileComponent },
   { path: 'user-profile', component: UserProfileComponent },
   { path: 'settings', component: SettingsComponent },
+  { path: 'settings/edit-profile', component: EditProfileComponent },
+  { path: 'about-us', component: AboutUsPageComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
