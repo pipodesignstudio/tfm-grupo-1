@@ -37,7 +37,7 @@
         optionLabel="label"
         placeholder="Filtrar por niño o actividad"
       ></p-select>
-      <div class="flex align-middle">
+      <div class="flex ">
         <span class="flex items-center justify-center"
           >Fecha de realización:</span
         >
@@ -45,6 +45,7 @@
           formControlName="fecha_realizacion"
           class="border-0 rounded-md"
           [iconDisplay]="'input'"
+          [appendTo]="'body'"
           [showIcon]="true"
         ></p-datepicker>
       </div>
@@ -57,7 +58,7 @@
           class="border-0 rounded-md"
         />
       </div>
-      <div class="flex align-middle">
+      <div class="flex justify-between align-middle">
         <span class="flex items-center justify-center">Hora de fin:</span>
         <p-datepicker
           [iconDisplay]="'input'"
