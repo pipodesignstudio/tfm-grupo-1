@@ -12,6 +12,9 @@ import { SettingsComponent } from './pages/profiles/settings/settings-profile.co
 import { MyFamilyComponent } from './pages/auth/my-family/my-family.component';
 import { AboutUsPageComponent } from './pages/others/about-us-page/about-us-page.component';
 import { EditProfileComponent } from './pages/profiles/edit-profile/edit-profile.component';
+import { ObjectivesPageComponent } from './pages/objectives/objectives-page/objectives-page.component';
+import { ObjectivesFormComponent } from './pages/objectives/objectives-form/objectives-form.component';
+
 
 export const routes: Routes = [
   { path: '', component: WelcomePageComponent, title: 'Bienvenido a Nido' },
@@ -26,6 +29,8 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent },
   { path: 'settings/edit-profile', component: EditProfileComponent },
   { path: 'about-us', component: AboutUsPageComponent },
+  { path: 'objectives', component: ObjectivesPageComponent },
+  { path: 'objectives-form', component: ObjectivesFormComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
