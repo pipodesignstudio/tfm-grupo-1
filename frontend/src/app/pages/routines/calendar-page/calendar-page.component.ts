@@ -27,6 +27,10 @@ import { EventInput } from '@fullcalendar/core';
 
 import { CreateActivityComponent } from '../../../components/activity/create-activity.component';
 
+interface MyEvent extends EventInput {
+  checked?: boolean;
+}
+
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
@@ -50,9 +54,9 @@ export class CalendarPageComponent {
 
   allEvents: IActivity[] = [];
 
-  currentEvents: EventInput[] = [];
+  currentEvents: MyEvent[] = [];
 
-  selectedDateEvents: EventInput[] = [];
+  selectedDateEvents: MyEvent[] = [];
 
   mostrarModalNuevoEvento = false;
 
@@ -143,6 +147,9 @@ export class CalendarPageComponent {
     );
 
     this.selectedDateEvents = filtrados;
+
+    console.log(filtrados, this.selectedDate);
+
     this.selectedDate = format(new Date(fecha), 'MMMM, do, EEE');
 
     console.log(`Eventos filtrados para la fecha ${fecha}:`, filtrados);
@@ -178,34 +185,43 @@ export class CalendarPageComponent {
   }
 
   guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+    // Asegurar que estas propiedades son instancias de Date
+    const actividadConFechas: IActivity = {
+      ...nuevaActividad,
+      fecha_realizacion: new Date(nuevaActividad.fecha_realizacion!),
+      hora_inicio: nuevaActividad.hora_inicio
+        ? new Date(nuevaActividad.hora_inicio)
+        : undefined,
+      hora_fin: nuevaActividad.hora_fin
+        ? new Date(nuevaActividad.hora_fin)
+        : undefined,
+    } as IActivity;
 
-  // Asegurar que estas propiedades son instancias de Date
-  const actividadConFechas: IActivity = {
-    ...nuevaActividad,
-    fecha_realizacion: new Date(nuevaActividad.fecha_realizacion!),
-    hora_inicio: nuevaActividad.hora_inicio ? new Date(nuevaActividad.hora_inicio) : undefined,
-    hora_fin: nuevaActividad.hora_fin ? new Date(nuevaActividad.hora_fin) : undefined,
-  } as IActivity;
+    const calendarApi = this.calendarComponent.getApi();
+    const fecha =
+      actividadConFechas.fecha_realizacion.toLocaleDateString('en-CA');
 
-  const calendarApi = this.calendarComponent.getApi();
-  const fecha = actividadConFechas.fecha_realizacion.toLocaleDateString('en-CA');
-
-
-  try {
-    this.activityService.createActivity(actividadConFechas).then((actividadCreada) => {
-      console.log('Actividad creada:', actividadCreada);
-      calendarApi.addEvent({
-        title: actividadConFechas.titulo || 'Sin título',
-        start: fecha,
-        allDay: true,
-        color: actividadConFechas.color || '#7c3aed',
-      });
-    });
-  } catch (error) {
-    console.error('Error al crear la actividad:', error);
-  } finally {
-    this.mostrarModalNuevoEvento = false;
+    try {
+      this.activityService
+        .createActivity(actividadConFechas)
+        .then((actividadCreada) => {
+          console.log('Actividad creada:', actividadCreada);
+          calendarApi.addEvent({
+            title: actividadConFechas.titulo || 'Sin título',
+            start: fecha,
+            allDay: true,
+            color: actividadConFechas.color || '#7c3aed',
+          });
+        });
+    } catch (error) {
+      console.error('Error al crear la actividad:', error);
+    } finally {
+      this.mostrarModalNuevoEvento = false;
+    }
   }
-}
 
+  onCheckedChange(event: MyEvent) {
+    console.log(event, 'checked:', event.checked);
+    
+  }
 }

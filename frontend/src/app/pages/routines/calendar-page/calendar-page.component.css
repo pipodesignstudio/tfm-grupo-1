@@ -51,7 +51,7 @@
   transform: translateX(-50%);
   width: 4px;
   height: 4px;
-  background-color: red;
+  background-color: #ff7f50;
   border-radius: 50%;
   z-index: 9999;
 }

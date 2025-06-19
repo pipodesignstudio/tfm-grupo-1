@@ -29,7 +29,8 @@
     <p class="text-sm font-semibold text-gray-700">{{ selectedDate }}</p>
     @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent.id) {
     <div
-      class="flex items-center justify-between p-4 rounded-2xl bg-purple-100 shadow-sm"
+      class="flex items-center justify-between p-4 rounded-2xl shadow-sm"
+      [style.backgroundColor]="selectedDateEvent.color"
     >
       <div class="flex items-center gap-3">
         <i class="text-xl text-purple-800"></i>
@@ -39,14 +40,17 @@
       </div>
       <input
         type="checkbox"
-        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:bg-purple-500 checked:border-transparent"
+        class="appearance-none w-5 h-5 rounded-full border border-gray-400 bg-white checked:border-transparent"
+        (change)="onCheckedChange(selectedDateEvent)"
+        [(ngModel)]="selectedDateEvent.checked"
+        [ngStyle]="selectedDateEvent.checked ? { backgroundColor: selectedDateEvent.color } : {}"
       />
     </div>
     }
 
     <!-- Botón flotante -->
     <button
-      class="fixed bottom-10 right-5 bg-purple-500 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-2xl"
+      class="fixed bottom-10 right-5 bg-[#ff7f50] text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-2xl"
       (click)="agregarEventoRapido()"
     >
       +
