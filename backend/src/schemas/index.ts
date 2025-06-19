@@ -9,3 +9,4 @@ export * from './objetivos.schema';
 export * from './ninos.schema';
 export * from './rutina.schema';
 export * from './actividades.schema';
+export * from './notes.schema';
