@@ -10,6 +10,7 @@ import actividadRoutes from "./actividad.router";
 
 import ninoRoutes from "./ninos.router";
 import objetivosRouter from "./objetivos.router";
+import rutinasRouter from "./rutinas.router";
 
 const apiRouter = Router();
 
@@ -22,5 +23,6 @@ apiRouter.use("/ninos", ninoRoutes);
 apiRouter.use("/ninos/:id_nino/alergias", alergiaRoutes);
 apiRouter.use("/actividades", actividadRoutes);
 apiRouter.use('/ninos/:id_nino/objetivos', objetivosRouter);
+apiRouter.use('/ninos/:id_nino/rutinas', rutinasRouter);
 
 export default apiRouter;

@@ -6,3 +6,6 @@ export * from './success.schema';
 export * from './users.schema';
 export * from './alergias.schema';
 export * from './objetivos.schema';
+export * from './ninos.schema';
+export * from './rutina.schema';
+export * from './actividades.schema';

@@ -9,3 +9,4 @@ export * from './suggestions.service';
 export * from './user.service';
 export * from './ninos.service';
 export * from './objetivos.service';
+export * from './rutinas.service';
