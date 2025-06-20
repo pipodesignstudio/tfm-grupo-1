@@ -27,6 +27,8 @@ import { EventInput } from '@fullcalendar/core';
 
 import { CreateActivityComponent } from '../../../components/activity/create-activity.component';
 
+import { Router } from '@angular/router';
+
 interface MyEvent extends EventInput {
   checked?: boolean;
 }
@@ -47,6 +49,8 @@ interface MyEvent extends EventInput {
 })
 export class CalendarPageComponent {
   @ViewChild('fullCalendarRef') calendarComponent!: FullCalendarComponent;
+
+  constructor(private changeDetector: ChangeDetectorRef, private router: Router) {}
 
   calendarVisible = signal(true);
 
@@ -90,6 +94,7 @@ export class CalendarPageComponent {
 
   filtroSeleccionado: number | null = null;
 
+  
   filtrarEventos() {
     const filterValue: { label: string; value: number } | any =
       this.filtroSeleccionado;
@@ -110,6 +115,7 @@ export class CalendarPageComponent {
       center: 'title',
       right: 'next',
     },
+    height: 'auto',
     initialView: 'dayGridMonth',
     initialEvents: [],
     weekends: true,
@@ -120,11 +126,10 @@ export class CalendarPageComponent {
     contentHeight: 'auto',
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
-    /*     eventsSet: this.handleEvents.bind(this),
-     */ eventDidMount: this.eventDidMount.bind(this),
+    /*     eventsSet: this.handleEvents.bind(this),*/ 
+    eventDidMount: this.eventDidMount.bind(this),
   });
 
-  constructor(private changeDetector: ChangeDetectorRef) {}
 
   // Metodo para añadir el dot
   eventDidMount(info: any) {
@@ -182,6 +187,10 @@ export class CalendarPageComponent {
 
   cerrarModalNuevoEvento() {
     this.mostrarModalNuevoEvento = false;
+  }
+
+  redirectToObjective(){
+    this.router.navigate(['/objectives']);
   }
 
   guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
