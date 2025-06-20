@@ -26,77 +26,81 @@
   </div>
 
   <!-- Calendario -->
-<div class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-  <full-calendar
-    #fullCalendarRef
-    [options]="calendarOptions()"
-    class="rounded-xl shadow-md bg-white p-4 h-full"
-  >
-
+  <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <full-calendar
+      #fullCalendarRef
+      [options]="calendarOptions()"
+      class="rounded-xl shadow-md bg-white p-4 h-full dark:bg-gray-800 dark:text-white"
+    >
       <ng-template #eventContent let-arg>
-        <b class="text-sm text-gray-800">{{ arg.timeText }}</b>
-        <i class="text-sm text-gray-500 ml-1">{{ arg.event.title }}</i>
+        <b class="text-sm text-gray-800 dark:text-gray-200">{{
+          arg.timeText
+        }}</b>
+        <i class="text-sm text-gray-500 dark:text-gray-400 ml-1">{{
+          arg.event.title
+        }}</i>
       </ng-template>
     </full-calendar>
-  </div>
 
-  <!-- Eventos listados -->
-  <div class="mt-6 space-y-4 px-4 w-full">
-    <p class="text-sm font-semibold text-gray-700 dark:text-white">
-      {{ selectedDate }}
-    </p>
-    @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent.id) {
-    <div
-      class="flex items-center justify-between p-4 rounded-2xl shadow-sm"
-      [style.backgroundColor]="selectedDateEvent.color"
-    >
-      <div class="flex items-center gap-3">
-        <i class="text-xl text-purple-800"></i>
-        <span class="text-gray-800 font-medium">{{
-          selectedDateEvent.title
-        }}</span>
-      </div>
-      <label class="relative inline-block w-5 h-5">
-        <input
-          type="checkbox"
-          [(ngModel)]="selectedDateEvent.checked"
-          (change)="onCheckedChange(selectedDateEvent)"
-          class="opacity-0 w-5 h-5 cursor-pointer"
-        />
-        <div
-          class="absolute inset-0 rounded border border-gray-900 flex items-center justify-center transition-colors"
-          [ngStyle]="
+    <!-- Eventos listados -->
+    <div class="mt-6 space-y-4 px-4 w-full">
+      <p class="text-sm font-semibold text-gray-700 dark:text-white">
+        {{ selectedDate }}
+      </p>
+      @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent.id)
+      {
+      <div
+        class="flex items-center justify-between p-4 rounded-2xl shadow-sm"
+        [style.backgroundColor]="selectedDateEvent.color"
+      >
+        <div class="flex items-center gap-3">
+          <i class="text-xl text-purple-800"></i>
+          <span class="text-gray-800 font-medium">{{
+            selectedDateEvent.title
+          }}</span>
+        </div>
+        <label class="relative inline-block w-5 h-5">
+          <input
+            type="checkbox"
+            [(ngModel)]="selectedDateEvent.checked"
+            (change)="onCheckedChange(selectedDateEvent)"
+            class="opacity-0 w-5 h-5 cursor-pointer"
+          />
+          <div
+            class="absolute inset-0 rounded border border-gray-900 flex items-center justify-center transition-colors"
+            [ngStyle]="
             selectedDateEvent.checked
               ? {
                   'background-color': selectedDateEvent.color,
                 }
               : { 'background-color': '#ffffff' }
           "
-        >
-          <svg
-            *ngIf="selectedDateEvent.checked"
-            class="w-3 h-3 text-white"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3"
-            viewBox="0 0 24 24"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        </div>
-      </label>
+            <svg
+              *ngIf="selectedDateEvent.checked"
+              class="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+        </label>
+      </div>
+      }
     </div>
+    <!-- Modal de agregar evento -->
+    @if (mostrarModalNuevoEvento) {
+    <app-create-activity
+      (cerrar)="cerrarModalNuevoEvento()"
+      (guardar)="guardarNuevaActividad($event)"
+    />
     }
   </div>
-  <!-- Modal de agregar evento -->
-  @if (mostrarModalNuevoEvento) {
-  <app-create-activity
-    (cerrar)="cerrarModalNuevoEvento()"
-    (guardar)="guardarNuevaActividad($event)"
-  />
-  }
 </div>

@@ -62,6 +62,11 @@
   display: none !important;
 }
 
+html.dark .fc-col-header {
+  background-color: oklch(27.8% 0.033 256.848);
+
+}
+
 
 /* Estilo botones calendario */
 html:not(.dark) .fc .fc-button {
