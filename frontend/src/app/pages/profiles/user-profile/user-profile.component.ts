@@ -48,8 +48,8 @@ constructor(public router: Router) {}
 
 getBgColor(member: any) {
   switch (member.color) {
-    case 'pink':
-      return 'bg-pink-100';
+    case 'orange':
+      return 'bg-[#ff7f50] ';
     case 'green':
       return 'bg-green-100';
     case 'blue':
