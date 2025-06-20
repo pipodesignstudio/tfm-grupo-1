@@ -1,0 +1,94 @@
+<div
+  class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white dark:bg-gray-700 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
+  >
+    <h2 class="text-xl font-semibold text-gray-800 mb-4 shrink-0">
+      @if (editMode) { Editar Niño } @else { Crear Niño }
+    </h2>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
+    >
+      <input
+        type="text"
+        placeholder="Nombre"
+        pInputText
+        formControlName="nombre"
+        class="p-3 rounded-md"
+      />
+      <input
+        type="text"
+        placeholder="Apellido"
+        pInputText
+        formControlName="apellido"
+        class="p-3 rounded-md"
+      />
+
+      <p-datepicker
+        formControlName="fechaNacimiento"
+        [appendTo]="'body'"
+        [showIcon]="true"
+        class="border-0 rounded-md"
+        placeholder="Fecha de nacimiento"
+      ></p-datepicker>
+
+      <p-select
+        [options]="generos"
+        formControlName="genero"
+        optionLabel="label"
+        [optionValue]="'value'"
+        placeholder="Género"
+      ></p-select>
+      <div>
+        <textarea
+          placeholder="Descripción"
+          pTextarea
+          formControlName="descripcion"
+          class="p-3 rounded-md w-full h-19"
+        ></textarea>
+      </div>
+      <input
+        type="number"
+        pInputText
+        placeholder="Peso (kg)"
+        formControlName="peso"
+        class="p-3 rounded-md"
+      />
+      <input
+        type="number"
+        pInputText
+        placeholder="Altura (cm)"
+        formControlName="altura"
+        class="p-3 rounded-md"
+      />
+      <input
+        type="text"
+        pInputText
+        placeholder="URL de imagen de perfil"
+        formControlName="imgPerfil"
+        class="p-3 rounded-md"
+      />
+
+      <div class="flex justify-end gap-2 mt-4 shrink-0">
+        <button
+          type="button"
+          (click)="cerrarModal()"
+          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="form.invalid"
+          class="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
