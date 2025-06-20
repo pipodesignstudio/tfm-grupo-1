@@ -25,7 +25,13 @@ import { IActivity } from '../../../interfaces/iactivity.interface';
 
 import { EventInput } from '@fullcalendar/core';
 
-import { CreateActivityComponent } from '../../../components/activity/create-activity.component';
+import { ActivityFormComponent } from '../../../components/activity/activity-form.component';
+
+import { Router } from '@angular/router';
+
+interface MyEvent extends EventInput {
+  checked?: boolean;
+}
 
 @Component({
   selector: 'app-calendar-page',
@@ -35,7 +41,7 @@ import { CreateActivityComponent } from '../../../components/activity/create-act
     FullCalendarModule,
     DropdownModule,
     FormsModule,
-    CreateActivityComponent,
+    ActivityFormComponent,
   ],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',
@@ -44,17 +50,21 @@ import { CreateActivityComponent } from '../../../components/activity/create-act
 export class CalendarPageComponent {
   @ViewChild('fullCalendarRef') calendarComponent!: FullCalendarComponent;
 
+  constructor(private changeDetector: ChangeDetectorRef, private router: Router) {}
+
   calendarVisible = signal(true);
 
   activityService = inject(ActivityService);
 
   allEvents: IActivity[] = [];
 
-  currentEvents: EventInput[] = [];
+  currentEvents: MyEvent[] = [];
 
-  selectedDateEvents: EventInput[] = [];
+  selectedDateEvents: MyEvent[] = [];
 
-  mostrarModalNuevoEvento = false;
+  mostrarActivityModal = false;
+
+  actividadInfo: IActivity | null = null;
 
   async ngOnInit() {
     // Cargar los eventos de la familia con id '1'
@@ -86,6 +96,7 @@ export class CalendarPageComponent {
 
   filtroSeleccionado: number | null = null;
 
+  
   filtrarEventos() {
     const filterValue: { label: string; value: number } | any =
       this.filtroSeleccionado;
@@ -106,6 +117,7 @@ export class CalendarPageComponent {
       center: 'title',
       right: 'next',
     },
+    height: 'auto',
     initialView: 'dayGridMonth',
     initialEvents: [],
     weekends: true,
@@ -116,11 +128,10 @@ export class CalendarPageComponent {
     contentHeight: 'auto',
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
-    /*     eventsSet: this.handleEvents.bind(this),
-     */ eventDidMount: this.eventDidMount.bind(this),
+    /*     eventsSet: this.handleEvents.bind(this),*/ 
+    eventDidMount: this.eventDidMount.bind(this),
   });
 
-  constructor(private changeDetector: ChangeDetectorRef) {}
 
   // Metodo para añadir el dot
   eventDidMount(info: any) {
@@ -143,6 +154,9 @@ export class CalendarPageComponent {
     );
 
     this.selectedDateEvents = filtrados;
+
+    console.log(filtrados, this.selectedDate);
+
     this.selectedDate = format(new Date(fecha), 'MMMM, do, EEE');
 
     console.log(`Eventos filtrados para la fecha ${fecha}:`, filtrados);
@@ -164,48 +178,76 @@ export class CalendarPageComponent {
     }));
   }
 
-  nuevoTituloEvento = '';
-  nuevaFechaEvento = new Date().toISOString().slice(0, 10);
 
-  agregarEventoRapido() {
-    this.nuevoTituloEvento = '';
-    this.nuevaFechaEvento = new Date().toISOString().slice(0, 10);
-    this.mostrarModalNuevoEvento = true;
+
+  abrirActivityModal(actividad: IActivity | null = null) {
+    this.actividadInfo = actividad || null;
+    this.mostrarActivityModal = true;
+     // Si no se pasa actividad, se inicializa como null
   }
 
-  cerrarModalNuevoEvento() {
-    this.mostrarModalNuevoEvento = false;
+  cerrarActivityModal() {
+    this.mostrarActivityModal = false;
+  }
+
+  redirectToObjective(){
+    this.router.navigate(['/objectives']);
   }
 
   guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+    // Asegurar que estas propiedades son instancias de Date
+    const actividadConFechas: IActivity = {
+      ...nuevaActividad,
+      fecha_realizacion: new Date(nuevaActividad.fecha_realizacion!),
+      hora_inicio: nuevaActividad.hora_inicio
+        ? new Date(nuevaActividad.hora_inicio)
+        : undefined,
+      hora_fin: nuevaActividad.hora_fin
+        ? new Date(nuevaActividad.hora_fin)
+        : undefined,
+    } as IActivity;
 
-  // Asegurar que estas propiedades son instancias de Date
-  const actividadConFechas: IActivity = {
-    ...nuevaActividad,
-    fecha_realizacion: new Date(nuevaActividad.fecha_realizacion!),
-    hora_inicio: nuevaActividad.hora_inicio ? new Date(nuevaActividad.hora_inicio) : undefined,
-    hora_fin: nuevaActividad.hora_fin ? new Date(nuevaActividad.hora_fin) : undefined,
-  } as IActivity;
+    const calendarApi = this.calendarComponent.getApi();
+    const fecha =
+      actividadConFechas.fecha_realizacion.toLocaleDateString('en-CA');
 
-  const calendarApi = this.calendarComponent.getApi();
-  const fecha = actividadConFechas.fecha_realizacion.toLocaleDateString('en-CA');
-
-
-  try {
-    this.activityService.createActivity(actividadConFechas).then((actividadCreada) => {
-      console.log('Actividad creada:', actividadCreada);
-      calendarApi.addEvent({
-        title: actividadConFechas.titulo || 'Sin título',
-        start: fecha,
-        allDay: true,
-        color: actividadConFechas.color || '#7c3aed',
-      });
-    });
-  } catch (error) {
-    console.error('Error al crear la actividad:', error);
-  } finally {
-    this.mostrarModalNuevoEvento = false;
+    try {
+      this.activityService
+        .createActivity(actividadConFechas)
+        .then((actividadCreada) => {
+          console.log('Actividad creada:', actividadCreada);
+          calendarApi.addEvent({
+            title: actividadConFechas.titulo || 'Sin título',
+            start: fecha,
+            allDay: true,
+            color: actividadConFechas.color || '#7c3aed',
+          });
+        });
+    } catch (error) {
+      console.error('Error al crear la actividad:', error);
+    } finally {
+      this.mostrarActivityModal = false;
+    }
   }
-}
 
+  onCheckedChange(event: MyEvent) {
+    console.log(event, 'checked:', event.checked);
+    
+  }
+
+  editarActividad(actividad: Partial<IActivity>) {
+    console.log('Editar actividad con ID:', actividad.id);
+    // Aquí puedes implementar la lógica para editar la actividad
+  } 
+
+  deleteActivity(actividad: IActivity) {
+    console.log('Borrar actividad con ID:', actividad.id);
+    this.activityService.deleteActivity(actividad.id, actividad.nino_id).then(() => {
+      const calendarApi = this.calendarComponent.getApi();
+      calendarApi.getEventById(String(actividad.id))?.remove();
+      this.allEvents = this.allEvents.filter((event) => event.id !== actividad.id);
+      this.currentEvents = this.mapActivitiesToEvents(this.allEvents);
+      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
+    });
+  }
 }

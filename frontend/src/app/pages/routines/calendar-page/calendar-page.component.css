@@ -27,7 +27,7 @@
 }
 
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  background-color: rgb(38, 161, 231);
+  background-color: #c8e6f0;
   color: white;
 /*   border-radius: 50%;
  */  width: 30px;
@@ -51,7 +51,7 @@
   transform: translateX(-50%);
   width: 4px;
   height: 4px;
-  background-color: red;
+  background-color: #ff7f50;
   border-radius: 50%;
   z-index: 9999;
 }
@@ -60,4 +60,21 @@
 .fc-daygrid-more-link,
 .fc-daygrid-day-events {
   display: none !important;
+}
+
+html.dark .fc-col-header {
+  background-color: oklch(27.8% 0.033 256.848);
+
+}
+
+
+/* Estilo botones calendario */
+html:not(.dark) .fc .fc-button {
+  background-color: #c8e6f0 !important;
+  border-color: #c8e6f0 !important;
+}
+
+html:not(.dark) .fc .fc-button:hover {
+  background-color: #bed3e4 !important;
+  border-color: #bed3e4 !important;
 }

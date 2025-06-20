@@ -6,13 +6,20 @@
   >
     <!-- Título fijo -->
     <h2 class="text-xl font-semibold text-gray-800 mb-4 shrink-0">
-      Agregar nuevo evento
+
+      @if(editMode) {
+        Editar {{tipo}} {{actividadInfo?.titulo || ''}}
+      } 
+      @else {
+        Crear {{tipo}}
+      }
+
     </h2>
 
     <!-- Contenido con scroll -->
     <form
       [formGroup]="form"
-      (ngSubmit)="guardarEvento()"
+      (ngSubmit)="onSubmit()"
       class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
     >
       <input
@@ -74,7 +81,8 @@
         [optionValue]="'value'"
         placeholder="Responsable"
       ></p-select>
-      <div>
+      @if(tipo === 'evento') {
+        <div>
         <span>Seleccione color del evento:</span>
 
         <p-colorpicker
@@ -83,6 +91,8 @@
           class="w-full h-12 border-0 rounded-md p-1"
         ></p-colorpicker>
       </div>
+      }
+      
       <app-ubicacion formControlName="ubicacion"></app-ubicacion>
       <div class="flex justify-end gap-2 mt-4 shrink-0">
         <button
