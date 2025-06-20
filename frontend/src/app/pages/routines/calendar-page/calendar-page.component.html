@@ -13,7 +13,7 @@
     <!-- Botones -->
     <button
       class="bg-[#ff7f50] text-white text-sm px-3 py-1 rounded shadow-lg"
-      (click)="agregarEventoRapido()"
+      (click)="abrirActivityModal()"
     >
       Añadir Evento
     </button>
@@ -52,6 +52,7 @@
       <div
         class="flex items-center justify-between p-4 rounded-2xl shadow-sm"
         [style.backgroundColor]="selectedDateEvent.color"
+        (click)="abrirActivityModal(selectedDateEvent['actividadInfo'])"
       >
         <div class="flex items-center gap-3">
           <i class="text-xl text-purple-800"></i>
@@ -96,9 +97,12 @@
       }
     </div>
     <!-- Modal de agregar evento -->
-    @if (mostrarModalNuevoEvento) {
-    <app-create-activity
-      (cerrar)="cerrarModalNuevoEvento()"
+    @if (mostrarActivityModal) {
+    <app-activity-form
+      [actividadInfo]="actividadInfo"
+      [tipo]="'evento'"
+      (editar)="editarActividad($event)"
+      (cerrar)="cerrarActivityModal()"
       (guardar)="guardarNuevaActividad($event)"
     />
     }

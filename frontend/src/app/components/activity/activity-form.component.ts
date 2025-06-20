@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IActivity } from '../../interfaces/iactivity.interface';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { UbicacionComponent } from '../ubicacion/ubicacion.component';
 
 @Component({
-  selector: 'app-create-activity',
+  selector: 'app-activity-form',
   standalone: true,
   imports: [
     CommonModule,
@@ -27,14 +27,20 @@ import { UbicacionComponent } from '../ubicacion/ubicacion.component';
     TextareaModule,
     InputTextModule,
   ],
-  templateUrl: './create-activity.component.html',
-  styleUrl: './create-activity.component.css',
+  templateUrl: './activity-form.component.html',
+  styleUrl: './activity-form.component.css',
 })
-export class CreateActivityComponent {
+export class ActivityFormComponent {
+  @Input() actividadInfo: IActivity | null = null;
+  @Input() tipo: 'evento' | 'objetivo' | 'rutina' | null = null;
+
+  @Output() editar = new EventEmitter<Partial<IActivity>>();
   @Output() cerrar = new EventEmitter<void>();
   @Output() guardar = new EventEmitter<Partial<IActivity>>();
 
   isMobile = window.innerWidth < 768;
+
+  editMode = false;
 
   filtroOpciones = [
     { label: 'Selecciona Niño', value: null },
@@ -61,13 +67,28 @@ export class CreateActivityComponent {
         hora_fin: ['', Validators.required],
         usuario_responsable: [null, Validators.required],
         color: ['#7c3aed'],
-        tipo: ['Evento'],
+        tipo: [this.tipo],
         ubicacion: [null],
       },
       {
         validators: this.validarHoras,
       }
     );
+  }
+
+  ngOnInit() {
+    if (this.actividadInfo) {
+      this.form.patchValue(this.actividadInfo);
+      this.editMode = true;
+    }
+  }
+
+  onSubmit() {
+    if (this.editMode) {
+      this.guardarEvento();
+    } else {
+      this.editarActividad();
+    }
   }
 
   validarHoras(group: FormGroup) {
@@ -81,6 +102,14 @@ export class CreateActivityComponent {
 
   cerrarModal() {
     this.cerrar.emit();
+  }
+
+  editarActividad() {
+    if (this.form.valid) {
+      this.editar.emit();
+    } else {
+      this.form.markAllAsTouched();
+    }
   }
 
   guardarEvento() {

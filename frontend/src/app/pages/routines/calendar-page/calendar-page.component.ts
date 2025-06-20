@@ -25,7 +25,7 @@ import { IActivity } from '../../../interfaces/iactivity.interface';
 
 import { EventInput } from '@fullcalendar/core';
 
-import { CreateActivityComponent } from '../../../components/activity/create-activity.component';
+import { ActivityFormComponent } from '../../../components/activity/activity-form.component';
 
 import { Router } from '@angular/router';
 
@@ -41,7 +41,7 @@ interface MyEvent extends EventInput {
     FullCalendarModule,
     DropdownModule,
     FormsModule,
-    CreateActivityComponent,
+    ActivityFormComponent,
   ],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',
@@ -62,7 +62,9 @@ export class CalendarPageComponent {
 
   selectedDateEvents: MyEvent[] = [];
 
-  mostrarModalNuevoEvento = false;
+  mostrarActivityModal = false;
+
+  actividadInfo: IActivity | null = null;
 
   async ngOnInit() {
     // Cargar los eventos de la familia con id '1'
@@ -176,17 +178,16 @@ export class CalendarPageComponent {
     }));
   }
 
-  nuevoTituloEvento = '';
-  nuevaFechaEvento = new Date().toISOString().slice(0, 10);
 
-  agregarEventoRapido() {
-    this.nuevoTituloEvento = '';
-    this.nuevaFechaEvento = new Date().toISOString().slice(0, 10);
-    this.mostrarModalNuevoEvento = true;
+
+  abrirActivityModal(actividad: IActivity | null = null) {
+    this.actividadInfo = actividad || null;
+    this.mostrarActivityModal = true;
+     // Si no se pasa actividad, se inicializa como null
   }
 
-  cerrarModalNuevoEvento() {
-    this.mostrarModalNuevoEvento = false;
+  cerrarActivityModal() {
+    this.mostrarActivityModal = false;
   }
 
   redirectToObjective(){
@@ -225,12 +226,28 @@ export class CalendarPageComponent {
     } catch (error) {
       console.error('Error al crear la actividad:', error);
     } finally {
-      this.mostrarModalNuevoEvento = false;
+      this.mostrarActivityModal = false;
     }
   }
 
   onCheckedChange(event: MyEvent) {
     console.log(event, 'checked:', event.checked);
     
+  }
+
+  editarActividad(actividad: Partial<IActivity>) {
+    console.log('Editar actividad con ID:', actividad.id);
+    // Aquí puedes implementar la lógica para editar la actividad
+  } 
+
+  deleteActivity(actividad: IActivity) {
+    console.log('Borrar actividad con ID:', actividad.id);
+    this.activityService.deleteActivity(actividad.id, actividad.nino_id).then(() => {
+      const calendarApi = this.calendarComponent.getApi();
+      calendarApi.getEventById(String(actividad.id))?.remove();
+      this.allEvents = this.allEvents.filter((event) => event.id !== actividad.id);
+      this.currentEvents = this.mapActivitiesToEvents(this.allEvents);
+      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
+    });
   }
 }

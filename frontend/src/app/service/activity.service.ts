@@ -25,7 +25,7 @@ export class ActivityService {
     ).then(response => response.data);
   }
 
-  deleteActivity(id: string, nino_id: string): Promise<IActivity> {
+  deleteActivity(id: number, nino_id: number): Promise<IActivity> {
     return lastValueFrom(this.httpClient.delete<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}/${id}`));
   }
 
