@@ -5,15 +5,16 @@
       alt="Logo de Nido"
       class="logo"
     />
-    <h1 class="welcome-title">Bienvenido a Nido</h1>
+    <h1 class="welcome-title">¡Listo!</h1>
     <p class="welcome-description">
-      Tu plataforma colaborativa para la crianza.<br />
-      Organiza rutinas, coordina actividades y comparte momentos clave con tu
-      familia.
+      Tu registro ha sido un éxito y ya eres parte de la familia Nido. Es hora
+      de dar el primer paso: vamos a añadir a un pequeño y comenzar a
+      simplificar tu vida.
     </p>
-    <!-- <button class="continue-button" (click)="continueToLogin()">
-      Continuar
-    </button> -->
-    <p-button label="Iniciar Sesión" [raised]="true" (onClick)="continueToLogin()" />
+    <p-button
+      label="Continuar"
+      [raised]="true"
+      (onClick)="continueToCreateFamily()"
+    />
   </div>
 </div>

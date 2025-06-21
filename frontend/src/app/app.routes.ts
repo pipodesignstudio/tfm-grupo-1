@@ -14,12 +14,13 @@ import { AboutUsPageComponent } from './pages/others/about-us-page/about-us-page
 import { EditProfileComponent } from './pages/profiles/edit-profile/edit-profile.component';
 import { ObjectivesPageComponent } from './pages/objectives/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './pages/objectives/objectives-form/objectives-form.component';
-
+import { LandingPageComponent } from './landing-page/landing-page.component';
 
 export const routes: Routes = [
-  { path: '', component: WelcomePageComponent, title: 'Bienvenido a Nido' },
+  { path: '', component: LandingPageComponent, title: 'Bienvenido a Nido' },
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
+  { path: 'message1', component: WelcomePageComponent },
   { path: 'create-family', component: CreateFamilyComponent },
   { path: 'my-family', component: MyFamilyComponent },
   { path: 'dashboard', component: DashboardPageComponent },
@@ -39,4 +40,3 @@ export const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
-

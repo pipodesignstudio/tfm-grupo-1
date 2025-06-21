@@ -10,7 +10,7 @@ import { ButtonModule } from 'primeng/button';
 export class WelcomePageComponent {
   constructor(private router: Router) {}
 
-  continueToLogin(): void {
-    this.router.navigate(['/login']);
+  continueToCreateFamily(): void {
+    this.router.navigate(['/create-family']);
   }
 }

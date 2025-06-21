@@ -38,7 +38,7 @@ export class RegisterPageComponent implements OnInit {
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
+        password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', [Validators.required]],
       },
       {
@@ -96,6 +96,6 @@ export class RegisterPageComponent implements OnInit {
     console.log('Registrando usuario:', username, email);
 
     // Simular un registro exitoso y navegar
-    this.router.navigate(['/create-family']);
+    this.router.navigate(['/message1']);
   }
 }
