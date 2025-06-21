@@ -2,7 +2,8 @@
   <div class="create-family-content">
     <h1 class="page-title">Perfil del Niño</h1>
 
-    <div class="profile-picture-section">
+    <!-- OPCIONAL: Añadir foto de perfil niño -->
+    <!-- <div class="profile-picture-section">
       <input
         type="file"
         #fileInput
@@ -26,98 +27,124 @@
         }
       </div>
       <p class="profile-tip"></p>
-    </div>
+    </div> -->
 
     <form
       [formGroup]="childProfileForm"
       (ngSubmit)="onSubmit()"
       class="child-profile-form"
     >
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="name"
           >Nombre <span class="required-asterisk">*</span></label
         >
         <input
           type="text"
           id="name"
+          pInputText
           formControlName="name"
           placeholder="Nombre del niño/a"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['name'].invalid && f['name'].touched
+          }"
         />
-        @if (childProfileForm.get('name'); as nameControl) { @if
-        (nameControl.invalid && (nameControl.dirty || nameControl.touched)) {
-        <p class="error-message">
-          @if (nameControl.errors?.['required']) { El nombre es obligatorio. }
-        </p>
-        } }
+        @if (f['name'].invalid && f['name'].dirty) {
+        <small class="p-error">
+          @if (f['name'].errors?.['required']) { El nombre es obligatorio. }
+        </small>
+        }
       </div>
 
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="dob"
           >Fecha de Nacimiento <span class="required-asterisk">*</span></label
         >
-        <input type="date" id="dob" formControlName="dob" [max]="maxDate" />
-        @if (childProfileForm.get('dob'); as dobControl) { @if
-        (dobControl.invalid && (dobControl.dirty || dobControl.touched)) {
-        <p class="error-message">
-          @if (dobControl.errors?.['required']) { La fecha de nacimiento es
+        <p-calendar
+          inputId="dob"
+          formControlName="dob"
+          [maxDate]="maxDate"
+          [readonlyInput]="true"
+          dateFormat="dd-mm-yy"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['dob'].invalid && f['dob'].touched
+          }"
+        ></p-calendar>
+        @if (f['dob'].invalid && f['dob'].dirty) {
+        <small class="p-error">
+          @if (f['dob'].errors?.['required']) { La fecha de nacimiento es
           obligatoria. }
-        </p>
-        } }
+        </small>
+        }
       </div>
 
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="gender">Género (Opcional)</label>
-        <select id="gender" formControlName="gender">
-          @for (option of genderOptions; track option.value) {
-          <option [value]="option.value">{{ option.viewValue }}</option>
-          }
-        </select>
+        <p-dropdown
+          inputId="gender"
+          formControlName="gender"
+          [options]="genderOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona el género"
+          [showClear]="true"
+        ></p-dropdown>
       </div>
 
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="heightCm">Altura (cm - Opcional)</label>
         <input
           type="number"
           id="heightCm"
+          pInputText
           formControlName="heightCm"
           placeholder="Ej: 90"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['heightCm'].invalid && f['heightCm'].touched
+          }"
         />
-        @if (childProfileForm.get('heightCm'); as heightCmControl) { @if
-        (heightCmControl.invalid && (heightCmControl.dirty ||
-        heightCmControl.touched)) {
-        <p class="error-message">
-          @if (heightCmControl.errors?.['min'] ||
-          heightCmControl.errors?.['max']) { Introduce una altura válida (1-300
-          cm). }
-        </p>
-        } }
+        @if (f['heightCm'].invalid && f['heightCm'].dirty) {
+        <small class="p-error">
+          @if (f['heightCm'].errors?.['min'] || f['heightCm'].errors?.['max']) {
+          Introduce una altura válida (1-300 cm). }
+        </small>
+        }
       </div>
 
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="weightKg">Peso (kg - Opcional)</label>
         <input
           type="number"
           step="0.1"
           id="weightKg"
+          pInputText
           formControlName="weightKg"
           placeholder="Ej: 15.5"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['weightKg'].invalid && f['weightKg'].touched
+          }"
         />
-        @if (childProfileForm.get('weightKg'); as weightKgControl) { @if
-        (weightKgControl.invalid && (weightKgControl.dirty ||
-        weightKgControl.touched)) {
-        <p class="error-message">
-          @if (weightKgControl.errors?.['min'] ||
-          weightKgControl.errors?.['max']) { Introduce un peso válido (0.1-200
-          kg). }
-        </p>
-        } }
+        @if (f['weightKg'].invalid && f['weightKg'].dirty) {
+        <small class="p-error">
+          @if (f['weightKg'].errors?.['min'] || f['weightKg'].errors?.['max']) {
+          Introduce un peso válido (0.1-200 kg). }
+        </small>
+        }
       </div>
 
       @if (errorMessage) {
-      <p class="error-message">{{ errorMessage }}</p>
+      <small class="p-error">{{ errorMessage }}</small>
       }
 
-      <button type="submit" class="submit-button">Enviar</button>
+      <button
+        pButton
+        type="submit"
+        label="Enviar"
+        class="p-button-primary"
+      ></button>
     </form>
   </div>
 </div>

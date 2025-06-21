@@ -11,9 +11,22 @@ import {
 import { CommonModule } from '@angular/common';
 import { ChildService, ChildProfile } from '../../../service/child.service';
 
+import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
+
 @Component({
   selector: 'app-create-family',
-  imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    InputTextModule,
+    CalendarModule,
+    DropdownModule,
+    ButtonModule,
+  ],
   templateUrl: './create-family.component.html',
   styleUrl: './create-family.component.css',
 })
@@ -21,13 +34,13 @@ export class CreateFamilyComponent implements OnInit {
   childProfileForm!: FormGroup;
   profileImageUrl: string | ArrayBuffer | null = null;
   errorMessage: string = '';
-  maxDate: string;
+  maxDate: Date;
 
   genderOptions = [
-    { value: 'male', viewValue: 'Masculino' },
-    { value: 'female', viewValue: 'Femenino' },
-    { value: 'other', viewValue: 'Otro' },
-    { value: null, viewValue: 'Prefiero no especificar' },
+    { label: 'Masculino', value: 'male' },
+    { label: 'Femenino', value: 'female' },
+    { label: 'Otro', value: 'other' },
+    { label: 'Prefiero no especificar', value: null },
   ];
 
   constructor(
@@ -35,40 +48,43 @@ export class CreateFamilyComponent implements OnInit {
     private fb: FormBuilder,
     @Inject(ChildService) private childService: ChildService
   ) {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const day = today.getDate().toString().padStart(2, '0');
-    this.maxDate = `${year}-${month}-${day}`;
+    this.maxDate = new Date();
   }
 
   ngOnInit(): void {
     this.childProfileForm = this.fb.group({
       name: ['', Validators.required],
-      dob: ['', Validators.required],
+      dob: [null, Validators.required],
       gender: [null],
       heightCm: ['', [Validators.min(1), Validators.max(300)]],
       weightKg: ['', [Validators.min(0.1), Validators.max(200)]],
     });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        this.profileImageUrl = reader.result;
-      };
-
-      reader.readAsDataURL(file);
-    } else {
-      this.profileImageUrl = null;
-    }
+  get f() {
+    return this.childProfileForm.controls;
   }
 
+  // OPCIONAL: Añadir foto de perfil niño
+  // onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files[0]) {
+  //     const file = input.files[0];
+  //     const reader = new FileReader();
+
+  //     reader.onload = (e) => {
+  //       this.profileImageUrl = reader.result;
+  //     };
+
+  //     reader.readAsDataURL(file);
+  //   } else {
+  //     this.profileImageUrl = null;
+  //   }
+  // }
+
   onSubmit(): void {
+    this.errorMessage = '';
+
     if (this.childProfileForm.invalid) {
       this.childProfileForm.markAllAsTouched();
       this.errorMessage =
