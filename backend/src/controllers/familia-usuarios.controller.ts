@@ -8,10 +8,10 @@ export class FamiliaUsuariosController {
   /**
    * Obtener los usuarios de una familia
    */
-  public async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const familiaId = Number(req.params.id);
-      const usuarios = await service.listarUsuariosDeFamilia(familiaId);
+      const usuarios = await service.getAll(familiaId);
       ApiCorrectResponse.genericSuccess(res, usuarios, true, 'Usuarios obtenidos', 200);
     } catch (err) {
       next(err);
@@ -21,11 +21,11 @@ export class FamiliaUsuariosController {
   /**
    * Añadir un usuario a la familia
    */
-  public async agregar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const familiaId = Number(req.params.id);
       const dto = req.body;
-      const nuevo = await service.agregarUsuarioAFamilia(familiaId, dto);
+      const nuevo = await service.create(familiaId, dto);
       ApiCorrectResponse.genericSuccess(res, nuevo, true, 'Usuario añadido a la familia', 201);
     } catch (err) {
       next(err);
@@ -35,12 +35,12 @@ export class FamiliaUsuariosController {
   /**
    * Actualizar el rol de un usuario en la familia
    */
-  public async actualizarRol(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async changeRol(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const familiaId = Number(req.params.id);
       const usuarioId = Number(req.params.usuarioId);
       const dto = req.body;
-      await service.actualizarRolUsuario(familiaId, usuarioId, dto);
+      await service.update(familiaId, usuarioId, dto);
       ApiCorrectResponse.genericSuccess(res, null, true, 'Rol actualizado', 200);
     } catch (err) {
       next(err);
@@ -50,11 +50,11 @@ export class FamiliaUsuariosController {
   /**
    * Eliminar un usuario de la familia
    */
-  public async eliminar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const familiaId = Number(req.params.id);
       const usuarioId = Number(req.params.usuarioId);
-      await service.eliminarUsuarioDeFamilia(familiaId, usuarioId);
+      await service.delete(familiaId, usuarioId);
       ApiCorrectResponse.genericSuccess(res, null, true, 'Usuario eliminado', 204);
     } catch (err) {
       next(err);

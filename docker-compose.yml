@@ -21,7 +21,7 @@ services:
       - "8080:80"
     environment:
       PMA_HOST: db
-      PMA_PORT: 3307
+      PMA_PORT: 3306
       PMA_ARBITRARY: 1
       UPLOAD_LIMIT: 64M
       PMA_USER: root
@@ -29,7 +29,7 @@ services:
 
   # Nueva instancia de MongoDB
   mongodb:
-    image: mongo:8.0.10-noble
+    image: mongo:latest 
     container_name: nidodb_mongo 
     restart: always 
     ports:

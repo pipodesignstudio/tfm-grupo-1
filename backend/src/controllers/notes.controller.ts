@@ -8,7 +8,7 @@ export class NotesController {
   /**
    * Crear una nueva nota para un niño
    */
-  public async crear(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const dto = req.body;
@@ -22,7 +22,7 @@ export class NotesController {
   /**
    * Listar todas las notas de un niño
    */
-  public async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const notas = await notesService.findAllByNino(id_nino);
@@ -35,7 +35,7 @@ export class NotesController {
   /**
    * Obtener una nota por ID (si pertenece al niño)
    */
-  public async obtener(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);
@@ -49,7 +49,7 @@ export class NotesController {
   /**
    * Actualizar una nota por ID
    */
-  public async actualizar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);
@@ -63,7 +63,7 @@ export class NotesController {
   /**
    * Borrar una nota por ID
    */
-  public async borrar(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id_nino = Number(req.params.id_nino);
       const id = Number(req.params.id);

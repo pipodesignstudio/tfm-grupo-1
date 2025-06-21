@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { FamiliaController } from "../controllers/familia.controller";
-import { authMiddleware, validationMiddleware } from "../middlewares";
-import { validateIdParam } from "../middlewares/validate-id.middleware";
+import { asyncMiddlewareWrapper } from '../utils';
+import { authMiddleware, validationMiddleware, validateIdParam } from "../middlewares";
 import { NewFamiliaDto, UpdateFamiliaDto } from "../dtos/familia";
 
 const familiaRoutes = Router();
@@ -12,7 +12,7 @@ const familiaController = new FamiliaController();
  */
 /**
  * @openapi
- * /api/familia:
+ * /familia:
  *   post:
  *     summary: Crear una nueva familia
  *     tags:
@@ -35,7 +35,7 @@ const familiaController = new FamiliaController();
  */
 familiaRoutes.post(
   "/",
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(NewFamiliaDto),
   familiaController.create
 );
@@ -45,7 +45,7 @@ familiaRoutes.post(
  */
 /**
  * @openapi
- * /api/familia:
+ * /familia:
  *   get:
  *     summary: Obtener todas las familias (uso interno o admin)
  *     tags:
@@ -59,9 +59,9 @@ familiaRoutes.post(
  *         description: No autorizado
  */
 familiaRoutes.get(
-    "/", 
-    authMiddleware, 
-    familiaController.getAll
+  "/", 
+  asyncMiddlewareWrapper(authMiddleware),
+  familiaController.getAll
 );
 
 /**
@@ -69,7 +69,7 @@ familiaRoutes.get(
  */
 /**
  * @openapi
- * /api/familia/{id}:
+ * /familia/{id}:
  *   get:
  *     summary: Obtener una familia por ID
  *     tags:
@@ -91,10 +91,10 @@ familiaRoutes.get(
  *         description: No autorizado
  */
 familiaRoutes.get(
-    "/:id", 
-    authMiddleware, 
-    validateIdParam, 
-    familiaController.getById
+  "/:id", 
+  asyncMiddlewareWrapper(authMiddleware),
+  validateIdParam, 
+  familiaController.getById
 );
 
 /**
@@ -102,7 +102,7 @@ familiaRoutes.get(
  */
 /**
  * @openapi
- * /api/familia/{id}:
+ * /familia/{id}:
  *   put:
  *     summary: Actualizar una familia existente
  *     tags:
@@ -133,7 +133,7 @@ familiaRoutes.get(
  */
 familiaRoutes.put(
   "/:id",
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
   validationMiddleware(UpdateFamiliaDto),
   familiaController.update
@@ -144,7 +144,7 @@ familiaRoutes.put(
  */
 /**
  * @openapi
- * /api/familia/{id}:
+ * /familia/{id}:
  *   delete:
  *     summary: Eliminar una familia
  *     tags:
@@ -167,7 +167,7 @@ familiaRoutes.put(
  */
 familiaRoutes.delete(
     "/:id", 
-    authMiddleware, 
+    asyncMiddlewareWrapper(authMiddleware), 
     validateIdParam, 
     familiaController.delete
 );

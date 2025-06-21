@@ -1,13 +1,13 @@
 import prisma from "../config/prisma.config";
 import { AddUsuarioFamiliaDto, UpdateRolUsuarioDto } from "../dtos/familia-usuarios";
-import { NotFoundError, InternalServerError } from "../utils";
+import { NotFoundError, InternalServerError, CustomError } from "../utils";
 
 export class FamiliaUsuariosService {
   /**
    * Listar todos los usuarios de una familia
    * @param familiaId - ID de la familia
    */
-  public async listarUsuariosDeFamilia(familiaId: number) {
+  public async getAll(familiaId: number) {
     return await prisma.familia_usuarios.findMany({
       where: { familia_id: familiaId },
       include: { usuarios: true },
@@ -19,7 +19,33 @@ export class FamiliaUsuariosService {
    * @param familiaId - ID de la familia
    * @param dto - ID del usuario y rol
    */
-  public async agregarUsuarioAFamilia(familiaId: number, dto: AddUsuarioFamiliaDto) {
+  public async create(familiaId: number, dto: AddUsuarioFamiliaDto) {
+    // Validar que el usuario existe
+    const usuario = await prisma.usuarios.findUnique({
+      where: { id: dto.usuarios_id },
+    });
+
+    if (!usuario) {
+      throw new NotFoundError("El usuario no existe", {
+        error: "USUARIO_NO_ENCONTRADO",
+      });
+    }
+
+    // Validar que no esté ya en la familia
+    const yaExiste = await prisma.familia_usuarios.findFirst({
+      where: {
+        familia_id: familiaId,
+        usuarios_id: dto.usuarios_id,
+      },
+    });
+
+    if (yaExiste) {
+      throw new CustomError("El usuario ya pertenece a esta familia", 409, {
+        error: "USUARIO_YA_EN_FAMILIA",
+      }, false);
+    }
+
+    // Crear usuario en familia
     try {
       return await prisma.familia_usuarios.create({
         data: {
@@ -41,7 +67,7 @@ export class FamiliaUsuariosService {
    * @param usuarioId - ID del usuario
    * @param dto - Nuevo rol
    */
-  public async actualizarRolUsuario(familiaId: number, usuarioId: number, dto: UpdateRolUsuarioDto) {
+  public async update(familiaId: number, usuarioId: number, dto: UpdateRolUsuarioDto) {
     const result = await prisma.familia_usuarios.updateMany({
       where: {
         familia_id: familiaId,
@@ -64,7 +90,7 @@ export class FamiliaUsuariosService {
    * @param familiaId - ID de la familia
    * @param usuarioId - ID del usuario
    */
-  public async eliminarUsuarioDeFamilia(familiaId: number, usuarioId: number) {
+  public async delete(familiaId: number, usuarioId: number) {
     const result = await prisma.familia_usuarios.deleteMany({
       where: {
         familia_id: familiaId,

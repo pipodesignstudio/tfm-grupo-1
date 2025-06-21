@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { NotesController } from '../controllers/notes.controller';
 import { asyncMiddlewareWrapper } from '../utils';
-import { authMiddleware, validationMiddleware } from '../middlewares';
-import { validateIdParam } from '../middlewares/validate-id.middleware';
+import { authMiddleware, validationMiddleware, validateIdParam } from '../middlewares';
 import { NewNoteDto, UpdateNoteDto } from '../dtos/notes';
 
 const notesRoute = Router();
@@ -50,7 +49,7 @@ notesRoute.post(
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
   validationMiddleware(NewNoteDto),
-  notesController.crear
+  notesController.create
 );
 
 /**
@@ -86,7 +85,7 @@ notesRoute.get(
   '/:id_nino',
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
-  notesController.listar
+  notesController.getAll
 );
 
 /**
@@ -129,7 +128,7 @@ notesRoute.get(
   '/:id_nino/:id',
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
-  notesController.obtener
+  notesController.getById
 );
 
 /**
@@ -182,7 +181,7 @@ notesRoute.put(
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
   validationMiddleware(UpdateNoteDto),
-  notesController.actualizar
+  notesController.update
 );
 
 /**
@@ -221,7 +220,7 @@ notesRoute.delete(
   '/:id_nino/:id',
   asyncMiddlewareWrapper(authMiddleware),
   validateIdParam,
-  notesController.borrar
+  notesController.delete
 );
 
 export default notesRoute;

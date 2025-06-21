@@ -1,19 +1,18 @@
 import { Router } from 'express';
 import { FamiliaUsuariosController } from '../controllers/familia-usuarios.controller';
 import { asyncMiddlewareWrapper } from '../utils';
-import { authMiddleware, validationMiddleware, validateIdParam } from '../middlewares';
-import { AddUsuarioFamiliaDto, UpdateRolUsuarioDto } from '../dtos/familia-usuarios.dto';
+import { authMiddleware, validationMiddleware } from '../middlewares';
+import { AddUsuarioFamiliaDto, UpdateRolUsuarioDto } from '../dtos/familia-usuarios';
 
-const familiaUsuariosRoutes = Router();
+const familiaUsuariosRoutes = Router({ mergeParams: true });
 const controller = new FamiliaUsuariosController();
 
 /**
- * GET - Obtener los usuarios de una familia
+ * GET - Obtener todos los usuarios de una familia
  */
 /**
-/**
  * @openapi
- * /api/familias/{id}/usuarios:
+ * /familia/{id}/usuarios:
  *   get:
  *     summary: Obtener los usuarios de una familia
  *     tags:
@@ -32,18 +31,17 @@ const controller = new FamiliaUsuariosController();
  *         description: Lista de usuarios obtenida
  */
 familiaUsuariosRoutes.get(
-  '/:id/usuarios',
+  '/',
   asyncMiddlewareWrapper(authMiddleware),
-  validateIdParam,
-  controller.listar
+  controller.getAll
 );
 
 /**
- * POST - Añadir un usuario a la familia
+ * POST - Añadir un nuevo usuario a una familia
  */
 /**
  * @openapi
- * /api/familias/{id}/usuarios:
+ * /familia/{id}/usuarios:
  *   post:
  *     summary: Añadir un usuario a la familia
  *     tags:
@@ -68,11 +66,10 @@ familiaUsuariosRoutes.get(
  *         description: Usuario añadido a la familia
  */
 familiaUsuariosRoutes.post(
-  '/:id/usuarios',
+  '/',
   asyncMiddlewareWrapper(authMiddleware),
-  validateIdParam,
   validationMiddleware(AddUsuarioFamiliaDto),
-  controller.agregar
+  controller.create
 );
 
 /**
@@ -80,7 +77,7 @@ familiaUsuariosRoutes.post(
  */
 /**
  * @openapi
- * /api/familias/{id}/usuarios/{usuarioId}:
+ * /familia/{id}/usuarios/{usuarioId}:
  *   put:
  *     summary: Cambiar el rol de un usuario en la familia
  *     tags:
@@ -109,11 +106,10 @@ familiaUsuariosRoutes.post(
  *         description: Rol actualizado
  */
 familiaUsuariosRoutes.put(
-  '/:id/usuarios/:usuarioId',
+  '/:usuarioId',
   asyncMiddlewareWrapper(authMiddleware),
-  validateIdParam,
   validationMiddleware(UpdateRolUsuarioDto),
-  controller.actualizarRol
+  controller.changeRol
 );
 
 /**
@@ -121,7 +117,7 @@ familiaUsuariosRoutes.put(
  */
 /**
  * @openapi
- * /api/familias/{id}/usuarios/{usuarioId}:
+ * /familia/{id}/usuarios/{usuarioId}:
  *   delete:
  *     summary: Eliminar un usuario de la familia
  *     tags:
@@ -144,10 +140,9 @@ familiaUsuariosRoutes.put(
  *         description: Usuario eliminado de la familia
  */
 familiaUsuariosRoutes.delete(
-  '/:id/usuarios/:usuarioId',
+  '/:usuarioId',
   asyncMiddlewareWrapper(authMiddleware),
-  validateIdParam,
-  controller.eliminar
+  controller.delete
 );
 
 export default familiaUsuariosRoutes;

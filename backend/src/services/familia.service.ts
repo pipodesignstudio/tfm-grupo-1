@@ -8,7 +8,7 @@ export class FamiliaService {
    * @param dto - Datos validados para crear la familia
    * @param userId - ID del usuario creador (será admin)
    */
-  public async crearFamilia(dto: NewFamiliaDto, userId: number) {
+  public async create(dto: NewFamiliaDto, userId: number) {
     try {
       // 1. Crear la familia
       const familia = await prisma.familia.create({
@@ -37,7 +37,7 @@ export class FamiliaService {
   /**
    * Devuelve todas las familias existentes (uso interno o admin)
    */
-  public async listarFamilias() {
+  public async getAll() {
     return await prisma.familia.findMany();
   }
 
@@ -45,7 +45,7 @@ export class FamiliaService {
    * Devuelve una familia específica por su ID
    * @param id - ID de la familia
    */
-  public async obtenerFamilia(id: number) {
+  public async getById(id: number) {
     const familia = await prisma.familia.findUnique({
       where: { id },
     });
@@ -64,7 +64,7 @@ export class FamiliaService {
    * @param id - ID de la familia
    * @param dto - Datos a actualizar
    */
-  public async actualizarFamilia(id: number, dto: UpdateFamiliaDto) {
+  public async update(id: number, dto: UpdateFamiliaDto) {
     try {
       const result = await prisma.familia.update({
         where: { id },
@@ -85,7 +85,7 @@ export class FamiliaService {
    * Elimina una familia por su ID
    * @param id - ID de la familia
    */
-  public async borrarFamilia(id: number) {
+  public async delete(id: number) {
     const result = await prisma.familia.deleteMany({
       where: { id },
     });
