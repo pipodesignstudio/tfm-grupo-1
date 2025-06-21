@@ -8,3 +8,4 @@ export * from './objetivos.controller';
 export * from './rutinas.controller';
 export * from './notes.controller';
 export * from './familia.controller';
+export * from './familia-usuarios.controller';
