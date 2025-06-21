@@ -52,21 +52,22 @@ export class RegisterPageComponent implements OnInit {
     return null;
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
+  // OPCIONAL: Añadir foto de perfil
+  // onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files[0]) {
+  //     const file = input.files[0];
+  //     const reader = new FileReader();
 
-      reader.onload = (e) => {
-        this.profileImageUrl = reader.result;
-      };
+  //     reader.onload = (e) => {
+  //       this.profileImageUrl = reader.result;
+  //     };
 
-      reader.readAsDataURL(file);
-    } else {
-      this.profileImageUrl = null;
-    }
-  }
+  //     reader.readAsDataURL(file);
+  //   } else {
+  //     this.profileImageUrl = null;
+  //   }
+  // }
 
   onSubmit(): void {
     if (this.registerForm.invalid) {

@@ -6,51 +6,61 @@
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="email">Email</label>
         <input
           type="email"
           id="email"
-          name="email"
+          pInputText
           formControlName="email"
           placeholder="tu.email@ejemplo.com"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['email'].invalid && f['email'].touched
+          }"
         />
         @if (loginForm.get('email'); as emailControl) { @if
-        (emailControl.invalid && (emailControl.dirty || emailControl.touched)) {
-        <p class="error-message">
+        (emailControl.invalid && emailControl.dirty) {
+        <small class="p-error">
           @if (emailControl.errors?.['required']) { El email es obligatorio. }
           @if (emailControl.errors?.['email']) { Introduce un email válido. }
-        </p>
+        </small>
         } }
       </div>
 
-      <div class="input-group">
+      <div class="input-group p-fluid">
         <label for="password">Contraseña</label>
-        <input
-          type="password"
+        <p-password
           id="password"
-          name="password"
           formControlName="password"
           placeholder="********"
-        />
-        @if (loginForm.get('password'); as passwordControl) { @if
-        (passwordControl.invalid && (passwordControl.dirty ||
-        passwordControl.touched)) {
-        <p class="error-message">
-          @if (passwordControl.errors?.['required']) { La contraseña es
-          obligatoria. } @if (passwordControl.errors?.['minlength']) { La
+          [toggleMask]="true"
+          [feedback]="false"
+          inputStyleClass="w-full"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['password'].invalid && f['password'].touched
+          }"
+        ></p-password>
+        @if (f['password'].invalid && f['password'].dirty) {
+        <small class="p-error">
+          @if (f['password'].errors?.['required']) { La contraseña es
+          obligatoria. } @if (f['password'].errors?.['minlength']) { La
           contraseña debe tener al menos
-          {{ passwordControl.errors?.['minlength'].requiredLength }} caracteres.
-          }
-        </p>
-        } }
+          {{ f['password'].errors?.['minlength'].requiredLength }} caracteres. }
+        </small>
+        }
       </div>
 
       @if (errorMessage) {
-      <p class="error-message">{{ errorMessage }}</p>
+      <small class="p-error">{{ errorMessage }}</small>
       }
 
-      <button type="submit" class="login-button">Iniciar Sesión</button>
+      <button
+        pButton
+        type="submit"
+        label="Iniciar Sesión"
+        class="p-button-primary"
+      ></button>
     </form>
 
     <div class="register-link-section">
