@@ -3,15 +3,16 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ChildService, ChildProfile } from '../../../service/child.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-my-family',
-  imports: [CommonModule],
   standalone: true,
+  imports: [CommonModule, ButtonModule],
   templateUrl: './my-family.component.html',
   styleUrl: './my-family.component.css',
 })
-export class MyFamilyComponent implements OnInit {
+export class MyFamilyComponent implements OnInit, OnDestroy {
   children: ChildProfile[] = [];
   private childrenSubscription!: Subscription;
 
@@ -44,11 +45,11 @@ export class MyFamilyComponent implements OnInit {
       alert('Por favor, añade al menos un niño para continuar.');
       return;
     }
-    this.router.navigate(['/select-routine']);
+    this.router.navigate(['/message2']);
   }
 
-  // LIMPIAR DATOS - TEST
   clearAllChildren(): void {
     this.childService.clearChildren();
+    alert('Todos los niños han sido borrados (Solo desarrollo).');
   }
 }

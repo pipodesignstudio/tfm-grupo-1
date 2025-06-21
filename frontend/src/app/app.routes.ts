@@ -15,6 +15,8 @@ import { EditProfileComponent } from './pages/profiles/edit-profile/edit-profile
 import { ObjectivesPageComponent } from './pages/objectives/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './pages/objectives/objectives-form/objectives-form.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
+import { CreateRoutineComponent } from './create-routine/create-routine.component';
+import { Mensaje2Component } from './mensaje2/mensaje2.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent, title: 'Bienvenido a Nido' },
@@ -23,6 +25,8 @@ export const routes: Routes = [
   { path: 'message1', component: WelcomePageComponent },
   { path: 'create-family', component: CreateFamilyComponent },
   { path: 'my-family', component: MyFamilyComponent },
+  { path: 'message2', component: Mensaje2Component },
+  { path: 'create-routine', component: CreateRoutineComponent },
   { path: 'dashboard', component: DashboardPageComponent },
   { path: 'calendar', component: CalendarPageComponent },
   { path: 'child-profile', component: ChildProfileComponent },

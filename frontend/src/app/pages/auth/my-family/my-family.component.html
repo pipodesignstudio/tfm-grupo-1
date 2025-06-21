@@ -5,21 +5,6 @@
     <div class="children-cards-section">
       @for (child of children; track child.id) {
       <div class="child-card">
-        <div class="child-profile-pic">
-          @if (child.profileImageUrl) {
-          <img
-            [src]="child.profileImageUrl"
-            alt="Foto de {{ child.name }}"
-            class="child-image"
-          />
-          } @else {
-          <img
-            src="https://img.icons8.com/?size=40&id=85103&format=png&color=000000"
-            alt="Foto por defecto"
-            class="default-child-icon"
-          />
-          }
-        </div>
         <div class="child-info">
           <p class="child-name">{{ child.name }}</p>
         </div>
@@ -31,16 +16,30 @@
       }
     </div>
 
-    <button class="add-child-button" (click)="addNewChild()">
-      Añadir Niño
-    </button>
+    <button
+      pButton
+      type="button"
+      label="Añadir otro niño"
+      class="add-child-button p-button-primary"
+      (click)="addNewChild()"
+    ></button>
 
-    <button class="continue-button" (click)="continueToNextStep()">
-      Continuar al Siguiente Paso
-    </button>
+    <a
+      class="continue-link"
+      (click)="continueToNextStep()"
+      tabindex="0"
+      role="link"
+      [attr.aria-disabled]="children.length === 0"
+    >
+      Continuar al siguiente Paso
+    </a>
 
-    <button class="clear-children-button" (click)="clearAllChildren()">
-      Borrar Todos los Niños (Solo Desarrollo)
-    </button>
+    <button
+      pButton
+      type="button"
+      label="Borrar Todos los Niños (Solo Desarrollo)"
+      class="clear-children-button p-button-danger p-button-sm"
+      (click)="clearAllChildren()"
+    ></button>
   </div>
 </div>
