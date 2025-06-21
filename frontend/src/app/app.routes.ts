@@ -17,6 +17,8 @@ import { ObjectivesFormComponent } from './pages/objectives/objectives-form/obje
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { CreateRoutineComponent } from './create-routine/create-routine.component';
 import { Mensaje2Component } from './mensaje2/mensaje2.component';
+import { RoutineFormPageComponent } from './pages/routines/routine-form-page/routine-form-page.component';
+import { RoutineListPageComponent } from './pages/routines/routine-list-page/routine-list-page.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent, title: 'Bienvenido a Nido' },
@@ -36,6 +38,8 @@ export const routes: Routes = [
   { path: 'about-us', component: AboutUsPageComponent },
   { path: 'objectives', component: ObjectivesPageComponent },
   { path: 'objectives-form', component: ObjectivesFormComponent },
+  { path: 'routine-form', component: RoutineFormPageComponent },
+  { path: 'routine-list', component: RoutineListPageComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
