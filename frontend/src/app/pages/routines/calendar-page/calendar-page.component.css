@@ -38,6 +38,12 @@
   margin: auto;
 }
 
+html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+    color: #3a3a3a;
+
+
+}
+
 /* Añadir un punto rojo en las celdas con eventos */
 .has-event-dot {
   position: relative;
@@ -77,4 +83,8 @@ html:not(.dark) .fc .fc-button {
 html:not(.dark) .fc .fc-button:hover {
   background-color: #bed3e4 !important;
   border-color: #bed3e4 !important;
+}
+
+html:not(.dark) .fc .fc-button:focus {
+  box-shadow: #bed3e4 0 0 0 0.2rem !important; 
 }

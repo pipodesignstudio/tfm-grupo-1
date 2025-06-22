@@ -1,15 +1,15 @@
 @if(showLayoutHeader) {
-<header class="">
-  <app-header></app-header>
-</header>
+  <header>
+    <app-header></app-header>
+  </header>
 }
-<main class="">
-  <div class="">
-    <router-outlet />
-  </div>
+
+<main class="sm:pb-20">
+  <router-outlet />
 </main>
+
 @if(showLayoutFooter) {
-
-  <app-footer class=""></app-footer>
-
+  <footer>
+    <app-footer></app-footer>
+  </footer>
 }
