@@ -28,6 +28,8 @@ import { EventInput } from '@fullcalendar/core';
 import { ActivityFormComponent } from '../../../components/activity/activity-form.component';
 
 import { Router } from '@angular/router';
+import { SelectModule } from 'primeng/select';
+
 
 interface MyEvent extends EventInput {
   checked?: boolean;
@@ -42,6 +44,7 @@ interface MyEvent extends EventInput {
     DropdownModule,
     FormsModule,
     ActivityFormComponent,
+    SelectModule
   ],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',

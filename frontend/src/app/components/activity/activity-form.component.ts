@@ -43,12 +43,10 @@ export class ActivityFormComponent {
   editMode = false;
 
   filtroOpciones = [
-    { label: 'Selecciona Niño', value: null },
     { label: 'Lucas', value: 1 },
     { label: 'Sofía', value: 2 },
   ];
   usuariosResponsables = [
-    { label: 'Selecciona Usuario', value: null },
     { label: 'Usuario 1', value: 1 },
     { label: 'Usuario 2', value: 2 },
     { label: 'Usuario 3', value: 3 },
