@@ -1,0 +1,202 @@
+<!-- CONTENEDOR GENERAL -->
+<div class="min-h-screen bg-[#C8E6F0] p-6">
+    <div class="max-w-6xl mx-auto grid gap-6 lg:grid-cols-2">
+      
+      <!-- CARD: Información del Niño -->
+      <div class="bg-white/90 rounded-3xl shadow-xl p-8 border border-[#9ED2C5]/40 flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-[#3A3A3A] mb-4 text-center">
+          {{ child.nombre }} {{ child.apellido }}
+        </h2>
+  
+        <!-- Imagen -->
+        <div class="flex flex-col items-center mb-6 relative group">
+          <img [src]="child.imgPerfil" alt="Foto del niño"
+            class="w-32 h-32 rounded-full object-cover border-4 border-[#9ED2C5] shadow transition group-hover:scale-105 duration-200" />
+          <label class="absolute bottom-2 right-2 bg-[#FF7F50] p-2 rounded-full cursor-pointer shadow-lg transition hover:bg-[#ff9a72]"
+            [hidden]="!editProfile">
+            <i class="pi pi-camera text-white text-base"></i>
+            <input type="file" hidden (change)="onFileSelected($event)" />
+          </label>
+        </div>
+  
+        <!-- Modo Lectura -->
+        <div class="space-y-3 text-[#3A3A3A] w-full text-center" [hidden]="editProfile">
+          <p class="flex items-center justify-center gap-2">
+            <i class="pi pi-calendar text-[#9ED2C5]"></i>
+            Cumpleaños:
+            <span class="font-semibold">{{ child.fechaNacimiento | date:'dd/MM/yyyy' }}</span>
+            <span class="ml-2 text-[#9ED2C5] font-medium">({{ edadCalculada }})</span>
+          </p>
+          <p class="flex items-center justify-center gap-2">
+            <i class="pi pi-chart-bar text-[#9ED2C5]"></i> Peso:
+            <span class="font-semibold">{{ child.peso }} kg</span>
+          </p>
+          <p class="flex items-center justify-center gap-2">
+            <i class="pi pi-arrows-v text-[#9ED2C5]"></i> Altura:
+            <span class="font-semibold">{{ child.altura }} cm</span>
+          </p>
+          <p class="flex items-center justify-center gap-2">
+            <i class="pi pi-user text-[#9ED2C5]"></i> Género:
+            <span class="font-semibold">{{ child.genero }}</span>
+          </p>
+        </div>
+  
+        <!-- Modo Edición -->
+        <div class="flex flex-col w-full max-w-xs mx-auto gap-3" [hidden]="!editProfile">
+          <!-- Cumpleaños -->
+          <p-calendar
+            [(ngModel)]="child.fechaNacimiento"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            placeholder="Fecha de nacimiento"
+            inputStyleClass="w-full py-2 px-3 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] placeholder-[#9ED2C5] text-[#3A3A3A] focus:ring-2 focus:ring-[#9ED2C5]"
+            panelStyleClass="bg-[#E6F7F9] text-[#3A3A3A] border border-[#9ED2C5] rounded-xl shadow"
+            styleClass="w-full"
+            appendTo="body"
+          ></p-calendar>
+  
+          <!-- Peso -->
+          <div class="relative">
+            <i class="pi pi-weight text-[#9ED2C5] absolute left-3 top-3"></i>
+            <input type="number"
+              class="p-inputtext w-full pr-10 py-2 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] placeholder-[#9ED2C5] text-[#3A3A3A]"
+              [(ngModel)]="child.peso" placeholder="Peso" />
+            <span class="absolute right-3 top-2.5 text-[#9ED2C5] font-semibold">kg</span>
+          </div>
+  
+          <!-- Altura -->
+          <div class="relative">
+            <input type="number"
+              class="p-inputtext w-full pr-10 py-2 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] placeholder-[#9ED2C5] text-[#3A3A3A]"
+              [(ngModel)]="child.altura" placeholder="Altura" />
+            <span class="absolute right-3 top-2.5 text-[#9ED2C5] font-semibold">cm</span>
+          </div>
+  
+          <!-- Género -->
+          <p-dropdown
+            [options]="generos"
+            [(ngModel)]="child.genero"
+            placeholder="Selecciona género"
+            class="w-full rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+            panelStyleClass="bg-[#E6F7F9] border border-[#9ED2C5] text-[#3A3A3A] rounded-xl shadow"
+            inputStyleClass="bg-[#E6F7F9] text-[#3A3A3A]"
+            dropdownIcon="pi pi-chevron-down"
+          ></p-dropdown>
+        </div>
+  
+        <!-- Botón Guardar/Editar -->
+        <div class="flex justify-center mt-4">
+          <button pButton
+            class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold transition shadow rounded-lg text-sm px-5 py-1"
+            [label]="editProfile ? 'Guardar' : 'Editar'"
+            [icon]="editProfile ? 'pi pi-check' : 'pi pi-pencil'"
+            (click)="editProfile ? saveProfile() : editProfile = true">
+          </button>
+        </div>
+      </div>
+  
+      <!-- CARD: Salud -->
+      <div class="bg-white/90 rounded-3xl shadow-xl p-6 border border-[#FBF8F0]/40 flex flex-col items-center">
+        <h3 class="text-lg font-semibold mb-4 text-[#3A3A3A] flex items-center justify-center gap-2">
+          <i class="pi pi-heart-fill text-[#FF7F50]"></i> Salud
+        </h3>
+  
+        <div class="flex-1 w-full text-center">
+          <!-- Lectura -->
+          <div class="text-[#6B6B6B] space-y-2" [hidden]="editHealth">
+            <p><strong>Alergias:</strong> {{ salud.alergias }}</p>
+            <p><strong>Enfermedades:</strong> {{ salud.enfermedades }}</p>
+            <p><strong>Pediatra:</strong> {{ salud.pediatra }}</p>
+            <p><strong>Vacunas:</strong></p>
+            <ul class="ml-4 list-disc text-left inline-block">
+              @for (vacuna of vacunas; track vacuna.id) {
+                <li>{{ vacuna.nombre }} - {{ vacuna.fecha | date:'dd/MM/yyyy' }}</li>
+              }
+            </ul>
+          </div>
+  
+          <!-- Edición -->
+          <div class="space-y-2" [hidden]="!editHealth">
+            <input type="text" class="p-inputtext w-full rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+              [(ngModel)]="salud.alergias" placeholder="Alergias" />
+            <input type="text" class="p-inputtext w-full rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+              [(ngModel)]="salud.enfermedades" placeholder="Enfermedades" />
+            <input type="text" class="p-inputtext w-full rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+              [(ngModel)]="salud.pediatra" placeholder="Pediatra" />
+  
+            <label class="block font-semibold text-[#9ED2C5] mb-2 mt-4">Vacunas</label>
+            @for (vacuna of vacunas; track vacuna.id; let i = $index) {
+              <div class="relative flex gap-2 mb-2 items-center justify-center w-full">
+                <input type="text"
+                  class="p-inputtext flex-1 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+                  [(ngModel)]="vacunas[i].nombre" placeholder="Nombre de la vacuna" />
+                
+                <p-calendar
+                  [(ngModel)]="vacunas[i].fecha"
+                  dateFormat="dd/mm/yy"
+                  [showIcon]="true"
+                  appendTo="body"
+                  inputStyleClass="w-24 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A] text-xs"
+                  panelStyleClass="bg-[#E6F7F9] text-[#3A3A3A] border border-[#9ED2C5] rounded-xl shadow"
+                  styleClass="calendar-coral-icon"
+                  placeholder="Fecha"
+                ></p-calendar>
+  
+                <button type="button"
+                  class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white p-2 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                  title="Eliminar vacuna"
+                  (click)="eliminarVacuna(i)">
+                  <i class="pi pi-trash text-sm"></i>
+                </button>
+              </div>
+            }
+  
+            <div class="flex justify-center">
+              <button pButton type="button" icon="pi pi-plus"
+                class="mt-2 bg-[#FF7F50] hover:bg-[#ff9a72] text-white rounded-lg px-3 py-1 text-sm"
+                (click)="agregarVacuna()">Añadir vacuna</button>
+            </div>
+          </div>
+        </div>
+  
+        <div class="flex justify-center mt-4">
+          <button pButton
+            class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold transition shadow rounded-lg text-sm px-5 py-1"
+            [label]="editHealth ? 'Guardar' : 'Editar'"
+            [icon]="editHealth ? 'pi pi-check' : 'pi pi-pencil'"
+            (click)="editHealth ? saveHealth() : editHealth = true">
+          </button>
+        </div>
+      </div>
+  
+      <!-- CARD: Descripción -->
+      <div class="bg-white/90 rounded-3xl shadow-xl p-6 border border-[#FBF8F0]/40 flex flex-col lg:col-span-2 items-center">
+        <h3 class="text-lg font-semibold mb-4 text-[#3A3A3A] flex items-center justify-center gap-2">
+          <i class="pi pi-comment text-[#9ED2C5]"></i> Descripción
+        </h3>
+  
+        <div class="w-full text-center" [hidden]="editDescription">
+          <p class="text-[#6B6B6B] text-base">{{ child.descripcion }}</p>
+        </div>
+  
+        <div class="w-full" [hidden]="!editDescription">
+          <textarea
+            [(ngModel)]="child.descripcion"
+            class="p-inputtext w-full rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] placeholder-[#9ED2C5] text-[#3A3A3A]"
+            rows="3"
+            placeholder="Descripción"
+          ></textarea>
+        </div>
+  
+        <div class="flex justify-center mt-4">
+          <button pButton
+            class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold transition shadow rounded-lg text-sm px-5 py-1"
+            [label]="editDescription ? 'Guardar' : 'Editar'"
+            [icon]="editDescription ? 'pi pi-check' : 'pi pi-pencil'"
+            (click)="editDescription ? saveDescription() : editDescription = true">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

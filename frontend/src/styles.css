@@ -1,1 +1,29 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+  }
+}
+
+@theme {
+  --font-nido: "Poppins", "sans-serif";
+}
+
+body {
+  color: #3a3a3a;
+  line-height: 1.5;
+}

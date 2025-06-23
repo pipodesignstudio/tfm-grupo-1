@@ -1,0 +1,144 @@
+<div class="register-container">
+  <div class="register-content">
+    <h1 class="page-title">Regístrate</h1>
+
+    <!-- OPCIONAL: Añadir avatar -->
+    <!-- <div class="profile-picture-section">
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="file-input"
+      />
+
+      <div class="profile-picture-placeholder" (click)="fileInput.click()">
+        @if (profileImageUrl) {
+        <img
+          [src]="profileImageUrl"
+          alt="Foto de Perfil"
+          class="profile-image"
+        />
+        } @else {
+        <img
+          src="https://img.icons8.com/?size=40&id=85103&format=png&color=000000"
+        />
+        }
+      </div>
+    </div> -->
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      class="register-form"
+    >
+      <div class="input-group p-fluid">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          pInputText
+          formControlName="username"
+          placeholder="nombredeusuario"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['username'].invalid && f['username'].touched
+          }"
+        />
+        @if (registerForm.get('username'); as usernameControl) { @if
+        (usernameControl.invalid && usernameControl.dirty) {
+        <small class="p-error">
+          @if (usernameControl.errors?.['required']) { El username es
+          obligatorio. } @if (usernameControl.errors?.['minlength']) { El
+          username debe tener al menos
+          {{ usernameControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </small>
+        } }
+      </div>
+
+      <div class="input-group p-fluid">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          pInputText
+          formControlName="email"
+          placeholder="tu.email@ejemplo.com"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['email'].invalid && f['email'].touched
+          }"
+        />
+        @if (registerForm.get('email'); as emailControl) { @if
+        (emailControl.invalid && emailControl.dirty) {
+        <small class="p-error">
+          @if (emailControl.errors?.['required']) { El email es obligatorio. }
+          @if (emailControl.errors?.['email']) { Introduce un email válido. }
+        </small>
+        } }
+      </div>
+
+      <div class="input-group p-fluid">
+        <label for="password">Contraseña</label>
+        <p-password
+          id="password"
+          formControlName="password"
+          placeholder="********"
+          [toggleMask]="true"
+          [feedback]="false"
+          inputStyleClass="w-full"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['password'].invalid && f['password'].touched
+          }"
+        ></p-password>
+        @if (registerForm.get('password'); as passwordControl) { @if
+        (passwordControl.invalid && passwordControl.dirty) {
+        <small class="p-error">
+          @if (passwordControl.errors?.['required']) { La contraseña es
+          obligatoria. } @if (passwordControl.errors?.['minlength']) { La
+          contraseña debe tener al menos
+          {{ passwordControl.errors?.['minlength'].requiredLength }} caracteres.
+          }
+        </small>
+        } }
+      </div>
+
+      <div class="input-group p-fluid">
+        <label for="confirmPassword">Confirmar Contraseña</label>
+        <p-password
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          placeholder="********"
+          [toggleMask]="true"
+          [feedback]="false"
+          inputStyleClass="w-full"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['confirmPassword'].invalid && f['confirmPassword'].touched
+          }"
+        ></p-password>
+        @if (registerForm.get('confirmPassword'); as confirmPasswordControl) {
+        @if (confirmPasswordControl.invalid && confirmPasswordControl.dirty) {
+        <small class="p-error">
+          @if (confirmPasswordControl.errors?.['required']) { Confirma la
+          contraseña. }
+        </small>
+        } }
+      </div>
+
+      @if (registerForm.errors?.['mismatch'] && registerForm.dirty) {
+      <small class="p-error">Las contraseñas no coinciden.</small>
+      } @if (errorMessage) {
+      <small class="p-error">{{ errorMessage }}</small>
+      }
+
+      <button
+        pButton
+        type="submit"
+        label="Enviar"
+        class="p-button-primary"
+      ></button>
+    </form>
+  </div>
+</div>

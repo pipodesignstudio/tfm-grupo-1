@@ -1,0 +1,287 @@
+<div class="min-h-screen">
+  <!-- Main tablet y movil-->
+  <div class="block lg:hidden max-w-md mx-auto p-4 space-y-6">
+    <!-- Family Card -->
+    <div
+      class="bg-[#9ed2c5] dark:bg-gray-700 rounded-2xl shadow p-6 space-y-6 text-center"
+    >
+      <!-- User Avatar + Info -->
+      <div class="flex justify-center items-center space-x-9">
+        <!-- Avatar -->
+        <div class="w-32 h-32 rounded-full overflow-hidden">
+          <img
+            [src]="user.avatar"
+            alt="User Avatar"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <!-- User info -->
+        <div class="leading-tight text-left">
+          <p class="text-base font-semibold text-gray-900 dark:text-white">
+            {{ user.nick }}
+          </p>
+          @if (user.name && user.surname) {
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ user.name }} {{ user.surname }}
+          </p>
+          }
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ user.rol }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Childrens -->
+      <div class="flex items-center justify-center space-x-4">
+        @for (child of children; track child) {
+        <button
+          (click)="selectChild(child)"
+          [class.bg-orange-100]="child === selectedChild"
+          [class.text-orange-700]="child === selectedChild"
+          [class.bg-gray-200]="child !== selectedChild"
+          class="rounded-full w-16 h-16 flex items-center justify-center hover:cursor-pointer transition-colors duration-200"
+        >
+          <span class="text-xs font-medium">
+            {{ child.name }}
+          </span>
+        </button>
+        }
+        <button
+          class="bg-gray-200 hover:bg-gray-300 rounded-full w-14 h-14 flex items-center justify-center hover:cursor-pointer"
+          (click)="showChildModal()"
+        >
+          <i class="pi pi-plus text-gray-700 text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Selected Child Card -->
+    @if (selectedChild) {
+    <div class="bg-[#9ed2c5] dark:bg-gray-700 rounded-2xl shadow">
+      <div class="p-4">
+        <h2
+          class="text-lg font-semibold text-gray-900 dark:text-white mb-4 ml-2"
+        >
+          {{ selectedChild.name }}
+        </h2>
+        <div class="mt-3 flex items-center justify-between ml-2 mr-2">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">
+            {{ selectedChild.age }}
+          </p>
+          <button
+            (click)="router.navigate(['/child-profile/{{selectedChild.id}}'])"
+            class="hover:cursor-pointer"
+          >
+            <i class="pi pi-search text-gray-600 dark:text-white text-sm"></i>
+          </button>
+        </div>
+
+        <div class="relative mt-4">
+          <img
+            [src]="selectedChild.image"
+            alt="Foto del niño"
+            class="w-full rounded-xl object-cover"
+          />
+        </div>
+        <div
+          class="mt-3 flex items-center dark:text-white justify-between ml-2 mr-2"
+        >
+          <p><strong>Altura:</strong> {{ selectedChild.altura }} cm</p>
+          <p><strong>Peso:</strong> {{ selectedChild.peso }} kg</p>
+        </div>
+      </div>
+    </div>
+    }
+    <div
+      class="bg-[#9ed2c5] dark:bg-gray-700 rounded-2xl shadow p-6 space-y-6 text-center"
+    >
+
+    <div class="flex items-center justify-between mb-4">
+       <h2
+        class="text-lg font-semibold text-center text-gray-900 dark:text-white mb-2"
+      >
+        INTEGRANTES DE LA FAMILIA
+      </h2>
+
+      <!-- Botón añadir familiar -->
+      <div class="flex justify-center mb-4">
+        <button
+          (click)="showFamilyModal()"
+          class="flex items-center gap-2 bg-purple-100 text-purple-800 hover:bg-purple-200 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+        >
+          <i class="pi pi-user-plus text-sm"></i>
+          +
+        </button>
+    </div>
+     
+      </div>
+      @for (member of familyMembers; track member) {
+      <div
+        class="flex justify-between items-center px-4 py-3 rounded-xl"
+        [ngClass]="getBgColor(member)"
+      >
+        <span class="text-sm font-medium text-gray-800">
+          {{ member.name }} – {{ member.role }}
+        </span>
+        <div class="w-8 h-8 rounded-full bg-gray-700"></div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Main desktop -->
+  <div class="hidden lg:block max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <!-- Perfil de usuario -->
+    <div class="flex items-center justify-center gap-8">
+      <!-- Avatar -->
+      <div
+        class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md"
+      >
+        <img
+          [src]="user.avatar"
+          alt="Avatar"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Info -->
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{ user.name }} {{ user.surname }}
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300">{{ user.nick }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ user.email }}
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Miembro desde {{ user.createdAt }}
+        </p>
+      </div>
+      <button
+        class="bg-purple-500 hover:bg-purple-600 dark:bg-gray-800 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-md shadow"
+        (click)="router.navigate(['/settings/edit-profile'])"
+      >
+        Editar Perfil
+      </button>
+    </div>
+
+    <!-- Mis Niños -->
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          👶 Mis Niños
+        </h3>
+        <button
+          class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          (click)="showChildModal()"
+        >
+          + Agregar Niño
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        @for (child of children; track child) {
+        <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-4">
+                <div class="relative mt-4">
+                  <img
+                    [src]="selectedChild.image"
+                    alt="Foto del niño"
+                    class="w-50 rounded-xl object-cover"
+                  />
+                </div>
+                <div>
+                  <h4
+                    class="text-lg font-semibold text-gray-900 dark:text-white"
+                  >
+                    {{ child.name }}
+                  </h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ child.age }} años
+                  </p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Nacimiento: {{ child.fecha_nacimiento }}
+                  </p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Peso: {{ child.peso }} kg
+                  </p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Peso: {{ child.altura }} cm
+                  </p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Género: {{ child.genero }}
+                  </p>
+                </div>
+              </div>
+              <p class="mt-2 italic text-gray-500">“{{ child.descripcion }}”</p>
+            </div>
+            <button
+              (click)="router.navigate(['/child-profile'])"
+              class="hover:cursor-pointer"
+            >
+              <i
+                class="pi pi-angle-right text-xl text-gray-600 dark:text-white"
+              ></i>
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Familia -->
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          ❤️ Mi Familia
+        </h3>
+        <button
+          class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+          (click)="showFamilyModal()"
+        >
+          + Agregar Familiar
+        </button>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        @for (member of familyMembers; track member) {
+        <div
+          class="bg-white dark:bg-gray-800 shadow rounded-xl p-4 flex items-center gap-4"
+        >
+          <div class="text-2xl">🧑</div>
+          <div>
+            <p class="text-gray-900 dark:text-white font-medium">
+              {{ member.name }}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ member.role }}
+            </p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Stats resumen -->
+    <div
+      class="flex gap-6 justify-end mt-4 text-sm text-gray-600 dark:text-gray-300"
+    >
+      <div>
+        <strong>{{ children.length }}</strong> Niños registrados
+      </div>
+      <div>
+        <strong>{{ familyMembers.length }}</strong> Miembros de familia
+      </div>
+    </div>
+  </div>
+  @if (childModalVisible) {
+  <app-child-form (cerrar)="hideChildModal()"> </app-child-form>
+
+  } @if (familyModalVisible) {
+  <app-family-form (cerrar)="hideFamilyModal()"> </app-family-form>
+
+  }
+</div>

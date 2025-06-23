@@ -1,0 +1,28 @@
+<div class="create-routine-container">
+  <div class="create-routine-content">
+    <h1 class="page-title">¿Cómo quieres crear tu rutina?</h1>
+
+    <div class="options-grid">
+      <div class="option-card" (click)="createFromScratch()">
+        <p class="option-title">Desce cero</p>
+        <p class="option-description">
+          Diseña cada paso de la rutina a tu medida.
+        </p>
+      </div>
+
+      <div class="option-card" (click)="choosePredefined()">
+        <p class="option-title">Nuestras propuestas</p>
+        <p class="option-description">
+          Explora nuestras plantillas populares para empezar rápidamente.
+        </p>
+      </div>
+
+      <div class="option-card" (click)="passTest()">
+        <p class="option-title">Hacer el test</p>
+        <p class="option-description">
+          Responde unas preguntas sencillas y te sugeriremos la rutina ideal.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

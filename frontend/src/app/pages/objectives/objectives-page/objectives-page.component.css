@@ -1,0 +1,13 @@
+/* Usar la variable para tintar la parte llena de la barra */
+:host ::ng-deep .p-progressbar .p-progressbar-value {
+  background-color: var(--progressbar-value) !important;
+}
+
+:host ::ng-deep .p-checkbox-box.p-highlight {
+  background-color: var(--checkbox-color) !important;
+  border-color: var(--checkbox-color) !important;
+}
+
+:host ::ng-deep .p-checkbox-box.p-highlight .p-checkbox-icon {
+  color: white !important;
+}

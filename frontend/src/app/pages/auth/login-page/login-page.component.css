@@ -1,0 +1,182 @@
+@keyframes slideInFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: #c8e6f0;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 500px;
+  max-width: 700px;
+  background-color: #9ed2c5;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: slideInFadeIn 0.8s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.brand-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.brand-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.app-name {
+  font-family: "Poppins", sans-serif;
+  font-size: 3em;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+}
+
+.app-slogan {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8em;
+  color: #fbf8f0;
+  margin-top: 5px;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.form-title {
+  font-size: 1.8em;
+  color: #ffffff;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group label {
+  font-size: 0.9em;
+  color: #fbf8f0;
+  font-weight: 500;
+}
+
+.p-inputtext {
+  padding: 12px 15px;
+  border: 1px solid #fbf8f0;
+  border-radius: var(--form-field-border-radius, 8px);
+  font-size: 1em;
+  color: #3a3a3a;
+  background-color: #ffffff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.p-inputtext::placeholder {
+  color: #9b9b9b;
+}
+
+.input-group p-password {
+  width: 100%;
+  display: flex;
+}
+
+.input-group p-password .p-inputtext {
+  width: 100%;
+}
+
+.input-group p-password .p-inputwrapper {
+  width: 100%;
+}
+
+.p-error {
+  color: #ff7f50;
+  font-size: 0.9em;
+  text-align: left;
+  margin-top: 5px;
+  display: block;
+}
+
+.p-button {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border: none;
+  border-radius: var(--button-border-radius, 8px);
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  transition: background-color var(--transition-duration, 0.3s) ease,
+    color var(--transition-duration, 0.3s) ease, transform 0.2s ease;
+}
+
+.p-button.p-button-primary {
+  background-color: #ffd700;
+  color: #3a3a3a;
+}
+.p-button.p-button-primary:hover {
+  background-color: #ff7f50;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.p-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.register-link-section {
+  margin-top: 20px;
+}
+
+.register-text {
+  font-size: 0.95em;
+  color: #fbf8f0;
+}
+
+.register-link {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: #ffd700;
+  text-decoration: underline;
+}
