@@ -124,3 +124,31 @@ export const UpdateActividadDtoSchema = {
   additionalProperties: false,
   minProperties: 1
 };
+
+
+export const ExportActivitiesDtoSchema = {
+  type: 'object',
+  required: ['activities'],
+  properties: {
+    activities: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          titulo: { type: 'string' },
+          tipo: { type: 'string' },
+          fecha_realizacion: { type: 'string' },
+          hora_inicio: { type: 'string' },
+          hora_fin: { type: 'string' },
+          color: { type: 'string' },
+          ubicacion: { type: 'object' },
+          usuario_responsable: { type: 'integer' },
+          completado: { type: 'boolean' },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
+  additionalProperties: false,
+};

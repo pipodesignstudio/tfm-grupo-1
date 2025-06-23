@@ -11,7 +11,7 @@ model actividades {
   id                        Int                         @id @default(autoincrement())
   rutina_id                 Int?
   ninos_id                  Int
-  titulo                    String                      @db.VarChar(100)
+  titulo                    String?                     @db.VarChar(100)
   descripcion               String?                     @db.Text
   fecha_creacion            DateTime                    @default(now()) @db.Timestamp(0)
   fecha_realizacion         DateTime                    @db.Timestamp(0)
@@ -74,11 +74,13 @@ model ninos {
   altura                  Int?
   actividades             actividades[]
   alergias                alergias[]
+  enfermedades            enfermedades[]
   familia                 familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_ninos_familia1")
   perfiles_aprendizaje    perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
   notas                   notas[]
   objetivos               objetivos[]
   rutinas                 rutinas[]
+  vacunas                 vacunas[]
 
   @@index([perfiles_aprendizaje_id], map: "fk_ninos_perfiles_aprendizaje1_idx")
   @@index([familia_id], map: "fk_ninos_familia1")
@@ -182,6 +184,26 @@ model objetivos_has_actividades {
   @@id([objetivo_id, actividad_id])
   @@index([actividad_id], map: "idx_actividad_objetivo_actividad_id")
   @@index([objetivo_id], map: "idx_actividad_objetivo_objetivo_id")
+}
+
+model enfermedades {
+  id       Int    @id @default(autoincrement())
+  ninos_id Int
+  nombre   String @db.VarChar(100)
+  doctor   String @db.VarChar(100)
+  ninos    ninos  @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_enfermedades_ninos1")
+
+  @@index([ninos_id], map: "fk_enfermedades_ninos1")
+}
+
+model vacunas {
+  id       Int      @id @default(autoincrement())
+  ninos_id Int
+  nombre   String   @db.VarChar(100)
+  fecha    DateTime @db.Timestamp(0)
+  ninos    ninos    @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_vacunas_ninos1")
+
+  @@index([ninos_id], map: "fk_vacunas_ninos1")
 }
 
 enum familia_usuarios_rol {

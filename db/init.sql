@@ -117,6 +117,22 @@ CREATE TABLE `alergias` (
   CONSTRAINT `fk_alergias_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE `vacunas` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `ninos_id` INT NOT NULL,
+  `nombre` VARCHAR(100) NOT NULL,
+  `fecha` TIMESTAMP NOT NULL,
+  CONSTRAINT `fk_vacunas_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `enfermedades` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `ninos_id` INT NOT NULL,
+  `nombre` VARCHAR(100) NOT NULL,
+  `doctor` VARCHAR(100) NOT NULL,
+  CONSTRAINT `fk_enfermedades_ninos1` FOREIGN KEY (`ninos_id`) REFERENCES `ninos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 CREATE TABLE `notas` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,

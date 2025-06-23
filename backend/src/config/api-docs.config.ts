@@ -1,5 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { BadRequestErrorSchema, ConflictErrorSchema, CreateNinoSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, InvitationResponseSchema, NewInvitationSchema, NewRemindedSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, SuggestionApiResponseSchema, UnauthorizedErrorSchema, UpdateRemindedSchema, UpdateUserDtoSchema, UserApiResponseSchema } from '../schemas';
+import { BadRequestErrorSchema, ConflictErrorSchema, CreateAlergiaDtoSchema, CreateEnfermedadDtoSchema, CreateNinoSchema, CreateVacunaDtoSchema, CustomErrorSchema, ExportActivitiesDtoSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, InvitationResponseSchema, NewInvitationSchema, NewRemindedSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, SuggestionApiResponseSchema, UnauthorizedErrorSchema, UpdateAlergiaDtoSchema, UpdateEnfermedadDtoSchema, UpdateRemindedSchema, UpdateUserDtoSchema, UpdateVacunaDtoSchema, UserApiResponseSchema } from '../schemas';
 
 export const schemas = {
   // Dto
@@ -10,6 +10,13 @@ export const schemas = {
   NewReminderDto: NewRemindedSchema,
   UpdateReminderDto: UpdateRemindedSchema,
   CreateNinoDto: CreateNinoSchema,
+  CreateAlergiaDto: CreateAlergiaDtoSchema,
+  UpdateAlergiaDto: UpdateAlergiaDtoSchema,
+  CreateEnfermedadDto: CreateEnfermedadDtoSchema,
+  UpdateEnfermedadDto: UpdateEnfermedadDtoSchema,
+  CreateVacunaDto: CreateVacunaDtoSchema,
+  UpdateVacunaDto: UpdateVacunaDtoSchema,
+  ExportActivitiesDto: ExportActivitiesDtoSchema,
 
   // Error schemas
   CustomError: CustomErrorSchema,

@@ -1,4 +1,5 @@
 export * from './async-middleware.util';
+export * from './ensure-child.util';
 export * from './errors.util';
 export * from './jwt.util';
 export * from './lista-alergias';

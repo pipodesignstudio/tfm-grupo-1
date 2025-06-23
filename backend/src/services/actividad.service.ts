@@ -1,12 +1,22 @@
 import prisma from "../config/prisma.config";
+import { ExportActivitiesDto } from "../dtos/actividades";
 import { CreateActividadDto } from '../dtos/actividades/create-actividad.dto';
 import { UpdateActividadDto } from "../dtos/actividades/update-actividad.dto";
+import { IActividad, IActividadPdf } from "../interfaces";
+import { activitiesPdfGenerator } from "../templates/pdf/activities-export.layout";
 import { NotFoundError, InternalServerError } from '../utils';
+import { PdfGeneratorService } from "./printer.service";
 
 
 export class ActividadService {
+
+  private printerService: PdfGeneratorService;
+
+  constructor() {
+    this.printerService = new PdfGeneratorService();
+  }
+
   public async createActividad(id_nino: number, dto: CreateActividadDto) {
-    console.log('aaaa');
     try {
       const data: any = {
         tipo: dto.tipo,
@@ -25,8 +35,6 @@ export class ActividadService {
       if (dto.rutina_id != null) {
         data.rutina_id = dto.rutina_id;
       }
-
-      console.log('Datos de la actividad a crear:', data);
 
       return await prisma.actividades.create({ data });
     } catch (error) {
@@ -98,4 +106,51 @@ export class ActividadService {
 
     return;
   }
+
+  public async exportActivitiesToPdf(dto: ExportActivitiesDto, nino_id: number):Promise<PDFKit.PDFDocument | null> {
+    try {
+      const nino = await prisma.ninos.findUnique({ where: { id: nino_id } });
+      if (!nino) {
+        throw new NotFoundError(
+          'Nino no encontrado',
+          { error: 'NINO_NOT_FOUND' },
+          false
+        );
+      }
+      const activitiesPdf = await this.transformActivitiesToPdfDto(dto.activities, `${nino.nombre} ${nino.apellido}`);
+      const docDefinitions = activitiesPdfGenerator(activitiesPdf);
+      return  this.printerService.createPdf(docDefinitions);
+    } catch (error) {
+      throw new InternalServerError('Error interno al exportar actividades', {
+        error: 'INTERNAL_SERVER_ERROR',
+        detalle: error,
+      });  
+    }
+  }
+
+
+  private async transformActivitiesToPdfDto(actividades: IActividad[], nino_name:string):Promise<IActividadPdf[]> {
+    const response:IActividadPdf[] = [];
+    actividades.forEach(async (actividad) => {
+      let rutina_name = '';
+      if (actividad.rutina_id) {
+        const rutina = await prisma.rutinas.findUnique({ where: { id: actividad.rutina_id } });
+        rutina_name = rutina?.nombre ?? '';
+      }
+      const pdfactividad:IActividadPdf = {
+        rutina_name,
+        nino: nino_name,
+        title: actividad.titulo ?? '',
+        description: actividad.descripcion ?? '',
+        fecha_realizacion: actividad.fecha_realizacion ?? new Date(),
+        hora_inicio: actividad.hora_inicio,
+        hora_fin: actividad.hora_fin,
+        color: actividad.color ?? '',
+        tipo: actividad.tipo,
+      }
+      response.push(pdfactividad);
+    });
+    return response;
+  }
+
 }

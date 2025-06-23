@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { validationMiddleware } from '../middlewares';
+import { authMiddleware, validationMiddleware } from '../middlewares';
 import { ActividadController } from '../controllers/actividad.controller';
 import { asyncMiddlewareWrapper } from '../utils';
 import { CreateActividadDto } from '../dtos/actividades/create-actividad.dto';
 import { UpdateActividadDto } from "../dtos/actividades/update-actividad.dto";
+import { ExportActivitiesDto } from '../dtos/actividades';
 
 const controller = new ActividadController();
 const router = Router({ mergeParams: true });
@@ -140,6 +141,36 @@ router.put(
 router.delete(
   '/ninos/:id_nino/:id',
   asyncMiddlewareWrapper(controller.borrarActividad.bind(controller))
+);
+
+/**
+ * @openapi
+ * /api/ninos/{id_nino}/actividades/export:
+ *   post:
+ *     summary: Exporta actividades
+ *     tags:
+ *       - Actividades
+ *     parameters:
+ *       - in: path
+ *         name: id_nino
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ExportActivitiesDto'
+ *     responses:
+ *       '200':
+ *         description: Actividades exportadas exitosamente
+ */
+router.post(
+  '/ninos/:id_nino/export',
+  asyncMiddlewareWrapper(authMiddleware),
+  validationMiddleware(ExportActivitiesDto),
+  controller.exportarActividades
 );
 
 export default router;

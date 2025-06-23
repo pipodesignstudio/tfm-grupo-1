@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { ActividadService } from '../services/actividad.service';
-import { ApiCorrectResponse } from '../utils';
+import { ApiCorrectResponse, InternalServerError } from '../utils';
+import { ExportActivitiesDto } from '../dtos/actividades';
+import { Stream } from 'nodemailer/lib/xoauth2';
 
 const actividadService = new ActividadService();
 
@@ -59,4 +61,33 @@ export class ActividadController {
       next(err);
     }
   }
+
+
+  public async exportarActividades(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id_nino = Number(req.params.id_nino);
+      const dto: ExportActivitiesDto = req.body;
+      const doc:PDFKit.PDFDocument | null = await actividadService.exportActivitiesToPdf(dto, id_nino);
+      if(!doc){
+        throw new InternalServerError('Error interno al exportar actividades', {
+          error: 'INTERNAL_SERVER_ERROR',
+          detalle: 'Error al exportar actividades',
+        });
+      }
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=informe-actividades.pdf'); // 'attachment' para forzar descarga
+
+      doc.pipe(res);
+      doc.info.Title = 'Informe de Actividades';
+      doc.info.Author = 'Nido';
+      doc.info.Subject = 'Informe de Actividades';
+      doc.info.CreationDate = new Date();
+      doc.info.ModDate = new Date();
+      doc.end();
+     
+    } catch (err) {
+      next(err);
+    }
+  }
+
 }
