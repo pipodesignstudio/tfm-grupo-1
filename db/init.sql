@@ -40,7 +40,7 @@ CREATE TABLE `perfiles_aprendizaje` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `nombre` VARCHAR(100) NOT NULL,
   `descripcion` TEXT DEFAULT NULL
-);
+);  
 
 CREATE TABLE `ninos` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,

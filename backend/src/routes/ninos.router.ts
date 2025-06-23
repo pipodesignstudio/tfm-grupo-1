@@ -36,7 +36,7 @@ const router = Router();
  *         description: Niño creado con éxito
  *         content:
  *           application/json:
- *             schema: { $ref: '#/components/schemas/NinoSuccessResponse' }
+ *             schema: { $ref: '#/components/schemas/SuccessResponse' }
  *       '400':
  *         description: Datos de entrada inválidos
  *         content:

@@ -19,6 +19,8 @@ export interface Ubicacion {
     lugar: string;
 }
 
+
+
 export interface IActividadSuggestion {
   titulo: string;
   descripcion: string | null;

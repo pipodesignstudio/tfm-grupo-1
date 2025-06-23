@@ -1,4 +1,4 @@
-export const NinoSchema = {
+export const CreateNinoSchema = {
   type: 'object',
   required: ['perfiles_aprendizaje_id', 'familia_id', 'nombre', 'apellido', 'fecha_nacimiento'],
   properties: {

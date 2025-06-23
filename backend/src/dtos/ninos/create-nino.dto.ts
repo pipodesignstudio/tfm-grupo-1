@@ -1,7 +1,10 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, IsDateString, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, IsDateString, Min, IsPositive } from 'class-validator';
 
 export class CreateNinoDto {
-  @IsInt() perfiles_aprendizaje_id!: number;
+  @IsInt() 
+  @IsPositive()
+  perfiles_aprendizaje_id!: number;
+  @IsPositive()
   @IsInt() familia_id!: number;
 
   @IsString() @MaxLength(100) @IsNotEmpty() nombre!: string;

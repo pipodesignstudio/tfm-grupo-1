@@ -1,5 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { BadRequestErrorSchema, ConflictErrorSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, InvitationResponseSchema, NewInvitationSchema, NewRemindedSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, SuggestionApiResponseSchema, UnauthorizedErrorSchema, UpdateRemindedSchema, UpdateUserDtoSchema, UserApiResponseSchema } from '../schemas';
+import { BadRequestErrorSchema, ConflictErrorSchema, CreateNinoSchema, CustomErrorSchema, ForbiddenErrorSchema, InternalServerErrorSchema, InvalidInputErrorSchema, InvitationResponseSchema, NewInvitationSchema, NewRemindedSchema, NotFoundErrorSchema, RegisterUserDtoSchema, SuccessApiResponseSchema, SuggestionApiResponseSchema, UnauthorizedErrorSchema, UpdateRemindedSchema, UpdateUserDtoSchema, UserApiResponseSchema } from '../schemas';
 
 export const schemas = {
   // Dto
@@ -9,6 +9,7 @@ export const schemas = {
   InvitationResponseDto: InvitationResponseSchema,
   NewReminderDto: NewRemindedSchema,
   UpdateReminderDto: UpdateRemindedSchema,
+  CreateNinoDto: CreateNinoSchema,
 
   // Error schemas
   CustomError: CustomErrorSchema,

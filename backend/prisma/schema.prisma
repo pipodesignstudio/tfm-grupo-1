@@ -14,6 +14,7 @@ model actividades {
   titulo                    String                      @db.VarChar(100)
   descripcion               String?                     @db.Text
   fecha_creacion            DateTime                    @default(now()) @db.Timestamp(0)
+  fecha_realizacion         DateTime                    @db.Timestamp(0)
   hora_inicio               DateTime                    @db.Time(0)
   hora_fin                  DateTime                    @db.Time(0)
   color                     String?                     @db.VarChar(45)
@@ -21,7 +22,6 @@ model actividades {
   ubicacion                 Json?
   usuario_responsable       Int
   completado                Boolean?                    @default(false)
-  fecha_realizacion         DateTime                    @db.Timestamp(0)
   rutinas                   rutinas?                    @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
   ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_actividades_ninos1")
   objetivos_has_actividades objetivos_has_actividades[]
@@ -45,8 +45,7 @@ model familia {
   descripcion                String?                      @db.Text
   familia_usuarios           familia_usuarios[]
   invitacion_usuario_familia invitacion_usuario_familia[]
-
-  ninos ninos[] 
+  ninos                      ninos[]
 }
 
 model familia_usuarios {
@@ -75,13 +74,14 @@ model ninos {
   altura                  Int?
   actividades             actividades[]
   alergias                alergias[]
+  familia                 familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_ninos_familia1")
   perfiles_aprendizaje    perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
-  familia                familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_ninos_familia1")
   notas                   notas[]
   objetivos               objetivos[]
   rutinas                 rutinas[]
 
   @@index([perfiles_aprendizaje_id], map: "fk_ninos_perfiles_aprendizaje1_idx")
+  @@index([familia_id], map: "fk_ninos_familia1")
 }
 
 model notas {
