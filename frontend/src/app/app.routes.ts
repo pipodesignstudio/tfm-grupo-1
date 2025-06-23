@@ -1,7 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { LoginPageComponent } from './pages/auth/login-page/login-page.component';
-import { RegisterPageComponent } from './pages/auth/register-page/register-page.component';
+import { LoginPageComponent } from './features/auth/pages/login-page/login-page.component';
+import { RegisterPageComponent } from './features/auth/pages/register-page/register-page.component';
 import { CalendarPageComponent } from './pages/routines/calendar-page/calendar-page.component';
 import { WelcomePageComponent } from './public/welcome-page/welcome-page.component';
 import { DashboardPageComponent } from './pages/dashboard/dashboard-page/dashboard-page.component';
@@ -19,11 +19,21 @@ import { CreateRoutineComponent } from './create-routine/create-routine.componen
 import { Mensaje2Component } from './mensaje2/mensaje2.component';
 import { RoutineFormPageComponent } from './pages/routines/routine-form-page/routine-form-page.component';
 import { RoutineListPageComponent } from './pages/routines/routine-list-page/routine-list-page.component';
+import { AuthLayoutComponent } from './features/auth/layouts/auth-layout/auth-layout.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent, title: 'Bienvenido a Nido' },
-  { path: 'login', component: LoginPageComponent },
-  { path: 'register', component: RegisterPageComponent },
+  { path: 'auth', component: AuthLayoutComponent, children: [
+    {
+      path: 'login', component: LoginPageComponent
+    },
+    {
+      path: 'register', component: RegisterPageComponent
+    }, 
+    {
+      path: '**' , redirectTo: 'login', pathMatch: 'full'
+    }
+  ]},
   { path: 'message1', component: WelcomePageComponent },
   { path: 'create-family', component: CreateFamilyComponent },
   { path: 'my-family', component: MyFamilyComponent },

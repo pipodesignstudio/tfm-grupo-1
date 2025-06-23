@@ -1,6 +1,4 @@
-<div class="register-container">
-  <div class="register-content">
-    <h1 class="page-title">Regístrate</h1>
+    <h1 class="text-xl font-bold">Regístrate</h1>
 
     <!-- OPCIONAL: Añadir avatar -->
     <!-- <div class="profile-picture-section">
@@ -30,9 +28,9 @@
     <form
       [formGroup]="registerForm"
       (ngSubmit)="onSubmit()"
-      class="register-form"
+      class="flex flex-col gap-3"
     >
-      <div class="input-group p-fluid">
+      <div class="flex flex-col gap-2">
         <label for="username">Username</label>
         <input
           type="text"
@@ -140,5 +138,4 @@
         class="p-button-primary"
       ></button>
     </form>
-  </div>
-</div>
+
