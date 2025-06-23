@@ -1,1 +1,83 @@
-<p-button label="Continuar" [raised]="true" (onClick)="continueToLogin()" />
+<div class="min-h-screen flex flex-col bg-[#f9fafb] dark:bg-gray-800">
+  <!-- Header secundario -->
+  <header
+    class="flex justify-between items-center p-6 bg-white dark:bg-gray-900 shadow mb-5"
+  >
+    <div class="flex items-center">
+      <img src="/nido.ico" alt="Logo Nido" class="w-8 h-8 mr-2" />
+      <span class="font-regular text-2xl text-gray-900">NIDO</span>
+    </div>
+
+    <p-button
+      label="Iniciar sesión"
+      [raised]="true"
+      (onClick)="continueToLogin()"
+    ></p-button>
+  </header>
+
+  <!-- Hero -->
+  <section
+    class="flex-1 flex flex-col items-center justify-center text-center px-4 py-6"
+  >
+    <h1
+      class="mx-10 text-4xl md:text-6xl font-semibold mb-4 text-gray-900 dark:text-white leading-tight"
+    >
+      Organiza los hábitos y rutinas de tus hijos con
+      <span class="text-yellow-400">NIDO</span>
+    </h1>
+
+    <p class="text-lg md:text-1xl text-gray-600 dark:text-gray-300 mb-6">
+      Una app sencilla para crear, seguir y celebrar el progreso diario en
+      familia.
+    </p>
+    <div>
+      <img class="w-80 mx-auto" src="/landing-image-01.png" alt="image" />
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section
+    class="max-w-4xl mx-auto mb-10 py-4 grid grid-cols-1 md:grid-cols-3 gap-8"
+  >
+    <div class="flex flex-col items-center">
+      <i class="pi pi-calendar text-4xl text-yellow-400 mb-2"></i>
+      <h3 class="font-semibold text-lg mb-1 text-gray-900 dark:text-white">
+        Rutinas diarias
+      </h3>
+      <p class="text-gray-600 dark:text-gray-300 text-center">
+        Crea hábitos y objetivos personalizados para cada hijo.
+      </p>
+    </div>
+    <div class="flex flex-col items-center">
+      <i class="pi pi-star text-4xl text-yellow-400 mb-2"></i>
+      <h3 class="font-semibold text-lg mb-1 text-gray-900 dark:text-white">
+        Motivación
+      </h3>
+      <p class="text-gray-600 dark:text-gray-300 text-center">
+        Seguimiento visual del progreso y colores personalizados.
+      </p>
+    </div>
+    <div class="flex flex-col items-center">
+      <i class="pi pi-users text-4xl text-yellow-400 mb-2"></i>
+      <h3 class="font-semibold text-lg mb-1 text-gray-900 dark:text-white">
+        Para toda la familia
+      </h3>
+      <p class="text-gray-600 dark:text-gray-300 text-center">
+        Diseñada para padres e hijos, fácil de usar y segura.
+      </p>
+    </div>
+  </section>
+  <p-button
+    label="Empezar gratis"
+    [raised]="true"
+    (onClick)="continueToLogin()"
+    class="mx-auto block mb-8"
+  />
+
+  <!-- Footer -->
+  <footer
+    class="bg-white dark:bg-gray-900 p-2 text-xs text-center text-gray-500 dark:text-gray-400"
+  >
+    © 2025 Nido. Todos los derechos reservados.
+  </footer>
+</div>
