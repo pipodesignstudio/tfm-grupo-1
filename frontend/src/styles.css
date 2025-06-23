@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-
 @layer base {
   *,
   *::before,
@@ -21,9 +20,8 @@
 }
 
 @theme {
-  --font-nido: "Poppins", "sans-serif"; 
+  --font-nido: "Poppins", "sans-serif";
 }
-
 
 body {
   color: #3a3a3a;
