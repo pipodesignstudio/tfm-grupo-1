@@ -10,3 +10,6 @@ export * from './user.service';
 export * from './ninos.service';
 export * from './objetivos.service';
 export * from './rutinas.service';
+export * from './notes.service';
+export * from './familia.service';
+export * from './familia-usuarios.service';

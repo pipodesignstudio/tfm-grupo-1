@@ -15,7 +15,7 @@ services:
 
   # Nueva instancia de MongoDB
   mongodb:
-    image: mongo:8.0.10-noble
+    image: mongo:latest 
     container_name: nidodb_mongo 
     restart: always 
     ports:

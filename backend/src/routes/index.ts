@@ -7,6 +7,9 @@ import invitationsRoute from "./invitations.route";
 import remindersRoute from "./reminders.route";
 import alergiaRoutes from "./alergia.router";
 import actividadRoutes from "./actividad.router";
+import notesRoute from "./notes.routes";
+import familiaRoutes from "./familia.routes";
+import familiaUsuariosRoutes from "./familia-usuarios.routes";
 
 import ninoRoutes from "./ninos.router";
 import objetivosRouter from "./objetivos.router";
@@ -22,7 +25,11 @@ apiRouter.use("/reminders", remindersRoute);
 apiRouter.use("/ninos", ninoRoutes);
 apiRouter.use("/ninos/:id_nino/alergias", alergiaRoutes);
 apiRouter.use("/actividades", actividadRoutes);
-apiRouter.use('/ninos/:id_nino/objetivos', objetivosRouter);
-apiRouter.use('/ninos/:id_nino/rutinas', rutinasRouter);
+apiRouter.use("/ninos/:id_nino/objetivos", objetivosRouter);
+apiRouter.use("/ninos/:id_nino/rutinas", rutinasRouter);
+apiRouter.use("/notes", notesRoute);
+
+apiRouter.use("/familia", familiaRoutes);
+apiRouter.use("/familia/:id/usuarios", familiaUsuariosRoutes);
 
 export default apiRouter;

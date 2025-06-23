@@ -9,3 +9,4 @@ export * from './reminders.schema';
 export * from './rutina.schema';
 export * from './success.schema';
 export * from './users.schema';
+export * from './notes.schema';

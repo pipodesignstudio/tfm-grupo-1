@@ -6,3 +6,6 @@ export * from './users.controller';
 export * from './ninos.controller';
 export * from './objetivos.controller';
 export * from './rutinas.controller';
+export * from './notes.controller';
+export * from './familia.controller';
+export * from './familia-usuarios.controller';
