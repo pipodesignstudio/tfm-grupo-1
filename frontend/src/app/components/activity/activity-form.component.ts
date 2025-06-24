@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IActivity } from '../../interfaces/iactivity.interface';
+import { IActivity } from '../../shared/interfaces/iactivity.interface';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';

@@ -256,4 +256,25 @@ export class UserService {
       return null;
     }
   }
+
+
+  public async checkIfEmailNeedsToBeVerified(id: number): Promise<boolean> {
+    try {
+      const user = await prisma.usuarios.findUnique({
+        where: { id: id },
+        select: {
+          email_verificado: true,
+        },
+      });
+      if (!user) {
+        throw new NotFoundError("Usuario no encontrado.");
+      }
+      return user.email_verificado;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+
 }

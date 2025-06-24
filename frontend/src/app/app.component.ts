@@ -3,13 +3,17 @@ import { RouterOutlet } from '@angular/router';
 
 import { Router, NavigationEnd } from '@angular/router';
 
-import { ThemeService } from "./service/theme.service";
 import { filter } from 'rxjs';
+import { ThemeService } from './shared/services/theme.service';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
+  template: `
+    <main>
+      <router-outlet />
+    </main>
+  `
 })
 export class AppComponent {
   title = 'Nido';

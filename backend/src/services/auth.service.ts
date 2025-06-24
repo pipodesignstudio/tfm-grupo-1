@@ -59,7 +59,7 @@ export class AuthService {
       });
 
       const _baseurl = process.env.FRONTEND_URL || "http://localhost:3000";
-      const url = `${_baseurl}/auth/verificar/${newUser.id}`;
+      const url = `${_baseurl}/auth/verificar/${newUser.email}`;
       await emailService.sendWelcomeVerificationEmail(
         dto.email,
         dto.nick,

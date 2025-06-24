@@ -62,7 +62,7 @@ userRouter.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware),
 
 /**
  * @openapi
- * /api/users/complete-onboarding:
+ * /api/users/verify-email/{email}:
  *   patch:
  *     summary: Confirma que el usuario ya no debe volver a ver el walktrough
  *     tags:
@@ -83,7 +83,7 @@ userRouter.patch('/complete-onboarding', asyncMiddlewareWrapper(authMiddleware),
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-userRouter.patch('/verify-email', asyncMiddlewareWrapper(authMiddleware), usersController.verifyEmail);
+userRouter.patch('/verify-email/:email', asyncMiddlewareWrapper(authMiddleware), usersController.verifyEmail);
 
 /**
  * @openapi
@@ -147,6 +147,37 @@ userRouter.patch('/update', asyncMiddlewareWrapper(authMiddleware), validationMi
  *               $ref: '#/components/schemas/NotFoundError'
  */
 userRouter.delete('/delete', asyncMiddlewareWrapper(authMiddleware), usersController.deleteUser);
+
+
+/**
+ * @openapi
+ * /api/users/verify-email/{email}:
+ *   get:
+ *     summary: Verifica si el email necesita ser verificado
+ *     tags:
+ *       - Usuarios
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       '200':
+ *         description: Email verificado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '404':
+ *         description: No se ha encontrado el usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
+ */
+userRouter.get('/verify-email/:email', asyncMiddlewareWrapper(authMiddleware), usersController.checkIfEmailNeedsToBeVerified);
 
 
 

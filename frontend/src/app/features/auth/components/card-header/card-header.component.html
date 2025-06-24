@@ -1,0 +1,8 @@
+<div class="flex flex-row justify-between items-center">
+    <app-logo-icon></app-logo-icon>
+@if(showDismissable) {
+    <p-button icon="pi pi-times" aria-label="back" styleClass="text-white" [link]="true" (click)="onGoBack()" />
+}
+
+</div>
+

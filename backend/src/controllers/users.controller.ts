@@ -1,5 +1,5 @@
-import {  Request, Response } from "express";
-import { ApiCorrectResponse, BadRequestError, NotFoundError } from "../utils";
+import {  NextFunction, Request, Response } from "express";
+import { ApiCorrectResponse, BadRequestError, NotFoundError, UnauthorizedError } from "../utils";
 import { UserService } from "../services";
 import { UpdateUserDto } from "../dtos";
 
@@ -54,6 +54,26 @@ export class UsersController {
 
   public async verifyEmail(req: Request, res: Response): Promise<void> {
     const reqUser = req.user!;
+    const email = req.params.email;
+
+    const userByEmail = await userService.getUserByEmail(email);
+    if (!userByEmail)
+      throw new NotFoundError(
+        "No se ha encontrado el usuario",
+        {
+          error: "USER_NOT_FOUND",
+        },
+        false
+      );
+
+    if (userByEmail.email !== reqUser.email)
+      throw new UnauthorizedError(
+        "El usuarios que realiza la petición no es el mismo que se intenta verificar",
+        {
+          error: "BAD_REQUEST",
+        },
+        false
+      );
 
     const success = await userService.completeUserOnboardingOrVerifyEmail(
       reqUser,
@@ -118,6 +138,48 @@ export class UsersController {
         "Eliminado con exito",
         200
       );
+    }
+  }
+
+  async checkIfEmailNeedsToBeVerified(req:Request, res:Response, next: NextFunction) {
+    try {
+      const reqUser = req.user!;
+    const email = req.params.email;
+
+    if(email !== reqUser.email) {
+      throw new BadRequestError(
+        "El email no corresponde al usuario que realiza la petición",
+        {
+          error: "BAD_REQUEST",
+        },
+        false
+      );
+    }
+
+    const verificate = await userService.checkIfEmailNeedsToBeVerified(reqUser.id);
+    if (!verificate) {
+      ApiCorrectResponse.genericSuccess(
+        res,
+        {
+          status: "NEEDS_VERIFICATION",
+        },
+        true,
+        "Email no verificado",
+        200
+      );
+    } else {
+      ApiCorrectResponse.genericSuccess(
+        res,
+        {
+          status: "VERIFIED",
+        },
+        true,
+        "Email verificado",
+        200
+      );
+    }
+    } catch (error) {
+      next(error);
     }
   }
 

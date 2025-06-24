@@ -1,5 +1,5 @@
 // src/app/pages/public/login-page/login-page.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   FormBuilder,
@@ -14,10 +14,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
+import { AutoFocusModule } from 'primeng/autofocus';
+import { AuthService, TokenService } from '../../services';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
+  providers: [MessageService],
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -26,7 +31,9 @@ import { MessageModule } from 'primeng/message';
     PasswordModule,
     FormsModule,
     ButtonModule,
-    MessageModule
+    MessageModule,
+    AutoFocusModule,
+    ToastModule
   ],
 })
 export class LoginPageComponent implements OnInit {
@@ -35,33 +42,43 @@ export class LoginPageComponent implements OnInit {
 
   constructor(private router: Router, private fb: FormBuilder) {}
 
+  private authService = inject(AuthService);
+  private tokenService = inject(TokenService);
+  private messageService = inject(MessageService);
+
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
+
+  public isLoading =  false;
 
   get f() {
     return this.loginForm.controls;
   }
 
-  onLogin(): void {
-    this.errorMessage = '';
-
+  async onLogin(): Promise<void> {
+    this.isLoading = true;
 
     const { email, password } = this.loginForm.value;
-    console.log('Intentando iniciar sesión con:', email, password);
 
-    if (email === 'test@example.com' && password === 'password123') {
-      console.log('Inicio de sesión exitoso!');
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1000);
+    const response = await this.authService.login(email, password);
+    if (response?.token) {
+      this.tokenService.setToken(response.token);
+      this.router.navigate(['/dashboard']);
     } else {
-      console.log('Credenciales incorrectas.');
-      this.errorMessage = 'El email o la contraseña son incorrectos.';
+     this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: response?.message || 'Error al iniciar sesión.',
+      });
+      if (response?.message?.toLocaleLowerCase() === 'credenciales incorrectas.') {
+        this.f['password'].reset()
+      }
     }
+    this.isLoading = false;
   }
 
   goToRegister(): void {

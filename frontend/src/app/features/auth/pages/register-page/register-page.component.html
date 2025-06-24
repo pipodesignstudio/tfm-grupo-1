@@ -1,4 +1,4 @@
-    <h1 class="text-xl font-bold">Regístrate</h1>
+    <h1 class="text-2xl font-semibold mb-3">Crea tu cuenta gratis</h1>
 
     <!-- OPCIONAL: Añadir avatar -->
     <!-- <div class="profile-picture-section">
@@ -36,6 +36,7 @@
           type="text"
           id="username"
           pInputText
+          [pAutoFocus]="true"
           formControlName="username"
           placeholder="nombredeusuario"
           [ngClass]="{
@@ -45,17 +46,17 @@
         />
         @if (registerForm.get('username'); as usernameControl) { @if
         (usernameControl.invalid && usernameControl.dirty) {
-        <small class="p-error">
-          @if (usernameControl.errors?.['required']) { El username es
-          obligatorio. } @if (usernameControl.errors?.['minlength']) { El
-          username debe tener al menos
-          {{ usernameControl.errors?.['minlength'].requiredLength }} caracteres.
-          }
-        </small>
+          <p-message severity="error">
+            @if (usernameControl.errors?.['required']) { El username es
+              obligatorio. } @if (usernameControl.errors?.['minlength']) { El
+              username debe tener al menos
+              {{ usernameControl.errors?.['minlength'].requiredLength }} caracteres.
+              }
+          </p-message>
         } }
       </div>
 
-      <div class="input-group p-fluid">
+      <div class="flex flex-col gap-2">
         <label for="email">Email</label>
         <input
           type="email"
@@ -69,14 +70,14 @@
         />
         @if (registerForm.get('email'); as emailControl) { @if
         (emailControl.invalid && emailControl.dirty) {
-        <small class="p-error">
+        <p-message severity="error">
           @if (emailControl.errors?.['required']) { El email es obligatorio. }
           @if (emailControl.errors?.['email']) { Introduce un email válido. }
-        </small>
+        </p-message>
         } }
       </div>
 
-      <div class="input-group p-fluid">
+      <div class="flex flex-col gap-2">
         <label for="password">Contraseña</label>
         <p-password
           id="password"
@@ -84,7 +85,7 @@
           placeholder="********"
           [toggleMask]="true"
           [feedback]="false"
-          inputStyleClass="w-full"
+          fluid
           [ngClass]="{
             'ng-invalid ng-dirty':
               f['password'].invalid && f['password'].touched
@@ -92,17 +93,17 @@
         ></p-password>
         @if (registerForm.get('password'); as passwordControl) { @if
         (passwordControl.invalid && passwordControl.dirty) {
-        <small class="p-error">
+        <p-message severity="error">
           @if (passwordControl.errors?.['required']) { La contraseña es
           obligatoria. } @if (passwordControl.errors?.['minlength']) { La
           contraseña debe tener al menos
           {{ passwordControl.errors?.['minlength'].requiredLength }} caracteres.
           }
-        </small>
+        </p-message>
         } }
       </div>
 
-      <div class="input-group p-fluid">
+      <div class="flex flex-col gap-2">
         <label for="confirmPassword">Confirmar Contraseña</label>
         <p-password
           id="confirmPassword"
@@ -110,7 +111,7 @@
           placeholder="********"
           [toggleMask]="true"
           [feedback]="false"
-          inputStyleClass="w-full"
+          fluid
           [ngClass]="{
             'ng-invalid ng-dirty':
               f['confirmPassword'].invalid && f['confirmPassword'].touched
@@ -118,24 +119,26 @@
         ></p-password>
         @if (registerForm.get('confirmPassword'); as confirmPasswordControl) {
         @if (confirmPasswordControl.invalid && confirmPasswordControl.dirty) {
-        <small class="p-error">
+        <p-message severity="error">
           @if (confirmPasswordControl.errors?.['required']) { Confirma la
           contraseña. }
-        </small>
+        </p-message>
         } }
       </div>
 
       @if (registerForm.errors?.['mismatch'] && registerForm.dirty) {
-      <small class="p-error">Las contraseñas no coinciden.</small>
+      <p-message severity="error">Las contraseñas no coinciden.</p-message>
       } @if (errorMessage) {
-      <small class="p-error">{{ errorMessage }}</small>
+      <p-message severity="error">{{ errorMessage }}</p-message>
       }
 
-      <button
-        pButton
-        type="submit"
-        label="Enviar"
-        class="p-button-primary"
-      ></button>
+      <p-button type="submit" [loading]="isLoading" label="Crear cuenta" styleClass="mt-5 w-full" [disabled]="registerForm.invalid" />
     </form>
 
+    <div class="mt-5">
+      <div class="flex gap-1 justify-center">
+        <p>¿Ya tienes cuenta?</p>
+        <a [routerLink]="['/auth/login']" class="underline cursor-pointer">¡Inicia sesión!</a>
+      </div>
+    </div>
+<p-toast />

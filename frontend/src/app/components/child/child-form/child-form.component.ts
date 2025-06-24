@@ -9,7 +9,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { SelectModule } from 'primeng/select';
 
 
-import { IChild } from '../../../interfaces/ichild.interface';
+import { IChild } from '../../../shared/interfaces/ichild.interface';
 
 @Component({
   selector: 'app-child-form',

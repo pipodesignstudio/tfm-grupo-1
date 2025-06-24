@@ -1,12 +1,12 @@
 
-      <h1 class="text-xl font-bold">Inicia sesión</h1>
-      <p class="text-sm mt-2">Cuidando tu familia, simplificando tu vida.</p>
+      <h1 class="text-2xl font-semibold">👋 Hola de nuevo</h1>
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="flex flex-col gap-3">
-      <div class="flex flex-col gap-2 mt-5">
+      <div class="flex flex-col gap-2 mt-3">
         <label for="email">Email</label>
         <input
           type="email"
           pInputText
+          [pAutoFocus]="true"
           suggested="current-email"
           formControlName="email"
           placeholder="tu.email@ejemplo.com"
@@ -63,3 +63,4 @@
         <a (click)="goToRegister()" class="underline cursor-pointer">¡Créala ahora!</a>
       </div>
     </div>
+<p-toast />
