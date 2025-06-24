@@ -2,10 +2,10 @@
   class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50"
 >
   <div
-    class="bg-white rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
   >
     <!-- Título fijo -->
-    <h2 class="text-xl font-semibold text-gray-800 mb-4 shrink-0">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 shrink-0">
 
       @if(editMode) {
         Editar {{tipo}} {{actividadInfo?.titulo || ''}}
@@ -20,7 +20,7 @@
     <form
       [formGroup]="form"
       (ngSubmit)="onSubmit()"
-      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
+      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible dark:text-white"
     >
       <input
         type="text"
@@ -34,7 +34,7 @@
           placeholder="Descripción"
           pTextarea
           formControlName="descripcion"
-          class="p-3 rounded-md w-full h-24"
+          class="p-3 rounded-md w-full h-19"
         ></textarea>
       </div>
       <p-select
@@ -42,7 +42,7 @@
         formControlName="nino_id"
         [optionValue]="'value'"
         optionLabel="label"
-        placeholder="Filtrar por niño o actividad"
+        placeholder="Selecciona Niño"
       ></p-select>
       <div class="flex ">
         <span class="flex items-center justify-center"

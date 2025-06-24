@@ -4,7 +4,6 @@ import { filter } from 'rxjs/operators';
 import { ThemeService } from '../../service/theme.service';
 import { Location } from '@angular/common';
 
-
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -14,7 +13,7 @@ import { Location } from '@angular/common';
 export class HeaderComponent {
   private router = inject(Router);
   private themeService = inject(ThemeService);
-    private location = inject(Location);
+  private location = inject(Location);
 
   isDarkMode = this.themeService.darkTheme;
 
@@ -35,14 +34,14 @@ export class HeaderComponent {
 
   constructor() {
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const path = event.urlAfterRedirects;
         this.pageTitle = this.routeTitles[path] || '';
       });
   }
 
-   goBack() {
+  goBack() {
     this.location.back();
   }
 

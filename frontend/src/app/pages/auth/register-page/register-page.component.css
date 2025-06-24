@@ -112,10 +112,10 @@
   font-weight: 500;
 }
 
-.input-group input {
+.p-inputtext {
   padding: 12px 15px;
   border: 1px solid #fbf8f0;
-  border-radius: 8px;
+  border-radius: var(--form-field-border-radius, 8px);
   font-size: 1em;
   color: #3a3a3a;
   background-color: #ffffff;
@@ -124,51 +124,56 @@
   box-sizing: border-box;
 }
 
-.input-group input::placeholder {
+.p-inputtext::placeholder {
   color: #9b9b9b;
 }
 
-.input-group input:focus {
-  border-color: #ffd700;
-  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+.input-group p-password {
+  width: 100%;
+  display: flex;
 }
 
-.error-message {
+.input-group p-password .p-inputtext {
+  width: 100%;
+}
+
+.input-group p-password .p-inputwrapper {
+  width: 100%;
+}
+
+.p-error {
   color: #ff7f50;
   font-size: 0.9em;
-  text-align: center;
-  margin-top: -10px;
+  text-align: left;
+  margin-top: 5px;
+  display: block;
 }
 
-.submit-button {
+.p-button {
   padding: 15px 30px;
   font-size: 1.2em;
   font-weight: bold;
-  color: white;
-  background-color: #ff7f50;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--button-border-radius, 8px);
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 15px;
-  transition: background-color 1s ease, color 1s ease, transform 0.2s ease;
+  transition: background-color var(--transition-duration, 0.3s) ease,
+    color var(--transition-duration, 0.3s) ease, transform 0.2s ease;
 }
 
-.submit-button:hover {
+.p-button.p-button-primary {
+  background-color: #ff7f50;
+  color: #ffffff;
+}
+
+.p-button.p-button-primary:hover {
   background-color: #ffd700;
   color: #3a3a3a;
   transform: translateY(-2px);
 }
 
-.submit-button:active {
+.p-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.error-message {
-  color: #ff7f50;
-  font-size: 0.9em;
-  text-align: center;
-  margin-top: 5px;
-  text-align: right;
 }

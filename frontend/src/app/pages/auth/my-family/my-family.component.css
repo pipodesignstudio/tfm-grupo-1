@@ -61,7 +61,7 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   gap: 15px;
-  width: calc(50% - 20px);
+  width: 400px;
   max-width: 350px;
   min-width: 280px;
   box-sizing: border-box;
@@ -120,77 +120,76 @@
   width: 100%;
 }
 
-.add-child-button,
-.continue-button {
+.p-button {
   padding: 15px 30px;
-  font-size: 1.2em;
+  font-size: 1em;
   font-weight: bold;
-  color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--button-border-radius, 8px);
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 400px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 70%;
+  max-width: 250px;
+  transition: background-color var(--transition-duration, 0.3s) ease,
+    transform 0.2s ease, color var(--transition-duration, 0.3s) ease;
+  margin-top: 10px;
 }
 
-.add-child-button {
+.p-button.add-child-button.p-button-primary {
   background-color: #ff7f50;
-  margin-top: 20px;
+  color: white;
 }
 
-.add-child-button:hover {
+.p-button.add-child-button.p-button-primary:hover {
   background-color: #e66a42;
   transform: translateY(-2px);
+  color: white;
 }
 
-.continue-button {
-  background-color: #4caf50;
-  margin-top: 15px;
-}
-
-.continue-button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-  .my-family-content {
-    width: 95%;
-    padding: 30px 20px;
-  }
-  .child-card {
-    width: 100%;
-    max-width: none;
-  }
-  .add-child-button,
-  .continue-button {
-    width: 90%;
-  }
-}
-
-/* PARA DESARROLLO */
-clear-children-button {
+.p-button.clear-children-button.p-button-danger.p-button-sm {
   padding: 10px 20px;
   font-size: 0.9em;
-  font-weight: bold;
-  color: white;
   background-color: #dc3545;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: white;
   margin-top: 20px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  width: auto;
 }
 
-.clear-children-button:hover {
+.p-button.clear-children-button.p-button-danger.p-button-sm:hover {
   background-color: #c82333;
+  transform: translateY(-2px);
+  color: white;
+}
+
+.p-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.continue-link {
+  display: block;
+  text-decoration: underline;
+  color: #fbf8f0;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin-top: 5px;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.continue-link:hover {
+  color: #ffd700;
   transform: translateY(-2px);
 }
 
-.clear-children-button:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.continue-link[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
 }
