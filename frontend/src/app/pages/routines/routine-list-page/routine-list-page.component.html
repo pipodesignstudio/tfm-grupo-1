@@ -1,1 +1,51 @@
-<p>routine-list-page works!</p>
+<div class="min-h-screen bg-[#C8E6F0] p-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-[#3A3A3A]">Rutinas</h1>
+      <button pButton 
+              class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold transition shadow rounded-lg text-sm px-4 py-2"
+              (click)="nuevaRutina()">
+        <i class="pi pi-plus mr-2"></i>Crear Nueva Rutina
+      </button>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      @for (rutina of rutinas; track rutina.id) {
+      <div class="bg-white/90 rounded-3xl shadow-xl p-6 border border-[#9ED2C5]/40">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h2 class="text-xl font-bold text-[#3A3A3A]">{{ rutina.nombre }}</h2>
+            <p class="text-[#3A3A3A] mt-1 text-sm">{{ rutina.descripcion }}</p>
+          </div>
+          <div class="flex gap-2">
+            <button pButton 
+                    class="p-button-rounded p-button-text p-button-sm"
+                    (click)="editarRutina(rutina.id)">
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button pButton 
+                    class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    (click)="eliminarRutina(rutina.id)">
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-2 text-sm text-[#9ED2C5]">
+          <i class="pi pi-calendar"></i>
+          <span>Creada: {{ rutina.fechaCreacion | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+      } @empty {
+      <div class="col-span-full text-center py-12">
+        <p class="text-[#3A3A3A]">No hay rutinas creadas</p>
+        <button pButton 
+                class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold mt-4"
+                (click)="nuevaRutina()">
+          Crear primera rutina
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+</div>

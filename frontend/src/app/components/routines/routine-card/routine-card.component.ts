@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IRoutine } from '../../../interfaces/iroutine.interface';
 
 @Component({
   selector: 'app-routine-card',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './routine-card.component.html',
-  styleUrl: './routine-card.component.css'
 })
 export class RoutineCardComponent {
-
+  @Input() routine!: IRoutine;
 }

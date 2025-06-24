@@ -14,6 +14,9 @@ import { AboutUsPageComponent } from './pages/others/about-us-page/about-us-page
 import { EditProfileComponent } from './pages/profiles/edit-profile/edit-profile.component';
 import { ObjectivesPageComponent } from './pages/objectives/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './pages/objectives/objectives-form/objectives-form.component';
+import { RoutineListPageComponent } from './pages/routines/routine-list-page/routine-list-page.component';
+import { RoutineFormPageComponent } from './pages/routines/routine-form-page/routine-form-page.component';
+
 
 
 export const routes: Routes = [
@@ -31,6 +34,8 @@ export const routes: Routes = [
   { path: 'about-us', component: AboutUsPageComponent },
   { path: 'objectives', component: ObjectivesPageComponent },
   { path: 'objectives-form', component: ObjectivesFormComponent },
+  { path: 'routines', component: RoutineListPageComponent },
+  { path: 'routines/new', component: RoutineFormPageComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 

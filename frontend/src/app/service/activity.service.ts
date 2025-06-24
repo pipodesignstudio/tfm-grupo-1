@@ -8,20 +8,25 @@ import { IActivity } from '../interfaces/iactivity.interface';
 })
 export class ActivityService {
 
-  private httpClient = inject(HttpClient)
+  private httpClient = inject(HttpClient);
   private apiUrl: string  = 'http://localhost:3000/api';
 
-
-
   getActivitiesFamily(id_familia: string): Promise<IActivity[]> {
-  return lastValueFrom(
-    this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/familias/${id_familia}`)
-  ).then(response => response.data);
-}
+    return lastValueFrom(
+      this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/familias/${id_familia}`)
+    ).then(response => response.data);
+  }
 
   getActivitiesNino(nino_id: string): Promise<IActivity[]> {
     return lastValueFrom(
       this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/ninos/${nino_id}`)
+    ).then(response => response.data);
+  }
+
+  // NUEVO: Obtener actividades por rutina
+  getActivitiesByRoutine(rutinaId: number): Promise<IActivity[]> {
+    return lastValueFrom(
+      this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/rutinas/${rutinaId}`)
     ).then(response => response.data);
   }
 
@@ -35,9 +40,7 @@ export class ActivityService {
   }
 
   createActivity(activity: IActivity): Promise<IActivity> {
-    console.log("activity", activity);
     let { nino_id, ...activityBody } = activity;
     return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}`, activityBody));
   }
-  
 }
