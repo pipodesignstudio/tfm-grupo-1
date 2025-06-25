@@ -25,83 +25,129 @@ import { DashboardLayoutComponent } from './features/dashboard/layout/dashboard-
 import { noAuthGuard } from './shared/guards/not-auth.guard';
 import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
+import { DashboardHomeComponent } from './features/dashboard/dashboard-home/dashboard-home.component';
 
 export const routes: Routes = [
-  { path: 'landing', component: LandingPageComponent, title: 'Bienvenido a Nido' },
-{ path: '', redirectTo: 'landing', pathMatch: 'full' },
-  { path: 'auth', component: AuthLayoutComponent, children: [
-    {
-      path: 'login', component: LoginPageComponent, canActivate: [noAuthGuard]
-    },
-    {
-      path: 'register', component: RegisterPageComponent, canActivate: [noAuthGuard]
-    }, 
-    {
-      path: 'verificar/:email', component: VerifyEmailPageComponent
-    },
-    {
-      path: '**' , redirectTo: 'login', pathMatch: 'full'
-    }
-  ]},
-  // TODO: Esto es solo para simular el acceso completo, hace falta crear familias etc
-  { path: 'onboarding', component: OnboardingLayoutComponent,   canActivate: [authGuard, onboardingGuard],
-    children: [
-    {
-      path: 'complete', component: CompleteOnboardingComponent
-    },
-    {
-      path: '**' , redirectTo: 'complete', pathMatch: 'full'
-    }
-  ]},
   {
-    path: 'dashboard', component: DashboardLayoutComponent,   canActivate: [authGuard], canActivateChild: [dashboardGuard]
-    , children: [
+    path: 'landing',
+    component: LandingPageComponent,
+    title: 'Bienvenido a Nido',
+  },
+  { path: '', redirectTo: 'landing', pathMatch: 'full' },
+  {
+    path: 'auth',
+    component: AuthLayoutComponent,
+    children: [
       {
-        path: 'create-family', component: CreateFamilyComponent
+        path: 'login',
+        component: LoginPageComponent,
+        canActivate: [noAuthGuard],
       },
       {
-        path: 'my-family', component: MyFamilyComponent
+        path: 'register',
+        component: RegisterPageComponent,
+        canActivate: [noAuthGuard],
       },
       {
-        path: 'message2', component: Mensaje2Component
+        path: 'verificar/:email',
+        component: VerifyEmailPageComponent,
       },
       {
-        path: 'create-routine', component: CreateRoutineComponent
+        path: '**',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
+    ],
+  },
+  // TODO: Esto es solo para simular el acceso completo, hace falta crear familias etc
+  {
+    path: 'onboarding',
+    component: OnboardingLayoutComponent,
+    canActivate: [authGuard, onboardingGuard],
+    children: [
+      {
+        path: 'complete',
+        component: CompleteOnboardingComponent,
       },
       {
-        path: 'calendar', component: CalendarPageComponent
+        path: '**',
+        redirectTo: 'complete',
+        pathMatch: 'full',
+      },
+    ],
+  },
+  {
+    path: 'dashboard',
+    component: DashboardLayoutComponent,
+    canActivate: [authGuard],
+    canActivateChild: [dashboardGuard],
+    children: [
+      {
+        path: '',
+        component: DashboardHomeComponent,
       },
       {
-        path: 'child-profile', component: ChildProfileComponent
+        path: 'create-family',
+        component: CreateFamilyComponent,
       },
       {
-        path: 'user-profile', component: UserProfileComponent
+        path: 'my-family',
+        component: MyFamilyComponent,
       },
       {
-        path: 'settings', component: SettingsComponent
+        path: 'message2',
+        component: Mensaje2Component,
       },
       {
-        path: 'settings/edit-profile', component: EditProfileComponent
+        path: 'create-routine',
+        component: CreateRoutineComponent,
       },
       {
-        path: 'about-us', component: AboutUsPageComponent
+        path: 'calendar',
+        component: CalendarPageComponent,
       },
       {
-        path: 'objectives', component: ObjectivesPageComponent
+        path: 'child-profile',
+        component: ChildProfileComponent,
       },
       {
-        path: 'objectives-form', component: ObjectivesFormComponent
+        path: 'user-profile',
+        component: UserProfileComponent,
       },
       {
-        path: 'routine-form', component: RoutineFormPageComponent
+        path: 'settings',
+        component: SettingsComponent,
       },
       {
-        path: 'routine-list', component: RoutineListPageComponent
+        path: 'settings/edit-profile',
+        component: EditProfileComponent,
       },
       {
-        path: '**', redirectTo: 'create-family', pathMatch: 'full'
-      }
-    ]
+        path: 'about-us',
+        component: AboutUsPageComponent,
+      },
+      {
+        path: 'objectives',
+        component: ObjectivesPageComponent,
+      },
+      {
+        path: 'objectives-form',
+        component: ObjectivesFormComponent,
+      },
+      {
+        path: 'routine-form',
+        component: RoutineFormPageComponent,
+      },
+      {
+        path: 'routine-list',
+        component: RoutineListPageComponent,
+      },
+      {
+        path: '**',
+        redirectTo: 'create-family',
+        pathMatch: 'full',
+      },
+    ],
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
