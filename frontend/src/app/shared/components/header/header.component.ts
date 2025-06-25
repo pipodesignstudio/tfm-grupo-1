@@ -3,7 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { ThemeService } from '../../services';
-import { LogoComponent } from "../logo/logo.component";
+import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
 import { ButtonModule } from 'primeng/button';
 
@@ -28,7 +28,7 @@ export class HeaderComponent {
   private routeTitles: { [key: string]: string } = {
     '/create-family': 'Crear familia',
     '/my-family': 'Mi familia',
-    '/dashboard': 'Panel',
+    '/dashboard': 'Home',
     '/calendar': 'Calendario',
     '/child-profile': 'Perfil del niño',
     '/user-profile': 'Mi perfil',
