@@ -47,6 +47,16 @@ export const recordatioEmailTemplate  = (nickname:string, title:string, url:stri
                                       <tbody>
                                         <tr>
                                           <td style="line-height: 24px; font-size: 16px; width: 100%; margin: 0; padding: 20px;" align="left">
+                                            <img src="https://ik.imagekit.io/pftkogwkc5j/Group%201_xR74OF4fh.png?updatedAt=1750871753207" alt="nido-logo" width="60" height="60" class="" style="height: auto; line-height: 100%; outline: none; text-decoration: none; display: block; border-style: none; border-width: 0;">
+                                            <table class="s-5 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
+                                              <tbody>
+                                                <tr>
+                                                  <td style="line-height: 20px; font-size: 20px; width: 100%; height: 20px; margin: 0;" align="left" width="100%" height="20">
+                                                    &#160;
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
                                             <h1 class="h3" style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 28px; line-height: 33.6px; margin: 0;" align="left">&#161;Tienes un nuevo recordatorio!</h1>
                                             <table class="s-2 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                               <tbody>
@@ -134,11 +144,11 @@ export const recordatioEmailTemplate  = (nickname:string, title:string, url:stri
                                                 </tr>
                                               </tbody>
                                             </table>
-                                            <table class="btn btn-primary" role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-radius: 6px; border-collapse: separate !important;">
+                                            <table class="btn btn-warning" role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-radius: 6px; border-collapse: separate !important;">
                                               <tbody>
                                                 <tr>
-                                                  <td style="line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;" align="center" bgcolor="#0d6efd">
-                                                    <a href="${url}" target="_blank" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Ver en Nido</a>
+                                                  <td style="line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;" align="center" bgcolor="#ffc107">
+                                                    <a href="${url}" target="_blank" style="color: #111111; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #ffc107; padding: 8px 12px; border: 1px solid #ffc107;">Ver en Nido</a>
                                                   </td>
                                                 </tr>
                                               </tbody>
@@ -180,6 +190,7 @@ export const recordatioEmailTemplate  = (nickname:string, title:string, url:stri
     </table>
   </body>
 </html>
+
 
 
 `
