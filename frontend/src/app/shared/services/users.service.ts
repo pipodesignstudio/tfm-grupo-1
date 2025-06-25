@@ -1,133 +1,151 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { TokenService } from '../../features/auth/services';
 import { IUserFromBackend } from '../interfaces/iuser-from-backend.interface';
+import { Router } from '@angular/router';
 
 
 interface UserApiResponse {
-    success: boolean;
-    data:{ user: IUserFromBackend } ;
-    message: string;
+  success: boolean;
+  data: { user: IUserFromBackend };
+  message: string;
 }
 
 interface EmailApiResponse {
-    success: boolean;
-    data:{ status: 'NEEDS_VERIFICATION' | 'VERIFIED' } ;
-    message: string;
+  success: boolean;
+  data: { status: 'NEEDS_VERIFICATION' | 'VERIFIED' };
+  message: string;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class UsersService {
-    private readonly apiUrl = `${environment.backendUrl}/api/users`;
-    private readonly tokenService = inject(TokenService);
-  
-    private readonly _user = signal<IUserFromBackend | null>(null);
-    public readonly user = computed(() => this._user());
-  
-    public async getUser(): Promise<{ user?: IUserFromBackend, message?: string } | null> {
-      if (this._user()) {
-        return { user: this._user()! };
-      }
-  
-      try {
-        const response = await axios.get<UserApiResponse>(`${this.apiUrl}/profile`, {
-          headers: {
-            Authorization: `Bearer ${this.tokenService.token()}`,
-          },
-        });
-  
-        if (!response.data.success) {
-          return { message: response.data.message };
-        }
-  
-        this._user.set(response.data.data.user);
-        return { user: response.data.data.user };
-      } catch (error) {
-        console.error('Error fetching user', error);
-        return null;
-      }
-    }
-  
-    public clearUser(): void {
-      this._user.set(null);
+  private readonly apiUrl = `${environment.backendUrl}/api/users`;
+  private readonly tokenService = inject(TokenService);
+  private readonly router = inject(Router);
+
+  private readonly _user = signal<IUserFromBackend | null>(null);
+  public readonly user = computed(() => this._user());
+
+  public async getUser(): Promise<{ user?: IUserFromBackend, message?: string } | null> {
+    if (this._user()) {
+      return { user: this._user()! };
     }
 
-    public async completeOnboarding(): Promise<{ success: boolean, message?: string } | null> {
-        try {
-          const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/complete-onboarding`, null, {
-            headers: {
-              Authorization: `Bearer ${this.tokenService.token()}`,
-            },
-          });
-      
-          if (!response.data.success) return { success: false, message: response.data.message };
-      
-          const refreshedUser = await this.getUserFromServer();
-          if (refreshedUser) {
-            this._user.set(refreshedUser);
-          }
-      
-          return { success: true, message: response.data.message };
-        } catch (error) {
-          console.log(error);
-          return null;
-        }
+    try {
+      const response = await axios.get<UserApiResponse>(`${this.apiUrl}/profile`, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      });
+
+      if (!response.data.success) {
+        return { message: response.data.message };
       }
 
-      public async verifyEmail(email: string): Promise<{ success: boolean, message?: string } | null> {
-        try {
-          const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/verify-email/${email}`, null, {
-            headers: {
-              Authorization: `Bearer ${this.tokenService.token()}`,
-            },
-          });
-      
-          if (!response.data.success) return { success: false, message: response.data.message };
-      
-          const refreshedUser = await this.getUserFromServer();
-          if (refreshedUser) {
-            this._user.set(refreshedUser);
-          }
-      
-          return { success: true, message: response.data.message };
-        } catch (error) {
-          console.log(error);
-          return null;
+      this._user.set(response.data.data.user);
+      return { user: response.data.data.user };
+    } catch (err: unknown) {
+
+      if (axios.isAxiosError<UserApiResponse>(err)) {
+        const axiosErr = err as AxiosError<UserApiResponse>;
+        const status = axiosErr.response?.status;
+
+        if (status === 401 || status === 403) {
+          this.tokenService.clearToken();
+          this._user.set(null);
+          await this.router.navigate(['/auth/login']);
+          return { message: 'Sesión expirada, inicia sesión de nuevo.' };
         }
+
+        const backendMsg = axiosErr.response?.data?.message;
+        return { message: backendMsg ?? `Error ${status ?? ''} al obtener usuario` };
       }
 
-      public async checkIfEmailNeedsToBeVerified(email: string): Promise<{ status?: 'NEEDS_VERIFICATION' | 'VERIFIED', message?: string } | null> {
-        try {
-          const response = await axios.get<EmailApiResponse>(`${this.apiUrl}/verify-email/${email}`, {
-            headers: {
-              Authorization: `Bearer ${this.tokenService.token()}`,
-            },
-          });
-      
-          if (!response.data.success) return {  message: response.data.message };
-      
-          return { status: response.data.data.status, message: response.data.message };
-        } catch (error) {
-          console.log(error);
-          return null;
-        }
+      console.error('Network / CORS error', err);
+      return { message: 'Servidor no disponible. Inténtalo más tarde.' };
+    }
+  }
+
+  public clearUser(): void {
+    this._user.set(null);
+  }
+
+  public async completeOnboarding(): Promise<{ success: boolean, message?: string } | null> {
+    try {
+      const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/complete-onboarding`, null, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      });
+
+      if (!response.data.success) return { success: false, message: response.data.message };
+
+      const refreshedUser = await this.getUserFromServer();
+      if (refreshedUser) {
+        this._user.set(refreshedUser);
       }
-      
-      private async getUserFromServer(): Promise<IUserFromBackend | null> {
-        try {
-          const response = await axios.get<UserApiResponse>(`${this.apiUrl}/profile`, {
-            headers: {
-              Authorization: `Bearer ${this.tokenService.token()}`,
-            },
-          });
-      
-          if (!response.data.success) return null;
-          return response.data.data.user;
-        } catch (error) {
-          return null;
-        }
+
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  public async verifyEmail(email: string): Promise<{ success: boolean, message?: string } | null> {
+    try {
+      const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/verify-email/${email}`, null, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      });
+
+      if (!response.data.success) return { success: false, message: response.data.message };
+
+      const refreshedUser = await this.getUserFromServer();
+      if (refreshedUser) {
+        this._user.set(refreshedUser);
       }
-      
-    
+
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  public async checkIfEmailNeedsToBeVerified(email: string): Promise<{ status?: 'NEEDS_VERIFICATION' | 'VERIFIED', message?: string } | null> {
+    try {
+      const response = await axios.get<EmailApiResponse>(`${this.apiUrl}/verify-email/${email}`, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      });
+
+      if (!response.data.success) return { message: response.data.message };
+
+      return { status: response.data.data.status, message: response.data.message };
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  private async getUserFromServer(): Promise<IUserFromBackend | null> {
+    try {
+      const response = await axios.get<UserApiResponse>(`${this.apiUrl}/profile`, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      });
+
+      if (!response.data.success) return null;
+      return response.data.data.user;
+    } catch (error) {
+      return null;
+    }
+  }
+
+
 }
