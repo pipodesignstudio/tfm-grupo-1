@@ -43,7 +43,7 @@ export const manageInvitationEmailTemplate = (familyName:string, nickname:string
                               <tbody>
                                 <tr>
                                   <td style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;" align="left" bgcolor="#ffffff">
-                                    <table class="card-body space-y-3" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                                    <table class="card-body" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
                                       <tbody>
                                         <tr>
                                           <td style="line-height: 24px; font-size: 16px; width: 100%; margin: 0; padding: 20px;" align="left">
@@ -68,15 +68,6 @@ export const manageInvitationEmailTemplate = (familyName:string, nickname:string
                                               </tbody>
                                             </table>
                                             <h5 class="text-yellow-700" style="color: #997404; padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 20px; line-height: 24px; margin: 0;" align="left">&#161;Hola! ${nickname} te ha invitado a unirte a su familia ${familyName} en Nido</h5>
-                                            <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-                                              <tbody>
-                                                <tr>
-                                                  <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">
-                                                    &#160;
-                                                  </td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
                                             <table class="s-5 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                               <tbody>
                                                 <tr>
@@ -104,18 +95,8 @@ export const manageInvitationEmailTemplate = (familyName:string, nickname:string
                                               </tbody>
                                             </table>
                                             <div class="space-y-3">
-                                              <p class="text-gray-700" style="line-height: 24px; font-size: 16px; color: #4a5568; width: 100%; margin: 0;" align="left">Nido es la aplicaci&#243;n todo en uno de gesti&#243;n de tareas basada en objetivos de aprendizaje para familias y cuidadores.</p>
-                                              <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-                                                <tbody>
-                                                  <tr>
-                                                    <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">
-                                                      &#160;
-                                                    </td>
-                                                  </tr>
-                                                </tbody>
-                                              </table>
                                               <p class="text-gray-700" style="line-height: 24px; font-size: 16px; color: #4a5568; width: 100%; margin: 0;" align="left">
-                                                Crea tu perfil completamente gratis para gestionar la invitaci&#243;n y poder unirte a la familia de ${nickname} en Nido
+                                                Accede ahora a tu perfil para gestionar la invitaci&#243;n y poder unirte a la familia de ${nickname} en Nido
                                               </p>
                                               <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                                 <tbody>
@@ -128,15 +109,6 @@ export const manageInvitationEmailTemplate = (familyName:string, nickname:string
                                               </table>
                                               <p class="text-gray-700" style="line-height: 24px; font-size: 16px; color: #4a5568; width: 100%; margin: 0;" align="left">Este email ha sido generado autom&#225;ticamente por la aplicaci&#243;n de Nido a petici&#243;n de un usuario. Por favor ignora este correo si crees que se trata de un error</p>
                                             </div>
-                                            <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-                                              <tbody>
-                                                <tr>
-                                                  <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">
-                                                    &#160;
-                                                  </td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
                                             <table class="s-5 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                               <tbody>
                                                 <tr>
@@ -167,7 +139,7 @@ export const manageInvitationEmailTemplate = (familyName:string, nickname:string
                                               <tbody>
                                                 <tr>
                                                   <td style="line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;" align="center" bgcolor="#ffc107">
-                                                    <a href="${url}" target="_blank" style="color: #111111; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #ffc107; padding: 8px 12px; border: 1px solid #ffc107;">Registrarme</a>
+                                                    <a href="${url}" target="_blank" style="color: #111111; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #ffc107; padding: 8px 12px; border: 1px solid #ffc107;">Ver invitaci&#243;n</a>
                                                   </td>
                                                 </tr>
                                               </tbody>
@@ -209,7 +181,6 @@ export const manageInvitationEmailTemplate = (familyName:string, nickname:string
     </table>
   </body>
 </html>
-
 
 
 `
