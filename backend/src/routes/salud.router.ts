@@ -28,6 +28,7 @@ const router = Router({ mergeParams: true });
  */
 router.get(
   '/alergias',
+  authMiddleware,
   asyncMiddlewareWrapper(controller.listarAlergias.bind(controller))
 );
 
@@ -56,6 +57,7 @@ router.get(
  */
 router.post(
   '/alergias',
+  authMiddleware,
   validationMiddleware(CreateAlergiaDto),
   asyncMiddlewareWrapper(controller.crearAlergia.bind(controller))
 );
@@ -90,6 +92,7 @@ router.post(
  */
 router.put(
   '/alergias/:id',
+  authMiddleware,
   validationMiddleware(UpdateAlergiaDto, true),
   asyncMiddlewareWrapper(controller.actualizarAlergias.bind(controller))
 );
@@ -118,6 +121,7 @@ router.put(
  */
 router.delete(
   '/alergias/:id',
+  authMiddleware,
   asyncMiddlewareWrapper(controller.borrarAlergias.bind(controller))
 );
 
