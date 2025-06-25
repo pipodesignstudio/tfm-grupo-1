@@ -163,9 +163,9 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
       headers: {
         Authorization: `Bearer ${this.tokenService.token()}`,
       },
-    console.log(response)
     });
 
+    console.log(response)
 
     return response.data.data.familias; // ✅ Esto es IUsersFamilies[]
   } catch (error) {
@@ -173,8 +173,6 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
     return null;
   }
 }
-
-
 
 
 }
