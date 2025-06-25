@@ -1,113 +1,87 @@
 <div class="min-h-screen bg-[#C8E6F0] p-6 flex items-center justify-center">
-    <div class="max-w-2xl w-full bg-white/90 rounded-3xl p-8 shadow-xl border border-[#9ED2C5]/40">
-      <h2 class="text-2xl font-bold text-[#3A3A3A] mb-6 text-center">
-        {{ rutinaId ? 'Editar Rutina' : 'Crear Rutina' }}
-      </h2>
-  
-      <div class="space-y-4">
-        <!-- Nombre y Descripción -->
-        <div class="grid grid-cols-1 gap-4">
-          <div>
-            <label class="block mb-2 text-[#3A3A3A] font-medium">Nombre de la Rutina</label>
-            <input
-              type="text"
-              [(ngModel)]="nombreRutina"
-              class="w-full p-inputtext py-2 px-4 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A] text-base"
-              placeholder="Ej: Rutina Matutina"
-              required
-            />
-          </div>
-          
-          <div>
-            <label class="block mb-2 text-[#3A3A3A] font-medium">Descripción</label>
-            <textarea
-              [(ngModel)]="descripcionRutina"
-              class="w-full p-inputtext py-2 px-4 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A] text-base"
-              placeholder="Descripción de la rutina"
-              rows="2"
-            ></textarea>
-          </div>
-        </div>
-  
-        <!-- Días de la semana -->
-        <div>
-          <label class="block mb-2 font-medium text-[#3A3A3A]">Días de la Semana</label>
-          <div class="grid grid-cols-4 gap-2">
-            @for (dia of diasSemana; track dia) {
+  <div class="max-w-2xl w-full bg-white/90 rounded-3xl p-8 shadow-xl border border-[#9ED2C5]/40">
+    <h2 class="text-2xl font-bold text-[#3A3A3A] mb-6 text-center">
+      {{ rutinaId ? 'Editar Rutina' : 'Crear Rutina' }}
+    </h2>
+
+    <div class="space-y-4">
+      <!-- Nombre y descripción -->
+      <div>
+        <label class="block mb-2 text-[#3A3A3A] font-medium">Nombre de la Rutina</label>
+        <input type="text" name="nombreRutina" [(ngModel)]="nombreRutina"
+               class="w-full py-2 px-4 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+               placeholder="Ej: Rutina Matutina" required />
+      </div>
+
+      <div>
+        <label class="block mb-2 text-[#3A3A3A] font-medium">Descripción</label>
+        <textarea name="descripcionRutina" [(ngModel)]="descripcionRutina"
+                  class="w-full py-2 px-4 rounded-lg border border-[#9ED2C5] bg-[#E6F7F9] text-[#3A3A3A]"
+                  rows="2" placeholder="Descripción de la rutina"></textarea>
+      </div>
+
+      <!-- Días de la semana -->
+      <div>
+        <label class="block mb-2 font-medium text-[#3A3A3A]">Días de la Semana</label>
+        <div class="grid grid-cols-4 gap-2">
+          @for (dia of diasSemana; track dia) {
             <label
               class="flex items-center gap-2 px-3 py-2 rounded-lg border font-semibold transition text-sm cursor-pointer
                      bg-white border-[#9ED2C5] text-[#3A3A3A]
                      hover:bg-[#E6F7F9] hover:border-[#FF7F50]"
-              [ngClass]="{'bg-[#FF7F50] text-white border-[#FF7F50]': diasSeleccionados.includes(dia)}"
-            >
-              <input
-                type="checkbox"
-                [checked]="diasSeleccionados.includes(dia)"
-                (change)="toggleDia(dia)"
-                class="accent-[#FF7F50] w-4 h-4"
-              />
+              [ngClass]="{'bg-[#FF7F50] text-white border-[#FF7F50]': diasSeleccionados.includes(dia)}">
+              <input type="checkbox" [checked]="diasSeleccionados.includes(dia)" (change)="toggleDia(dia)"
+                     class="accent-[#FF7F50] w-4 h-4" />
               {{ dia }}
             </label>
-            }
-          </div>
+          }
         </div>
-  
-        <!-- Actividades -->
-        <div class="mt-6">
-          <div class="flex justify-between items-center mb-3">
-            <label class="block text-[#3A3A3A] font-semibold">Actividades</label>
-            <button (click)="agregarActividad()" class="text-[#FF7F50] font-semibold underline text-sm">
-              + Agregar Actividad
-            </button>
-          </div>
-          
-          <div class="space-y-3">
-            @for (actividad of actividades; track $index) {
+      </div>
+
+      <!-- Actividades -->
+      <div class="mt-6">
+        <div class="flex justify-between items-center mb-3">
+          <label class="block text-[#3A3A3A] font-semibold">Actividades</label>
+          <button type="button" (click)="agregarActividad()" class="text-[#FF7F50] font-semibold underline text-sm">
+            + Agregar Actividad
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          @for (actividad of actividades; track $index) {
             <div class="flex flex-col md:flex-row gap-3 items-start bg-[#F6FAFB] rounded-xl p-3">
-              <input
-                type="text"
-                [(ngModel)]="actividad.titulo"
-                class="flex-1 p-inputtext py-2 px-3 rounded-lg border border-[#9ED2C5] bg-white text-[#3A3A3A] text-base"
-                placeholder="Nombre de la actividad"
-                required
-              />
-              <input
-                type="time"
-                [(ngModel)]="actividad.hora_inicio"
-                class="p-inputtext py-2 px-2 rounded-lg border border-[#9ED2C5] bg-white text-[#3A3A3A]"
-                required
-              />
-              <button
-                type="button"
-                (click)="eliminarActividad($index)"
-                class="bg-red-100 text-red-500 px-3 py-1 rounded-lg text-sm font-medium"
-                [disabled]="actividades.length === 1"
-              >
+              <input type="text" name="titulo{{$index}}" [(ngModel)]="actividad.titulo"
+                     class="flex-1 py-2 px-3 rounded-lg border border-[#9ED2C5] bg-white text-[#3A3A3A]"
+                     placeholder="Nombre de la actividad" required />
+
+              <input type="time" name="horaInicio{{$index}}" [(ngModel)]="actividad.hora_inicio"
+                     class="py-2 px-2 rounded-lg border border-[#9ED2C5] bg-white text-[#3A3A3A]" required />
+
+              <input type="time" name="horaFin{{$index}}" [(ngModel)]="actividad.hora_fin"
+                     class="py-2 px-2 rounded-lg border border-[#9ED2C5] bg-white text-[#3A3A3A]" required />
+
+
+              <button type="button" (click)="eliminarActividad($index)"
+                      class="bg-red-100 text-red-500 px-3 py-1 rounded-lg text-sm font-medium"
+                      [disabled]="actividades.length === 1">
                 Eliminar
               </button>
             </div>
-            }
-          </div>
+          }
         </div>
-  
-        <!-- Botones -->
-        <div class="flex justify-center gap-4 mt-8">
-          <button
-            type="button"
-            (click)="guardarRutina()"
-            class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold px-6 py-2 rounded-lg shadow text-base"
-          >
-            Guardar
-          </button>
-          <button
-            type="button"
-            (click)="cancelar()"
-            class="bg-gray-200 hover:bg-gray-300 text-[#3A3A3A] font-semibold px-6 py-2 rounded-lg shadow text-base"
-          >
-            Cancelar
-          </button>
-        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-center gap-4 mt-8">
+        <button type="button" (click)="guardarRutina()"
+                class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold px-6 py-2 rounded-lg shadow text-base">
+          Guardar
+        </button>
+        <button type="button" (click)="cancelar()"
+                class="bg-gray-200 hover:bg-gray-300 text-[#3A3A3A] font-semibold px-6 py-2 rounded-lg shadow text-base">
+          Cancelar
+        </button>
       </div>
     </div>
   </div>
-  
+</div>
