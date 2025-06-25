@@ -78,8 +78,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    canActivate: [authGuard],
-    canActivateChild: [dashboardGuard],
+    // canActivate: [authGuard],
+    // canActivateChild: [dashboardGuard],
     children: [
       {
         path: 'create-family',
