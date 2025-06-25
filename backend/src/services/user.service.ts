@@ -276,5 +276,29 @@ export class UserService {
     }
   }
 
+  /**
+   * Obtener familia de un usuario
+   * @param usuarioId - ID del usuario
+   */
+  public async getAllFamiliasByUsuarioId(usuarioId: number) {
+    const familias = await prisma.familia_usuarios.findMany({
+      where: { usuarios_id: usuarioId },
+      include: {
+        familia: {
+          select: {
+            id: true,
+            descripcion: true,
+          },
+        },
+      },
+    });
+
+    return familias.map((fu) => ({
+      id: fu.familia.id,
+      descripcion: fu.familia.descripcion,
+      rol: fu.rol,
+    }));
+  }
+
 
 }

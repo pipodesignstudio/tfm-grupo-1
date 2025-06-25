@@ -1,3 +1,4 @@
+import { UsersService } from '../../../../../shared/services/users.service';
 import {
   Component,
   signal,
@@ -5,6 +6,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   inject,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -26,10 +28,10 @@ import { IActivity } from '../../../../../shared/interfaces/iactivity.interface'
 import { EventInput } from '@fullcalendar/core';
 
 import { ActivityFormComponent } from '../../../../../components/activity/activity-form.component';
+import { FamiliesStore } from '../../../../../shared/services/familiesStore.service';
 
 import { Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
-
 
 interface MyEvent extends EventInput {
   checked?: boolean;
@@ -44,7 +46,7 @@ interface MyEvent extends EventInput {
     DropdownModule,
     FormsModule,
     ActivityFormComponent,
-    SelectModule
+    SelectModule,
   ],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.css',
@@ -53,41 +55,49 @@ interface MyEvent extends EventInput {
 export class CalendarPageComponent {
   @ViewChild('fullCalendarRef') calendarComponent!: FullCalendarComponent;
 
-  constructor(private changeDetector: ChangeDetectorRef, private router: Router) {}
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private router: Router
+  ) {}
+
+  familiesStore = inject(FamiliesStore);
+  activityService = inject(ActivityService);
 
   calendarVisible = signal(true);
 
-  activityService = inject(ActivityService);
-
   allEvents: IActivity[] = [];
-
   currentEvents: MyEvent[] = [];
-
   selectedDateEvents: MyEvent[] = [];
 
   mostrarActivityModal = false;
-
   actividadInfo: IActivity | null = null;
 
-  async ngOnInit() {
-    // Cargar los eventos de la familia con id '1'
+  private familiaEffect = effect(async () => {
+    const familia = this.familiesStore.familiaSeleccionada();
+    console.log(familia, 'familia seleccionada en el efecto');
+    if (familia == null || !this.calendarComponent) return;
+
     try {
-      const activities = await this.activityService.getActivitiesFamily('1');
-      console.log(activities);
+      // Cargar los eventos de la familia seleccionada
+      const activities = await this.activityService.getActivitiesFamily(
+        String(familia.id)
+      );
+      console.log(activities, 'Actividades de la familia seleccionada');
       this.allEvents = activities;
       console.log(this.allEvents);
       const eventInputs = this.mapActivitiesToEvents(activities);
       this.currentEvents = eventInputs;
       this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
 
-      // También actualiza el calendario si usas signal
+      // Actualizar el calendario con los nuevos eventos
       const calendarApi = this.calendarComponent.getApi();
       calendarApi.removeAllEvents(); // Limpia los eventos anteriores
       calendarApi.addEventSource(eventInputs);
     } catch (error) {
       console.error('Error al cargar los eventos:', error);
     }
-  }
+  });
+
 
   selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
 
@@ -99,7 +109,6 @@ export class CalendarPageComponent {
 
   filtroSeleccionado: number | null = null;
 
-  
   filtrarEventos() {
     const filterValue: { label: string; value: number } | any =
       this.filtroSeleccionado;
@@ -131,10 +140,9 @@ export class CalendarPageComponent {
     contentHeight: 'auto',
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
-    /*     eventsSet: this.handleEvents.bind(this),*/ 
+    /*     eventsSet: this.handleEvents.bind(this),*/
     eventDidMount: this.eventDidMount.bind(this),
   });
-
 
   // Metodo para añadir el dot
   eventDidMount(info: any) {
@@ -181,19 +189,17 @@ export class CalendarPageComponent {
     }));
   }
 
-
-
   abrirActivityModal(actividad: IActivity | null = null) {
     this.actividadInfo = actividad || null;
     this.mostrarActivityModal = true;
-     // Si no se pasa actividad, se inicializa como null
+    // Si no se pasa actividad, se inicializa como null
   }
 
   cerrarActivityModal() {
     this.mostrarActivityModal = false;
   }
 
-  redirectToObjective(){
+  redirectToObjective() {
     this.router.navigate(['/objectives']);
   }
 
@@ -235,22 +241,25 @@ export class CalendarPageComponent {
 
   onCheckedChange(event: MyEvent) {
     console.log(event, 'checked:', event.checked);
-    
   }
 
   editarActividad(actividad: Partial<IActivity>) {
     console.log('Editar actividad con ID:', actividad.id);
     // Aquí puedes implementar la lógica para editar la actividad
-  } 
+  }
 
   deleteActivity(actividad: IActivity) {
     console.log('Borrar actividad con ID:', actividad.id);
-    this.activityService.deleteActivity(actividad.id, actividad.nino_id).then(() => {
-      const calendarApi = this.calendarComponent.getApi();
-      calendarApi.getEventById(String(actividad.id))?.remove();
-      this.allEvents = this.allEvents.filter((event) => event.id !== actividad.id);
-      this.currentEvents = this.mapActivitiesToEvents(this.allEvents);
-      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
-    });
+    this.activityService
+      .deleteActivity(actividad.id, actividad.nino_id)
+      .then(() => {
+        const calendarApi = this.calendarComponent.getApi();
+        calendarApi.getEventById(String(actividad.id))?.remove();
+        this.allEvents = this.allEvents.filter(
+          (event) => event.id !== actividad.id
+        );
+        this.currentEvents = this.mapActivitiesToEvents(this.allEvents);
+        this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
+      });
   }
 }

@@ -4,12 +4,21 @@ import axios, { AxiosError } from 'axios';
 import { TokenService } from '../../features/auth/services';
 import { IUserFromBackend } from '../interfaces/iuser-from-backend.interface';
 import { Router } from '@angular/router';
-
+import { IUsersFamilies } from '../interfaces/iusers-families.interface';
 
 interface UserApiResponse {
   success: boolean;
   data: { user: IUserFromBackend };
   message: string;
+}
+
+export interface FamiliaApiResponse {
+  success: boolean;
+  message: string;
+  data: {
+    familias: IUsersFamilies[];
+  };
+  statusCode: number;
 }
 
 interface EmailApiResponse {
@@ -146,6 +155,26 @@ export class UsersService {
       return null;
     }
   }
+
+
+public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
+  try {
+    const response = await axios.get<FamiliaApiResponse>(`${environment.backendUrl}/api/users/familias`, {
+      headers: {
+        Authorization: `Bearer ${this.tokenService.token()}`,
+      },
+    console.log(response)
+    });
+
+
+    return response.data.data.familias; // ✅ Esto es IUsersFamilies[]
+  } catch (error) {
+    console.error('Error al obtener las familias del usuario:', error);
+    return null;
+  }
+}
+
+
 
 
 }
