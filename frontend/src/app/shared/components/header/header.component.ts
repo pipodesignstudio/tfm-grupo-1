@@ -3,7 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { ThemeService } from '../../services';
-import { LogoComponent } from "../logo/logo.component";
+import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
 import { ButtonModule } from 'primeng/button';
 

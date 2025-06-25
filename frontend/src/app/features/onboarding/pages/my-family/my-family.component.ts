@@ -2,7 +2,10 @@ import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { ChildService, ChildProfile } from '../../../../shared/services/child.service';
+import {
+  ChildService,
+  ChildProfile,
+} from '../../../../shared/services/child.service';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
@@ -37,7 +40,7 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
   }
 
   addNewChild(): void {
-    this.router.navigate(['/create-family']);
+    this.router.navigate(['/dashboard/create-family']);
   }
 
   continueToNextStep(): void {
