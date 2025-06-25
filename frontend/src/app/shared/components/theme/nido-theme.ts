@@ -666,8 +666,12 @@ export const NidoTheme = definePreset(Aura, {
       colorScheme: {
         light: {
           primary: {
+            color: '#000000',
+            background: '#ffd700',
+            width: 'auto',
             hover: {
-              color: '{surface.0}',
+              color: '#ffffff',
+              background: '#ff7f50',
             },
           },
         },
@@ -678,6 +682,34 @@ export const NidoTheme = definePreset(Aura, {
             },
           },
         },
+      },
+    },
+  },
+  inputtext: {
+    root: {
+      borderRadius: '{border.radius.md}',
+      transition: 'all 0.2s ease-in-out',
+    },
+    colorScheme: {
+      light: {
+        background: '{form.field.background}',
+        borderColor: '{form.field.border.color}',
+        color: '{form.field.color}',
+        hoverBorderColor: '{form.field.hover.border.color}',
+        focusBorderColor: '{form.field.focus.border.color}',
+        placeholderColor: '{form.field.placeholder.color}',
+        disabledBackground: '{form.field.disabled.background}',
+        disabledColor: '{form.field.disabled.color}',
+      },
+      dark: {
+        background: '{form.field.background}',
+        borderColor: '{form.field.border.color}',
+        color: '{form.field.color}',
+        hoverBorderColor: '{form.field.hover.border.color}',
+        focusBorderColor: '{form.field.focus.border.color}',
+        placeholderColor: '{form.field.placeholder.color}',
+        disabledBackground: '{form.field.disabled.background}',
+        disabledColor: '{form.field.disabled.color}',
       },
     },
   },
