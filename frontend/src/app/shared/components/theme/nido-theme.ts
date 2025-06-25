@@ -662,6 +662,16 @@ export const NidoTheme = definePreset(Aura, {
     },
   },
   components: {
+    buttonSecondary: {
+      colorScheme: {
+        light: {
+          primary: {
+            background: '#b3b3b3',
+            color: '#000000',
+          },
+        },
+      },
+    },
     button: {
       colorScheme: {
         light: {
@@ -674,6 +684,17 @@ export const NidoTheme = definePreset(Aura, {
               background: '#ff7f50',
             },
           },
+          secondary: {
+            color: '#FFFFFF',
+            background: '#b3b3b3',
+            width: 'auto',
+            borderColor: 'none',
+            hover: {
+              color: '#ffffff',
+              background: '#000000',
+              borderColor: 'none',
+            },
+          },
         },
         dark: {
           primary: {
@@ -682,34 +703,6 @@ export const NidoTheme = definePreset(Aura, {
             },
           },
         },
-      },
-    },
-  },
-  inputtext: {
-    root: {
-      borderRadius: '{border.radius.md}',
-      transition: 'all 0.2s ease-in-out',
-    },
-    colorScheme: {
-      light: {
-        background: '{form.field.background}',
-        borderColor: '{form.field.border.color}',
-        color: '{form.field.color}',
-        hoverBorderColor: '{form.field.hover.border.color}',
-        focusBorderColor: '{form.field.focus.border.color}',
-        placeholderColor: '{form.field.placeholder.color}',
-        disabledBackground: '{form.field.disabled.background}',
-        disabledColor: '{form.field.disabled.color}',
-      },
-      dark: {
-        background: '{form.field.background}',
-        borderColor: '{form.field.border.color}',
-        color: '{form.field.color}',
-        hoverBorderColor: '{form.field.hover.border.color}',
-        focusBorderColor: '{form.field.focus.border.color}',
-        placeholderColor: '{form.field.placeholder.color}',
-        disabledBackground: '{form.field.disabled.background}',
-        disabledColor: '{form.field.disabled.color}',
       },
     },
   },
