@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { RutinasController } from '../controllers/rutinas.controller';
 import { asyncMiddlewareWrapper } from '../utils';
-import { validationMiddleware } from '../middlewares';
+import { authMiddleware, validationMiddleware } from '../middlewares';
 import { CreateRutinaDto } from '../dtos/rutinas/create-rutina.dto';
 import { UpdateRutinaDto } from '../dtos/rutinas/update-rutina.dto';
 
@@ -31,7 +31,10 @@ const rutinasController = new RutinasController();
  *           application/json:
  *             schema: { $ref: '#/components/schemas/NotFoundError' }
  */
-rutinasRouter.get('/', asyncMiddlewareWrapper(rutinasController.list.bind(rutinasController)));
+rutinasRouter.get(
+    '/', 
+    authMiddleware,
+    asyncMiddlewareWrapper(rutinasController.list.bind(rutinasController)));
 
 /**
  * @openapi
@@ -69,7 +72,11 @@ rutinasRouter.get('/', asyncMiddlewareWrapper(rutinasController.list.bind(rutina
  *           application/json:
  *             schema: { $ref: '#/components/schemas/BadRequestError' }
  */
-rutinasRouter.post('/', validationMiddleware(CreateRutinaDto), asyncMiddlewareWrapper(rutinasController.create.bind(rutinasController)));
+rutinasRouter.post(
+    '/', 
+    authMiddleware,
+    validationMiddleware(CreateRutinaDto), 
+    asyncMiddlewareWrapper(rutinasController.create.bind(rutinasController)));
 
 /**
  * @openapi
@@ -108,7 +115,11 @@ rutinasRouter.post('/', validationMiddleware(CreateRutinaDto), asyncMiddlewareWr
  *           application/json:
  *             schema: { $ref: '#/components/schemas/NotFoundError' }
  */
-rutinasRouter.put('/:id', validationMiddleware(UpdateRutinaDto, true), asyncMiddlewareWrapper(rutinasController.update.bind(rutinasController)));
+rutinasRouter.put(
+    '/:id', 
+    authMiddleware,
+    validationMiddleware(UpdateRutinaDto, true), 
+    asyncMiddlewareWrapper(rutinasController.update.bind(rutinasController)));
 
 /**
  * @openapi
@@ -137,6 +148,9 @@ rutinasRouter.put('/:id', validationMiddleware(UpdateRutinaDto, true), asyncMidd
  *           application/json:
  *             schema: { $ref: '#/components/schemas/NotFoundError' }
  */
-rutinasRouter.delete('/:id', asyncMiddlewareWrapper(rutinasController.delete.bind(rutinasController)));
+rutinasRouter.delete(
+    '/:id', 
+    authMiddleware,
+    asyncMiddlewareWrapper(rutinasController.delete.bind(rutinasController)));
 
 export default rutinasRouter;

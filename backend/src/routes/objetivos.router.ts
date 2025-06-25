@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { asyncMiddlewareWrapper } from '../utils';
 import { ObjetivosController } from '../controllers/objetivos.controller';
-import { validationMiddleware } from '../middlewares';
+import { authMiddleware, validationMiddleware } from '../middlewares';
 import { CreateObjetivoDto } from '../dtos/objetivos/create-objetivo.dto';
 import { UpdateObjetivoDto } from '../dtos/objetivos/update-objetivo.dto';
 
@@ -33,7 +33,10 @@ const objetivosRouter = Router({ mergeParams: true });
  *           application/json:
  *             schema: { $ref: '#/components/schemas/NotFoundError' }
  */
-objetivosRouter.get('/', asyncMiddlewareWrapper(objController.list.bind(objController)));
+objetivosRouter.get(
+  '/', 
+  authMiddleware, 
+  asyncMiddlewareWrapper(objController.list.bind(objController)));
 
 /**
  * @openapi
@@ -73,6 +76,7 @@ objetivosRouter.get('/', asyncMiddlewareWrapper(objController.list.bind(objContr
  */
 objetivosRouter.post(
   '/',
+  authMiddleware,
   validationMiddleware(CreateObjetivoDto),
   asyncMiddlewareWrapper(objController.create.bind(objController))
 );
@@ -118,6 +122,7 @@ objetivosRouter.post(
  */
 objetivosRouter.put(
   '/:id',
+  authMiddleware,
   validationMiddleware(UpdateObjetivoDto, true),
   asyncMiddlewareWrapper(objController.update.bind(objController))
 );
@@ -151,6 +156,7 @@ objetivosRouter.put(
  */
 objetivosRouter.delete(
   '/:id',
+  authMiddleware,
   asyncMiddlewareWrapper(objController.delete.bind(objController))
 );
 

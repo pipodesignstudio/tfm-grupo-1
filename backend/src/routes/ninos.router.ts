@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validationMiddleware } from '../middlewares';
+import { authMiddleware, validationMiddleware } from '../middlewares';
 import { CreateNinoDto } from '../dtos/ninos/create-nino.dto';
 import { UpdateNinoDto } from '../dtos/ninos/update-nino.dto';
 import { NinosController } from '../controllers/ninos.controller';
@@ -7,6 +7,8 @@ import { asyncMiddlewareWrapper } from '../utils';
 
 const controller = new NinosController();
 const router = Router();
+
+
 
 /**
  * @openapi
@@ -55,6 +57,7 @@ const router = Router();
  */
 router.post(
   '/',
+  authMiddleware,
   validationMiddleware(CreateNinoDto),
   asyncMiddlewareWrapper(controller.create.bind(controller))
 );
@@ -94,6 +97,7 @@ router.post(
  */
 router.get(
   '/:id',
+  authMiddleware,
   asyncMiddlewareWrapper(controller.getById.bind(controller))
 );
 
@@ -142,6 +146,7 @@ router.get(
  */
 router.put(
   '/:id',
+  authMiddleware,
   validationMiddleware(UpdateNinoDto, true),
   asyncMiddlewareWrapper(controller.update.bind(controller))
 );
@@ -181,6 +186,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  authMiddleware,
   asyncMiddlewareWrapper(controller.delete.bind(controller))
 );
 
@@ -221,6 +227,7 @@ router.delete(
  */
 router.get(
   '/familia/:familiaId',
+  authMiddleware,
   asyncMiddlewareWrapper(controller.listByFamilia.bind(controller))
 );
 
