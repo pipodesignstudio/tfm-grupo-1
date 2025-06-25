@@ -180,5 +180,46 @@ userRouter.delete('/delete', asyncMiddlewareWrapper(authMiddleware), usersContro
 userRouter.get('/verify-email/:email', asyncMiddlewareWrapper(authMiddleware), usersController.checkIfEmailNeedsToBeVerified);
 
 
+/**
+ * @openapi
+ * /api/users/familias:
+ *   get:
+ *     summary: Obtener las familias del usuario autenticado
+ *     tags:
+ *       - Usuarios
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Lista de familias obtenida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       descripcion:
+ *                         type: string
+ *                         example: Familia Pérez
+ *                       rol:
+ *                         type: string
+ *                         example: ADMIN
+ */
+userRouter.get(
+  '/familias',
+  asyncMiddlewareWrapper(authMiddleware),
+  usersController.getFamiliasDelUsuarioAutenticado.bind(usersController)
+);
+
+
+
+
 
 export default userRouter;

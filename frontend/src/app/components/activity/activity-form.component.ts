@@ -83,9 +83,9 @@ export class ActivityFormComponent {
 
   onSubmit() {
     if (this.editMode) {
-      this.guardarEvento();
-    } else {
       this.editarActividad();
+    } else {
+      this.guardarEvento();
     }
   }
 
