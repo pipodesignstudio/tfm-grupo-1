@@ -127,6 +127,46 @@ export const routes: Routes = [
         component: AboutUsPageComponent,
       },
       {
+        path: 'create-family',
+        component: CreateFamilyComponent,
+      },
+      {
+        path: 'my-family',
+        component: MyFamilyComponent,
+      },
+      {
+        path: 'message2',
+        component: Mensaje2Component,
+      },
+      {
+        path: 'create-routine',
+        component: CreateRoutineComponent,
+      },
+      {
+        path: 'calendar',
+        component: CalendarPageComponent,
+      },
+      {
+        path: 'child-profile',
+        component: ChildProfileComponent,
+      },
+      {
+        path: 'user-profile',
+        component: UserProfileComponent,
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent,
+      },
+      {
+        path: 'settings/edit-profile',
+        component: EditProfileComponent,
+      },
+      {
+        path: 'about-us',
+        component: AboutUsPageComponent,
+      },
+      {
         path: 'objectives',
         component: ObjectivesPageComponent,
       },

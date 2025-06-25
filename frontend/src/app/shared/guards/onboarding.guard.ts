@@ -1,6 +1,6 @@
-import { inject } from "@angular/core";
-import { CanActivateFn, Router } from "@angular/router";
-import { UsersService } from "../services";
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { UsersService } from '../services';
 
 export const onboardingGuard: CanActivateFn = async () => {
   const userService = inject(UsersService);
@@ -20,6 +20,5 @@ export const onboardingGuard: CanActivateFn = async () => {
     return true;
   }
 
-  
   return true;
 };
