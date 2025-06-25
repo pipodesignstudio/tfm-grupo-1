@@ -25,7 +25,7 @@ import { DashboardLayoutComponent } from './features/dashboard/layout/dashboard-
 import { noAuthGuard } from './shared/guards/not-auth.guard';
 import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
-import { DashboardHomeComponent } from './features/dashboard/dashboard-home/dashboard-home.component';
+import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
 
 export const routes: Routes = [
   {
