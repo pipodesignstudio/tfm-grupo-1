@@ -1,6 +1,6 @@
-import { inject } from "@angular/core";
-import { CanActivateFn, Router } from "@angular/router";
-import { UsersService } from "../services";
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { UsersService } from '../services';
 
 export const dashboardGuard: CanActivateFn = async () => {
   const userService = inject(UsersService);
@@ -18,7 +18,7 @@ export const dashboardGuard: CanActivateFn = async () => {
     return true;
   }
 
-  // Onboarding pendiente 
+  // Onboarding pendiente
   await router.navigate(['/onboarding/complete']);
   return false;
 };

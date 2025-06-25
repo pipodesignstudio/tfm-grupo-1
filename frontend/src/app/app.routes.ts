@@ -25,7 +25,7 @@ import { DashboardLayoutComponent } from './features/dashboard/layout/dashboard-
 import { noAuthGuard } from './shared/guards/not-auth.guard';
 import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
-import { DashboardHomeComponent } from './features/dashboard/dashboard-home/dashboard-home.component';
+import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
 
 export const routes: Routes = [
   {
@@ -85,6 +85,46 @@ export const routes: Routes = [
       {
         path: '',
         component: DashboardHomeComponent,
+      },
+      {
+        path: 'create-family',
+        component: CreateFamilyComponent,
+      },
+      {
+        path: 'my-family',
+        component: MyFamilyComponent,
+      },
+      {
+        path: 'message2',
+        component: Mensaje2Component,
+      },
+      {
+        path: 'create-routine',
+        component: CreateRoutineComponent,
+      },
+      {
+        path: 'calendar',
+        component: CalendarPageComponent,
+      },
+      {
+        path: 'child-profile',
+        component: ChildProfileComponent,
+      },
+      {
+        path: 'user-profile',
+        component: UserProfileComponent,
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent,
+      },
+      {
+        path: 'settings/edit-profile',
+        component: EditProfileComponent,
+      },
+      {
+        path: 'about-us',
+        component: AboutUsPageComponent,
       },
       {
         path: 'create-family',

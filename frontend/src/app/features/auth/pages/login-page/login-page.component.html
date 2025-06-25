@@ -1,66 +1,75 @@
+<h1 class="text-2xl font-semibold">👋 Hola de nuevo</h1>
+<form
+  [formGroup]="loginForm"
+  (ngSubmit)="onLogin()"
+  class="flex flex-col gap-3"
+>
+  <div class="flex flex-col gap-2 mt-3">
+    <label for="email">Email</label>
+    <input
+      type="email"
+      pInputText
+      [pAutoFocus]="true"
+      suggested="current-email"
+      formControlName="email"
+      placeholder="tu.email@ejemplo.com"
+      [ngClass]="{
+        'ng-invalid ng-dirty': f['email'].invalid && f['email'].touched
+      }"
+    />
+    @if (loginForm.get('email'); as emailControl) { @if (emailControl.invalid &&
+    emailControl.dirty) {
+    <p-message severity="error">
+      @if (emailControl.errors?.['required']) { El email es obligatorio. } @if
+      (emailControl.errors?.['email']) { Introduce un email válido. }
+    </p-message>
+    } }
+  </div>
 
-      <h1 class="text-2xl font-semibold">👋 Hola de nuevo</h1>
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="flex flex-col gap-3">
-      <div class="flex flex-col gap-2 mt-3">
-        <label for="email">Email</label>
-        <input
-          type="email"
-          pInputText
-          [pAutoFocus]="true"
-          suggested="current-email"
-          formControlName="email"
-          placeholder="tu.email@ejemplo.com"
-          [ngClass]="{
-            'ng-invalid ng-dirty': f['email'].invalid && f['email'].touched
-          }"
-        />
-        @if (loginForm.get('email'); as emailControl) { @if
-        (emailControl.invalid && emailControl.dirty) {
-          <p-message severity="error">
-            @if (emailControl.errors?.['required']) { El email es obligatorio. }
-            @if (emailControl.errors?.['email']) { Introduce un email válido. }
-          </p-message>
-        } }
-      </div>
+  <div class="flex flex-col gap-2">
+    <label for="password">Contraseña</label>
+    <p-password
+      formControlName="password"
+      placeholder="********"
+      styleClass="w-full"
+      suggested="current-password"
+      fluid
+      [toggleMask]="true"
+      [feedback]="false"
+      [ngClass]="{
+        'ng-invalid ng-dirty': f['password'].invalid && f['password'].touched
+      }"
+    ></p-password>
+    @if (f['password'].invalid && f['password'].dirty) {
+    <p-message severity="error">
+      @if (f['password'].errors?.['required']) { La contraseña es obligatoria. }
+      @if (f['password'].errors?.['minlength']) { La contraseña debe tener al
+      menos
+      {{ f['password'].errors?.['minlength'].requiredLength }} caracteres. }
+    </p-message>
+    }
+  </div>
 
-      <div class="flex flex-col gap-2">
-        <label for="password">Contraseña</label>
-        <p-password
-          formControlName="password"
-          placeholder="********"
-          styleClass="w-full"
-          suggested="current-password"
-          fluid 
-          [toggleMask]="true"
-          [feedback]="false"
-          [ngClass]="{
-            'ng-invalid ng-dirty':
-              f['password'].invalid && f['password'].touched
-          }"
-        ></p-password>
-        @if (f['password'].invalid && f['password'].dirty) {
-          <p-message severity="error">
-            @if (f['password'].errors?.['required']) { La contraseña es
-            obligatoria. } @if (f['password'].errors?.['minlength']) { La
-            contraseña debe tener al menos
-            {{ f['password'].errors?.['minlength'].requiredLength }} caracteres. }
-          </p-message>
-        }
-      </div>
+  @if (errorMessage) {
+  <p-message severity="error">
+    {{ errorMessage }}
+  </p-message>
+  }
 
-      @if (errorMessage) {
-        <p-message severity="error">
-          {{ errorMessage }}
-        </p-message>
-      }
+  <p-button
+    label="Iniciar Sesión"
+    type="submit"
+    styleClass="w-full mt-5"
+    [disabled]="loginForm.invalid"
+  ></p-button>
+</form>
 
-      <p-button label="Iniciar Sesión" type="submit" styleClass="w-full mt-5" [disabled]="loginForm.invalid"></p-button>
-    </form>
-
-    <div class="mt-5">
-      <div class="flex gap-1 justify-center">
-        <p>¿No tienes cuenta?</p>
-        <a (click)="goToRegister()" class="underline cursor-pointer">¡Créala ahora!</a>
-      </div>
-    </div>
+<div class="mt-5">
+  <div class="flex gap-1 justify-center">
+    <p>¿No tienes cuenta?</p>
+    <a (click)="goToRegister()" class="underline cursor-pointer"
+      >¡Créala ahora!</a
+    >
+  </div>
+</div>
 <p-toast />

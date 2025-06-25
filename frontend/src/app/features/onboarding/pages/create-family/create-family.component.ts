@@ -14,7 +14,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { ChildProfile, ChildService } from '../../../../shared/services/child.service';
+import {
+  ChildProfile,
+  ChildService,
+} from '../../../../shared/services/child.service';
 
 @Component({
   selector: 'app-create-family',
@@ -100,6 +103,6 @@ export class CreateFamilyComponent implements OnInit {
     this.childService.addChild(newChild);
 
     console.log('Niño añadido:', newChild);
-    this.router.navigate(['/my-family']);
+    this.router.navigate(['/dashboard/my-family']);
   }
 }

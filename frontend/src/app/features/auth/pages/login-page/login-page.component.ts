@@ -33,7 +33,7 @@ import { ToastModule } from 'primeng/toast';
     ButtonModule,
     MessageModule,
     AutoFocusModule,
-    ToastModule
+    ToastModule,
   ],
 })
 export class LoginPageComponent implements OnInit {
@@ -53,7 +53,7 @@ export class LoginPageComponent implements OnInit {
     });
   }
 
-  public isLoading =  false;
+  public isLoading = false;
 
   get f() {
     return this.loginForm.controls;
@@ -69,13 +69,15 @@ export class LoginPageComponent implements OnInit {
       this.tokenService.setToken(response.token);
       this.router.navigate(['/dashboard']);
     } else {
-     this.messageService.add({
+      this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: response?.message || 'Error al iniciar sesión.',
       });
-      if (response?.message?.toLocaleLowerCase() === 'credenciales incorrectas.') {
-        this.f['password'].reset()
+      if (
+        response?.message?.toLocaleLowerCase() === 'credenciales incorrectas.'
+      ) {
+        this.f['password'].reset();
       }
     }
     this.isLoading = false;
