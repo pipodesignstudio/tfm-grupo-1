@@ -30,14 +30,14 @@ export class ActivityService {
   }
 
   updateActivity(activity: IActivity): Promise<IActivity> {
-    let { id, nino_id , ...activityBody } = activity;
-    return lastValueFrom(this.httpClient.put<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}/${id}`, activityBody));
+    let { id, ninos_id , ...activityBody } = activity;
+    return lastValueFrom(this.httpClient.put<IActivity>(`${this.apiUrl}/actividades/ninos/${ninos_id}/${id}`, activityBody));
   }
 
   createActivity(activity: IActivity): Promise<IActivity> {
     console.log("activity", activity);
-    let { nino_id, ...activityBody } = activity;
-    return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}`, activityBody));
+    let { ninos_id, ...activityBody } = activity;
+    return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${ninos_id}`, activityBody));
   }
   
 }

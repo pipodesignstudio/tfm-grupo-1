@@ -58,7 +58,8 @@ export class ActividadService {
     where: {
       ninos: {
         familia_id: id_familia
-      }
+      },
+      rutina_id: null // Filtrar actividades que no pertenecen a una rutina
     }
   });
 }

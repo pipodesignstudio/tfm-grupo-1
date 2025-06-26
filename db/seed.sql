@@ -44,16 +44,7 @@ INSERT INTO actividades (
   'Rutina', 10, FALSE);
 
 
--- Actividad tipo "Evento"
-INSERT INTO actividades (
-  ninos_id, titulo, descripcion, fecha_realizacion,
-  hora_inicio, hora_fin, color, tipo, usuario_responsable, completado
-)
-VALUES (
-  1, 'Cita con el pediatra', 'Control de salud mensual',
-  '2025-06-18', '10:00:00', '11:00:00', '#e74c3c',
-  'Evento', 10, FALSE
-);
+
 
 
 -- Actividad tipo "Objetivo"
@@ -373,3 +364,51 @@ INSERT INTO alergias (id, ninos_id, nombre) VALUES
 (20, 20, 'Nueces'),
 (21, 21, 'Polen'),
 (22, 22, 'Polen');
+
+
+-- Actividad tipo "Evento"
+INSERT INTO actividades (
+  ninos_id, titulo, descripcion, fecha_realizacion,
+  hora_inicio, hora_fin, color, tipo, usuario_responsable, completado
+) VALUES
+-- Niño 1
+(1, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-05', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 10, FALSE),
+(1, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-08', '09:30:00', '10:00:00', '#f39c12', 'Evento', 10, FALSE),
+(1, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-12', '15:00:00', '16:30:00', '#8e44ad', 'Evento', 10, FALSE),
+(1, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-16', '10:30:00', '12:00:00', '#27ae60', 'Evento', 10, FALSE),
+(1, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-24', '11:00:00', '12:00:00', '#3498db', 'Evento', 10, FALSE),
+
+-- Niño 2
+(2, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-03', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 11, FALSE),
+(2, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-06', '09:00:00', '09:30:00', '#f39c12', 'Evento', 11, FALSE),
+(2, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-10', '14:00:00', '15:00:00', '#8e44ad', 'Evento', 11, FALSE),
+(2, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-19', '11:00:00', '12:30:00', '#27ae60', 'Evento', 11, FALSE),
+(2, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-27', '13:00:00', '14:00:00', '#3498db', 'Evento', 11, FALSE),
+
+-- Niño 3
+(3, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-02', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 12, FALSE),
+(3, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-04', '09:00:00', '09:45:00', '#f39c12', 'Evento', 12, FALSE),
+(3, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-07', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 12, FALSE),
+(3, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-15', '10:30:00', '12:00:00', '#27ae60', 'Evento', 12, FALSE),
+(3, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-22', '11:00:00', '12:00:00', '#3498db', 'Evento', 12, FALSE),
+
+-- Niño 4
+(4, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-01', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 13, FALSE),
+(4, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-09', '09:00:00', '09:30:00', '#f39c12', 'Evento', 13, FALSE),
+(4, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-14', '15:00:00', '16:30:00', '#8e44ad', 'Evento', 13, FALSE),
+(4, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-20', '10:30:00', '12:00:00', '#27ae60', 'Evento', 13, FALSE),
+(4, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-28', '11:00:00', '12:00:00', '#3498db', 'Evento', 13, FALSE),
+
+-- Niño 5
+(5, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-04', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 14, FALSE),
+(5, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-06', '09:00:00', '09:30:00', '#f39c12', 'Evento', 14, FALSE),
+(5, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-11', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 14, FALSE),
+(5, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-17', '10:30:00', '12:00:00', '#27ae60', 'Evento', 14, FALSE),
+(5, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-26', '11:00:00', '12:00:00', '#3498db', 'Evento', 14, FALSE),
+
+-- Niño 6
+(6, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-03', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 15, FALSE),
+(6, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-08', '09:00:00', '09:30:00', '#f39c12', 'Evento', 15, FALSE),
+(6, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-13', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 15, FALSE),
+(6, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-21', '10:30:00', '12:00:00', '#27ae60', 'Evento', 15, FALSE),
+(6, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-30', '11:00:00', '12:00:00', '#3498db', 'Evento', 15, FALSE);

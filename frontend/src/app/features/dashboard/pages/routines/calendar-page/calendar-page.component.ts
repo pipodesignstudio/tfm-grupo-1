@@ -66,71 +66,87 @@ export class CalendarPageComponent {
 
   calendarVisible = signal(true);
 
-
   childService = inject(ChildService);
 
   allEvents: IActivity[] = [];
   currentEvents: MyEvent[] = [];
   selectedDateEvents: MyEvent[] = [];
 
+  filtroOpciones: { label: string; value: number | null }[] = [];
+
   mostrarActivityModal = false;
   actividadInfo: IActivity | null = null;
 
   private familiaEffect = effect(async () => {
     const familia = this.familiesStore.familiaSeleccionada();
-    console.log(familia, 'familia seleccionada en el efecto');
     if (familia == null || !this.calendarComponent) return;
 
     try {
       // Cargar los niños de la familia seleccionada
-      const children = await this.childService.getChildrenByFamily(String(familia.id));
-      console.log(children, 'Niños de la familia seleccionada');
+      const children = await this.childService.getChildrenByFamily(
+        String(familia.id)
+      );
 
-
-
+      children.forEach((child) => {
+        this.filtroOpciones.push({
+          label: child.nombre,
+          value: child.id,
+        });
+      });
 
       // Cargar los eventos de la familia seleccionada
       const activities = await this.activityService.getActivitiesFamily(
         String(familia.id)
       );
-      console.log(activities, 'Actividades de la familia seleccionada');
       this.allEvents = activities;
       console.log(this.allEvents);
       const eventInputs = this.mapActivitiesToEvents(activities);
       this.currentEvents = eventInputs;
-      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
 
       // Actualizar el calendario con los nuevos eventos
       const calendarApi = this.calendarComponent.getApi();
       calendarApi.removeAllEvents(); // Limpia los eventos anteriores
+
+      console.log('Eventos antes de añadir:', eventInputs);
       calendarApi.addEventSource(eventInputs);
+      calendarApi.render(); // Renderiza el calendario con los nuevos eventos
+
+      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
     } catch (error) {
       console.error('Error al cargar los eventos:', error);
     }
   });
 
-
   selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
-
-  filtroOpciones = [
-    { label: 'Todos', value: null },
-    { label: 'Lucas', value: 1 },
-    { label: 'Sofía', value: 2 },
-  ];
 
   filtroSeleccionado: number | null = null;
 
-  filtrarEventos() {
-    const filterValue: { label: string; value: number } | any =
-      this.filtroSeleccionado;
+  async filtrarEventos() {
+    console.log('filtro seleccionado:', this.filtroSeleccionado);
+    const filterValue: number | null = this.filtroSeleccionado;
     if (!filterValue) {
-      this.selectedDateEvents = [...this.currentEvents];
+      this.currentEvents = this.mapActivitiesToEvents(this.allEvents);
     } else {
-      console.log(filterValue.value);
-      this.selectedDateEvents = this.currentEvents.filter((evento: any) =>
-        evento.id_nino === filterValue.value ? evento.id_nino : null
+      this.currentEvents = this.mapActivitiesToEvents(
+        this.allEvents.filter(
+          (evento: IActivity) => evento.ninos_id == filterValue
+        )
       );
     }
+
+    // Actualizar el calendario con los nuevos eventos
+    const calendarApi = this.calendarComponent.getApi();
+
+    calendarApi.removeAllEvents(); // Limpia los eventos anteriores
+    // Limpia todos los dots (al principio de la función o antes de render)
+    document
+      .querySelectorAll('.has-event-dot')
+      .forEach((el) => el.classList.remove('has-event-dot'));
+
+
+    calendarApi.addEventSource(this.currentEvents);
+    calendarApi.render(); // Renderiza el calendario con los nuevos eventos
+
   }
 
   calendarOptions = signal<CalendarOptions>({
@@ -151,13 +167,12 @@ export class CalendarPageComponent {
     contentHeight: 'auto',
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
-    /*     eventsSet: this.handleEvents.bind(this),*/
     eventDidMount: this.eventDidMount.bind(this),
   });
 
   // Metodo para añadir el dot
   eventDidMount(info: any) {
-    const dateStr = info.event.startStr.split('T')[0]; // Formato YYYY-MM-DD
+    const dateStr = info.event.startStr.split('T')[0];
     const dayCell = document.querySelector(`[data-date="${dateStr}"]`);
 
     if (dayCell && !dayCell.classList.contains('has-event-dot')) {
@@ -168,6 +183,7 @@ export class CalendarPageComponent {
   handleDateSelect(selectInfo: DateSelectArg) {
     const clickedDate = selectInfo.startStr.split('T')[0];
     this.filtrarEventosPorFecha(clickedDate);
+    this.changeDetector.detectChanges();
   }
 
   private filtrarEventosPorFecha(fecha: string) {
@@ -182,12 +198,8 @@ export class CalendarPageComponent {
     this.selectedDate = format(new Date(fecha), 'MMMM, do, EEE');
 
     console.log(`Eventos filtrados para la fecha ${fecha}:`, filtrados);
-  }
-
-  /*  handleEvents(events: EventApi[]) {
-    this.currentEvents.set(events);
     this.changeDetector.detectChanges();
-  } */
+  }
 
   private mapActivitiesToEvents(activities: IActivity[]): EventInput[] {
     return activities.map((activity) => ({
@@ -262,7 +274,7 @@ export class CalendarPageComponent {
   deleteActivity(actividad: IActivity) {
     console.log('Borrar actividad con ID:', actividad.id);
     this.activityService
-      .deleteActivity(actividad.id, actividad.nino_id)
+      .deleteActivity(actividad.id, actividad.ninos_id)
       .then(() => {
         const calendarApi = this.calendarComponent.getApi();
         calendarApi.getEventById(String(actividad.id))?.remove();

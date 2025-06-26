@@ -3,7 +3,7 @@ type ActivityType = 'Tarea' | 'Evento' | 'Habito';
 export interface IActivity {
   id: number;
   id_rutina: number | null;
-  nino_id: number;
+  ninos_id: number;
   titulo: string;
   descripcion: string | null;
   fecha_realizacion: Date;
