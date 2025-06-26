@@ -3,6 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 import { IActivity } from '../interfaces/iactivity.interface';
 
+
+interface CreateActivityResponse {
+  success: boolean;
+  message: string;
+  data: IActivity;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,7 +44,12 @@ export class ActivityService {
   createActivity(activity: IActivity): Promise<IActivity> {
     console.log("activity", activity);
     let { ninos_id, ...activityBody } = activity;
-    return lastValueFrom(this.httpClient.post<IActivity>(`${this.apiUrl}/actividades/ninos/${ninos_id}`, activityBody));
+    return lastValueFrom(
+    this.httpClient.post<CreateActivityResponse>(
+      `${this.apiUrl}/actividades/ninos/${ninos_id}`,
+      activityBody
+    )
+  ).then(response => response.data);
   }
   
 }

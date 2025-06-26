@@ -53,9 +53,10 @@
       <div
         class="flex items-center justify-between p-4 rounded-2xl shadow-sm"
         [style.backgroundColor]="selectedDateEvent.color"
-        (click)="abrirActivityModal(selectedDateEvent['actividadInfo'])"
+        
       >
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 hover:cursor-pointer w-full"
+        (click)="abrirActivityModal(selectedDateEvent['actividadInfo'])">
           <i class="text-xl text-purple-800"></i>
           <span class="text-gray-800 font-medium">{{
             selectedDateEvent.title
@@ -64,22 +65,23 @@
         <label class="relative inline-block w-5 h-5">
           <input
             type="checkbox"
-            [(ngModel)]="selectedDateEvent.checked"
+            [(ngModel)]="selectedDateEvent['actividadInfo'].completado"
             (change)="onCheckedChange(selectedDateEvent)"
             class="opacity-0 w-5 h-5 cursor-pointer"
           />
           <div
             class="absolute inset-0 rounded border border-gray-900 flex items-center justify-center transition-colors"
             [ngStyle]="
-            selectedDateEvent.checked
+            selectedDateEvent['actividadInfo'].completado
               ? {
                   'background-color': selectedDateEvent.color,
                 }
               : { 'background-color': '#ffffff' }
           "
           >
+          @if(selectedDateEvent['actividadInfo'].completado) {
             <svg
-              *ngIf="selectedDateEvent.checked"
+              
               class="w-3 h-3 text-white"
               fill="none"
               stroke="currentColor"
@@ -92,6 +94,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
+          }
           </div>
         </label>
       </div>
@@ -101,6 +104,8 @@
     @if (mostrarActivityModal) {
     <app-activity-form
       [actividadInfo]="actividadInfo"
+      [children]="children"
+      [usersFamily]="usersFamily"
       [tipo]="'evento'"
       (editar)="editarActividad($event)"
       (cerrar)="cerrarActivityModal()"
