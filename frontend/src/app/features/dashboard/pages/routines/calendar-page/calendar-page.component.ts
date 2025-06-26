@@ -78,6 +78,8 @@ export class CalendarPageComponent {
   mostrarActivityModal = false;
   actividadInfo: IActivity | null = null;
 
+  clickedDate: string  = new Date().toISOString().slice(0, 10);
+
   private familiaEffect = effect(async () => {
     const familia = this.familiesStore.familiaSeleccionada();
     if (familia == null || !this.calendarComponent) return;
@@ -189,8 +191,8 @@ export class CalendarPageComponent {
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
-    const clickedDate = selectInfo.startStr.split('T')[0];
-    this.filtrarEventosPorFecha(clickedDate);
+    this.clickedDate = selectInfo.startStr.split('T')[0];
+    this.filtrarEventosPorFecha(this.clickedDate);
     this.changeDetector.detectChanges();
   }
 
@@ -251,7 +253,7 @@ export class CalendarPageComponent {
     } catch (error) {
       console.error('Error al crear la actividad:', error);
     } finally {
-      this.mostrarActivityModal = false;
+      this.cerrarActivityModal();
     }
   }
 
@@ -271,7 +273,7 @@ export class CalendarPageComponent {
       calendarApi.addEventSource(eventInputs);
       calendarApi.render(); // Renderiza el calendario con los nuevos eventos
 
-      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
+      this.filtrarEventosPorFecha(this.clickedDate);
   }
 
   onCheckedChange(event: EventInput) {
@@ -321,8 +323,31 @@ export class CalendarPageComponent {
     this.activityService.updateActivity(actividad as IActivity).then(
       (actividadActualizada) => {
         console.log('Actividad actualizada:', actividadActualizada);
+
+        // Actualizar el evento en el calendario
+        this.allEvents = this.allEvents.map((event) =>
+          event.id === actividad.id
+            ? { 
+                ...event,
+                ...actividadActualizada, 
+                titulo: actividad.titulo ?? event.titulo,
+                descripcion: actividad.descripcion ?? event.descripcion,
+                hora_inicio: actividad.hora_inicio ?? event.hora_inicio,
+                hora_fin: actividad.hora_fin ?? event.hora_fin,
+                color: actividad.color ?? event.color,
+                usuario_responsable: actividad.usuario_responsable ?? event.usuario_responsable,
+                ubicacion: actividad.ubicacion ?? event.ubicacion,
+                fecha_realizacion: actividad.fecha_realizacion
+                  ? new Date(actividad.fecha_realizacion)
+                  : event.fecha_realizacion,
+            }
+            : event
+        );
+        this.initEventosCalendario(this.allEvents);
       }
     );
+    this.cerrarActivityModal();
+
   }
 
   deleteActivity(actividad: IActivity) {

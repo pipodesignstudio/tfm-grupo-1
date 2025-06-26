@@ -4,12 +4,20 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  Input,
 } from '@angular/core';
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 import * as L from 'leaflet';
+
+// Define the IUbicacion interface if not imported from elsewhere
+export interface IUbicacion {
+  address?: string;
+  lat?: number;
+  lon?: number;
+}
 
 
 @Component({
@@ -31,17 +39,19 @@ export class UbicacionComponent
   @ViewChild('map') mapRef!: ElementRef;
   @ViewChild('search') searchInput!: ElementRef;
 
+  @Input() ubicacion: IUbicacion | null = null;
+
   map!: L.Map;
   marker!: L.Marker;
 
   private onChange: any = () => {};
   private onTouched: any = () => {};
 
-  address: string = '';
+  address: string = this.ubicacion?.address || '';
 
   ngAfterViewInit() {
-  const initialLat = 40.4168;
-  const initialLon = -3.7038;
+  const initialLat = this.ubicacion?.lat || 40.4168;
+  const initialLon = this.ubicacion?.lon || -3.7038;
 
   this.map = L.map(this.mapRef.nativeElement).setView([initialLat, initialLon], 13);
 

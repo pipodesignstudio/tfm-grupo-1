@@ -37,6 +37,8 @@
           class="p-3 rounded-md w-full h-19"
         ></textarea>
       </div>
+
+
       <p-select
         [options]="filtroOpciones"
         formControlName="ninos_id"
@@ -88,12 +90,13 @@
         <p-colorpicker
           formControlName="color"
           [inline]="isMobile"
+          [appendTo]="'body'"
           class="w-full h-12 border-0 rounded-md p-1"
         ></p-colorpicker>
       </div>
       }
-      
-      <app-ubicacion formControlName="ubicacion"></app-ubicacion>
+
+      <app-ubicacion formControlName="ubicacion"  [ubicacion]="actividadInfo?.ubicacion ?? null"></app-ubicacion>
       <div class="flex justify-end gap-2 mt-4 shrink-0">
         <button
           type="button"
@@ -107,11 +110,16 @@
           [disabled]="form.invalid"
           class="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
         >
-          Guardar
+        @if(editMode) {
+        Editar {{tipo}} 
+        } 
+        @else {
+          Crear {{tipo}}
+        }
+
         </button>
       </div>
     </form>
 
-    <!-- Botones fijos -->
   </div>
 </div>

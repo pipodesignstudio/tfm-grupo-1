@@ -35,8 +35,8 @@ import { IFamiliaUsuario } from '../../shared/interfaces/ifamily-users.interface
 export class ActivityFormComponent {
   @Input() actividadInfo: IActivity | null = null;
   @Input() tipo: 'evento' | 'objetivo' | 'rutina' | null = null;
-  @Input() children: IChild [] = [];
-  @Input() usersFamily: IFamiliaUsuario [] = [];
+  @Input() children: IChild[] = [];
+  @Input() usersFamily: IFamiliaUsuario[] = [];
 
   @Output() editar = new EventEmitter<Partial<IActivity>>();
   @Output() cerrar = new EventEmitter<void>();
@@ -73,11 +73,10 @@ export class ActivityFormComponent {
   }
 
   ngOnInit() {
-
-      this.filtroOpciones = this.children.map((child) => ({
-        label: child.nombre,
-        value: Number(child.id),
-      }));
+    this.filtroOpciones = this.children.map((child) => ({
+      label: child.nombre,
+      value: Number(child.id),
+    }));
 
     this.usuariosResponsables = this.usersFamily.map((user) => ({
       label: user.usuarios.nick,
@@ -85,8 +84,18 @@ export class ActivityFormComponent {
     }));
 
     if (this.actividadInfo) {
-      this.form.patchValue(this.actividadInfo);
+      const data = { ...this.actividadInfo };
+
+      // Transformar strings ISO en objetos Date
+      data.fecha_realizacion = new Date(data.fecha_realizacion);
+      data.hora_inicio = new Date(data.hora_inicio);
+      data.hora_fin = new Date(data.hora_fin);
+
+      this.form.get('ninos_id')?.disable();
+
+      this.form.patchValue(data);
       this.editMode = true;
+      console.log('values form', this.form.value);
     }
   }
 
@@ -112,8 +121,19 @@ export class ActivityFormComponent {
   }
 
   editarActividad() {
+    console.log(this.actividadInfo);
     if (this.form.valid) {
-      this.editar.emit();
+      console.log('Editar actividad:', this.form.value);
+      this.editar.emit({
+        ...this.form.value,
+        id: this.actividadInfo ? this.actividadInfo.id : undefined,
+        tipo:
+          this.tipo == 'evento'
+            ? 'Evento'
+            : this.tipo == 'objetivo'
+            ? 'Objetivo'
+            : undefined,
+      });
     } else {
       this.form.markAllAsTouched();
     }
