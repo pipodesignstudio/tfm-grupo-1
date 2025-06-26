@@ -22,7 +22,7 @@ import { SettingsComponent } from './features/dashboard/pages/profiles/settings/
 import { OnboardingLayoutComponent } from './features/onboarding/layouts/onboarding-layout/onboarding-layout.component';
 import { CompleteOnboardingComponent } from './features/onboarding/pages/complete-onboarding/complete-onboarding.component';
 import { DashboardLayoutComponent } from './features/dashboard/layout/dashboard-layout/dashboard-layout.component';
-import { noAuthGuard } from './shared/guards/not-auth.guard';
+// import { noAuthGuard } from './shared/guards/not-auth.guard';
 import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
 import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
@@ -41,12 +41,12 @@ export const routes: Routes = [
       {
         path: 'login',
         component: LoginPageComponent,
-        canActivate: [noAuthGuard],
+        // canActivate: [noAuthGuard],
       },
       {
         path: 'register',
         component: RegisterPageComponent,
-        canActivate: [noAuthGuard],
+        // canActivate: [noAuthGuard],
       },
       {
         path: 'verificar/:email',
@@ -63,7 +63,7 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     component: OnboardingLayoutComponent,
-    canActivate: [authGuard, onboardingGuard],
+    // canActivate: [authGuard, onboardingGuard],
     children: [
       {
         path: 'complete',
@@ -79,8 +79,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    canActivate: [authGuard],
-    canActivateChild: [dashboardGuard],
+    // canActivate: [authGuard],
+    // canActivateChild: [dashboardGuard],
     children: [
       {
         path: '',
