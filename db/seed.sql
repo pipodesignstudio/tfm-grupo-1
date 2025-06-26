@@ -1,3 +1,7 @@
+-- SEED NIDODB ---------------------------------------------------------
+SET FOREIGN_KEY_CHECKS = 0;
+USE nidodb;
+
 -- Insertar perfiles de aprendizaje
 INSERT INTO perfiles_aprendizaje (nombre, descripcion) VALUES
 ('Visual', 'Aprende observando'),
@@ -412,3 +416,13 @@ INSERT INTO actividades (
 (6, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-13', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 15, FALSE),
 (6, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-21', '10:30:00', '12:00:00', '#27ae60', 'Evento', 15, FALSE),
 (6, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-30', '11:00:00', '12:00:00', '#3498db', 'Evento', 15, FALSE);
+
+INSERT INTO vacunas (id,ninos_id,nombre,fecha) VALUES
+  (1,1,'Viruela','2023-05-15 00:00:00'),
+  (2,2,'Sarampión','2024-01-20 00:00:00');
+
+INSERT INTO enfermedades (id,ninos_id,nombre,doctor)
+VALUES (1,2,'Otitis','Dr. Ruiz');
+
+
+SET FOREIGN_KEY_CHECKS = 1;

@@ -6,9 +6,9 @@ import path from 'path';
 const FONTS_BASE_PATH = path.join(process.cwd(), 'src', 'assets', 'fonts'); 
 // TODO: Ajustar a la fuentes que usemos ppalmente en el front
 const fonts = {
-  Roboto: {
-    normal: path.join(FONTS_BASE_PATH, 'Roboto-Regular.ttf'),
-    bold: path.join(FONTS_BASE_PATH, 'Roboto-Bold.ttf'),
+  Poppins: {
+    normal: path.join(FONTS_BASE_PATH, 'Poppins-Regular.ttf'),
+    bold: path.join(FONTS_BASE_PATH, 'Poppins-SemiBold.ttf'),
   },
 };
 
@@ -26,9 +26,13 @@ export class PdfGeneratorService {
    * @returns Un objeto PDFKit.PDFDocument (stream).
    */
   createPdf(docDefinition: TDocumentDefinitions, options: BufferOptions = {}): PDFKit.PDFDocument {
-    return this.printer.createPdfKitDocument(docDefinition, options);
+    return this.printer.createPdfKitDocument({
+      ...docDefinition,
+      defaultStyle: {
+        font: 'Poppins',
+      },
+    }, options);
   }
 }
 
-// Opcional: exportar una instancia única para uso global (singleton)
 export const pdfGenerator = new PdfGeneratorService();

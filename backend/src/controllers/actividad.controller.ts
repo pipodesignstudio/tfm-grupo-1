@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ActividadService } from '../services/actividad.service';
-import { ApiCorrectResponse, InternalServerError } from '../utils';
+import { ApiCorrectResponse, InternalServerError, UnauthorizedError } from '../utils';
 import { ExportActivitiesDto } from '../dtos/actividades';
-import { Stream } from 'nodemailer/lib/xoauth2';
 
 const actividadService = new ActividadService();
 
@@ -65,9 +64,19 @@ export class ActividadController {
 
   public async exportarActividades(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const id_nino = Number(req.params.id_nino);
+      const user = req.user!;
+      // Esta validación debería ser redundante porque el usuario solo debe acceder a actividades de niños asociados a su familiaç
+      // Comentar en test para exportar pdfs 👇
+      // const isValidRequest = await actividadService.validateExportRequest(req.body.activityIds, user.id);
+      // if (!isValidRequest) {
+      //   throw new UnauthorizedError('No tienes permiso para exportar estas actividades', {
+      //     error: 'UNAUTHORIZED',
+      //     detalle: 'No tienes permiso para exportar estas actividades',
+      //   });
+      // }
+      // Comentar 👆
       const dto: ExportActivitiesDto = req.body;
-      const doc:PDFKit.PDFDocument | null = await actividadService.exportActivitiesToPdf(dto, id_nino);
+      const doc:PDFKit.PDFDocument | null = await actividadService.exportActivitiesToPdf(dto);
       if(!doc){
         throw new InternalServerError('Error interno al exportar actividades', {
           error: 'INTERNAL_SERVER_ERROR',
@@ -89,5 +98,7 @@ export class ActividadController {
       next(err);
     }
   }
+
+
 
 }

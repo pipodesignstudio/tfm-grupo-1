@@ -145,9 +145,9 @@ router.delete(
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/actividades/export:
+ * /api/actividades/export:
  *   post:
- *     summary: Exporta actividades
+ *     summary: Genera un reporte de actividades en base a la selección del usuario 
  *     tags:
  *       - Actividades
  *     parameters:
@@ -167,7 +167,7 @@ router.delete(
  *         description: Actividades exportadas exitosamente
  */
 router.post(
-  '/ninos/:id_nino/export',
+  '/export',
   asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(ExportActivitiesDto),
   controller.exportarActividades

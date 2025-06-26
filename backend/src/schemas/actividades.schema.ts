@@ -128,26 +128,20 @@ export const UpdateActividadDtoSchema = {
 
 export const ExportActivitiesDtoSchema = {
   type: 'object',
-  required: ['activities'],
+  required: ['activityIds'],
   properties: {
-    activities: {
+    activityIds: {
       type: 'array',
+      description: 'IDs de actividades que se desean exportar',
+      minItems: 1,          
+      uniqueItems: true,    
       items: {
-        type: 'object',
-        properties: {
-          id: { type: 'integer' },
-          titulo: { type: 'string' },
-          tipo: { type: 'string' },
-          fecha_realizacion: { type: 'string' },
-          hora_inicio: { type: 'string' },
-          hora_fin: { type: 'string' },
-          color: { type: 'string' },
-          ubicacion: { type: 'object' },
-          usuario_responsable: { type: 'integer' },
-          completado: { type: 'boolean' },
-        },
-        additionalProperties: false,
+        type: 'integer',
+        format: 'int32',
+        minimum: 1,      
+        example: 101,
       },
+      example: [101, 102, 105],
     },
   },
   additionalProperties: false,

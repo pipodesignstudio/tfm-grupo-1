@@ -11,6 +11,11 @@ DROP TABLE IF EXISTS `ninos`;
 DROP TABLE IF EXISTS `usuarios`;
 DROP TABLE IF EXISTS `familia`;
 DROP TABLE IF EXISTS `perfiles_aprendizaje`;
+DROP TABLE IF EXISTS `vacunas`;
+DROP TABLE IF EXISTS `enfermedades`;
+DROP TABLE IF EXISTS `objetivos_has_actividades`;
+DROP TABLE IF EXISTS `alergias`;
+DROP TABLE IF EXISTS `notas`;
 
 -- Crear esquema si no existe
 CREATE SCHEMA IF NOT EXISTS `nidodb` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

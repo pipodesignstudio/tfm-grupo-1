@@ -16,6 +16,16 @@ docker compose down -v
 
 Posteriormente repetir el paso 1
 
+### Diagrama de la base de datos
+
+```bash
+../db/diagrama.pdf
+```
+
+Online:
+
+https://dbdiagram.io/d/TFM-6832fb62b9f7446da30abbdd
+
 #### Troubleshooting
 
 Existe la posibilidad de que tengas los cuerpos por defecto de MySQL y MongoDB ocupados por alguna práctica anterior. En tal caso, deberás remapear los puertos a otro puerto disponible.

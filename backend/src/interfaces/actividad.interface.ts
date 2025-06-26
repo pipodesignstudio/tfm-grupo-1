@@ -32,6 +32,7 @@ export interface IActividadPdf {
   nino:string;
   title:string;
   description:string;
+  responsable:string;
   fecha_realizacion:Date | null;
   hora_inicio:Date | null;
   hora_fin:Date | null;
