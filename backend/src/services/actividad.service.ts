@@ -7,6 +7,9 @@ import { activitiesPdfGenerator } from "../templates/pdf/activities-export.layou
 import { NotFoundError, InternalServerError } from '../utils';
 import { PdfGeneratorService } from "./printer.service";
 
+import { Prisma } from '@prisma/client';
+
+
 
 export class ActividadService {
 
@@ -75,7 +78,7 @@ export class ActividadService {
         hora_inicio: dto.hora_inicio,
         hora_fin: dto.hora_fin,
         color: dto.color,
-        ubicacion: dto.ubicacion ?? undefined,
+        ubicacion: dto.ubicacion ? JSON.parse(JSON.stringify(dto.ubicacion)) : Prisma.JsonNull,
         usuario_responsable: dto.usuario_responsable,
         completado: dto.completado,
       }

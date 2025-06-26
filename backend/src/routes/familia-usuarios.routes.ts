@@ -32,8 +32,8 @@ const controller = new FamiliaUsuariosController();
  */
 familiaUsuariosRoutes.get(
   '/',
-  asyncMiddlewareWrapper(authMiddleware),
-  controller.getAll
+/*   asyncMiddlewareWrapper(authMiddleware),
+ */  controller.getAll
 );
 
 /**

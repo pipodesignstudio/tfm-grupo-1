@@ -1,3 +1,4 @@
+import { FamilyService } from './../../../../../shared/services/family.service';
 import { ChildService } from './../../../../../shared/services/child.service';
 import { UsersService } from '../../../../../shared/services/users.service';
 import {
@@ -31,10 +32,9 @@ import { FamiliesStore } from '../../../../../shared/services/familiesStore.serv
 
 import { Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
+import { IChild, IUser } from '../../../../../shared/interfaces';
+import { IFamiliaUsuario } from '../../../../../shared/interfaces/ifamily-users.interface';
 
-interface MyEvent extends EventInput {
-  checked?: boolean;
-}
 
 @Component({
   selector: 'app-calendar-page',
@@ -64,10 +64,14 @@ export class CalendarPageComponent {
   calendarVisible = signal(true);
 
   childService = inject(ChildService);
+  children: IChild[] = [];
+
+  familyService = inject(FamilyService);
+  usersFamily: IFamiliaUsuario[] = [];
 
   allEvents: IActivity[] = [];
-  currentEvents: MyEvent[] = [];
-  selectedDateEvents: MyEvent[] = [];
+  currentEvents: EventInput[] = [];
+  selectedDateEvents: EventInput[] = [];
 
   filtroOpciones: { label: string; value: number | null }[] = [];
 
@@ -80,34 +84,28 @@ export class CalendarPageComponent {
 
     try {
       // Cargar los niños de la familia seleccionada
-      const children = await this.childService.getChildrenByFamily(
+      this.children = await this.childService.getChildrenByFamily(
         String(familia.id)
       );
 
-      this.filtroOpciones = children.map((child) => ({
+      this.usersFamily = await this.familyService.getAllUsersFamily(
+        String(familia.id)
+      );
+
+      console.log('usuarios de la familia:', this.usersFamily);
+
+      this.filtroOpciones = this.children.map((child) => ({
         label: child.nombre,
         value: Number(child.id),
       }));
       this.changeDetector.detectChanges();
 
       // Cargar los eventos de la familia seleccionada
-      const activities = await this.activityService.getActivitiesFamily(
+       const activities = await this.activityService.getActivitiesFamily(
         String(familia.id)
       );
-      this.allEvents = activities;
-      console.log(this.allEvents);
-      const eventInputs = this.mapActivitiesToEvents(activities);
-      this.currentEvents = eventInputs;
-
-      // Actualizar el calendario con los nuevos eventos
-      const calendarApi = this.calendarComponent.getApi();
-      calendarApi.removeAllEvents(); // Limpia los eventos anteriores
-
-      console.log('Eventos antes de añadir:', eventInputs);
-      calendarApi.addEventSource(eventInputs);
-      calendarApi.render(); // Renderiza el calendario con los nuevos eventos
-
-      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
+      this.initEventosCalendario(activities);
+      
     } catch (error) {
       console.error('Error al cargar los eventos:', error);
     }
@@ -141,6 +139,22 @@ export class CalendarPageComponent {
 
     calendarApi.addEventSource(this.currentEvents);
     calendarApi.render(); // Renderiza el calendario con los nuevos eventos
+  }
+
+
+  private filtrarEventosPorFecha(fecha: string) {
+    const filtrados = this.currentEvents.filter(
+      (event: any) => event.start === fecha
+    );
+
+    this.selectedDateEvents = filtrados;
+
+    console.log(filtrados, this.selectedDate);
+
+    this.selectedDate = format(new Date(fecha), 'MMMM, do, EEE');
+
+    console.log(`Eventos filtrados para la fecha ${fecha}:`, filtrados);
+    this.changeDetector.detectChanges();
   }
 
   calendarOptions = signal<CalendarOptions>({
@@ -180,20 +194,7 @@ export class CalendarPageComponent {
     this.changeDetector.detectChanges();
   }
 
-  private filtrarEventosPorFecha(fecha: string) {
-    const filtrados = this.currentEvents.filter(
-      (event: any) => event.start === fecha
-    );
-
-    this.selectedDateEvents = filtrados;
-
-    console.log(filtrados, this.selectedDate);
-
-    this.selectedDate = format(new Date(fecha), 'MMMM, do, EEE');
-
-    console.log(`Eventos filtrados para la fecha ${fecha}:`, filtrados);
-    this.changeDetector.detectChanges();
-  }
+  
 
   private mapActivitiesToEvents(activities: IActivity[]): EventInput[] {
     return activities.map((activity) => ({
@@ -242,12 +243,10 @@ export class CalendarPageComponent {
         .createActivity(actividadConFechas)
         .then((actividadCreada) => {
           console.log('Actividad creada:', actividadCreada);
-          calendarApi.addEvent({
-            title: actividadConFechas.titulo || 'Sin título',
-            start: fecha,
-            allDay: true,
-            color: actividadConFechas.color || '#7c3aed',
-          });
+         
+
+          this.allEvents.push(actividadCreada);
+          this.initEventosCalendario(this.allEvents);
         });
     } catch (error) {
       console.error('Error al crear la actividad:', error);
@@ -256,13 +255,74 @@ export class CalendarPageComponent {
     }
   }
 
-  onCheckedChange(event: MyEvent) {
-    console.log(event, 'checked:', event.checked);
+
+  initEventosCalendario(activities: IActivity[]) {
+   
+      this.allEvents = activities;
+      console.log(this.allEvents);
+      const eventInputs = this.mapActivitiesToEvents(activities);
+      this.currentEvents = eventInputs;
+
+      // Actualizar el calendario con los nuevos eventos
+      const calendarApi = this.calendarComponent.getApi();
+      calendarApi.removeAllEvents(); // Limpia los eventos anteriores
+
+      console.log('Eventos antes de añadir:', eventInputs);
+      calendarApi.addEventSource(eventInputs);
+      calendarApi.render(); // Renderiza el calendario con los nuevos eventos
+
+      this.filtrarEventosPorFecha(new Date().toISOString().slice(0, 10));
   }
 
+  onCheckedChange(event: EventInput) {
+    this.editarActividad(event['actividadInfo']);
+  }
+
+
+
+/*   formato JsonValuecolor
+{
+    "titulo": "aaaa",
+    "descripcion": "aaa",
+    "ninos_id": 2,
+    "fecha_realizacion": "2025-06-22T22:00:00.000Z",
+    "hora_inicio": "2025-06-26T14:13:09.264Z",
+    "hora_fin": "2025-06-26T14:15:10.259Z",
+    "usuario_responsable": 2,
+    "color": "#eb1cad",
+    "tipo": "Evento",
+    "ubicacion": {
+        "address": "Paseo República de Cuba, Jerónimos, Retiro, Madrid, Community of Madrid, 28009, Spain",
+        "lat": 40.41291402150223,
+        "lon": -3.6823940277099614
+    }
+}
+{
+    "id": 89,
+    "rutina_id": null,
+    "ninos_id": 5,
+    "titulo": "Charla educativa",
+    "descripcion": "Actividad en la biblioteca infantil",
+    "fecha_creacion": "2025-06-26T12:11:54.000Z",
+    "fecha_realizacion": "2025-06-26T00:00:00.000Z",
+    "hora_inicio": "1970-01-01T11:00:00.000Z",
+    "hora_fin": "1970-01-01T12:00:00.000Z",
+    "color": "#3498db",
+    "tipo": "Evento",
+    "ubicacion": null,
+    "usuario_responsable": 14,
+    "completado": true
+}
+
+
+ */
   editarActividad(actividad: Partial<IActivity>) {
-    console.log('Editar actividad con ID:', actividad.id);
-    // Aquí puedes implementar la lógica para editar la actividad
+    console.log('Editar actividad con ID:', actividad);
+    this.activityService.updateActivity(actividad as IActivity).then(
+      (actividadActualizada) => {
+        console.log('Actividad actualizada:', actividadActualizada);
+      }
+    );
   }
 
   deleteActivity(actividad: IActivity) {
