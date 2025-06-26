@@ -19,8 +19,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { FormsModule } from '@angular/forms';
 
-import { DropdownModule } from 'primeng/dropdown';
-
 import { format } from 'date-fns';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 
@@ -44,7 +42,6 @@ interface MyEvent extends EventInput {
   imports: [
     CommonModule,
     FullCalendarModule,
-    DropdownModule,
     FormsModule,
     ActivityFormComponent,
     SelectModule,
@@ -87,12 +84,11 @@ export class CalendarPageComponent {
         String(familia.id)
       );
 
-      children.forEach((child) => {
-        this.filtroOpciones.push({
-          label: child.nombre,
-          value: child.id,
-        });
-      });
+      this.filtroOpciones = children.map((child) => ({
+        label: child.nombre,
+        value: Number(child.id),
+      }));
+      this.changeDetector.detectChanges();
 
       // Cargar los eventos de la familia seleccionada
       const activities = await this.activityService.getActivitiesFamily(
@@ -143,10 +139,8 @@ export class CalendarPageComponent {
       .querySelectorAll('.has-event-dot')
       .forEach((el) => el.classList.remove('has-event-dot'));
 
-
     calendarApi.addEventSource(this.currentEvents);
     calendarApi.render(); // Renderiza el calendario con los nuevos eventos
-
   }
 
   calendarOptions = signal<CalendarOptions>({
