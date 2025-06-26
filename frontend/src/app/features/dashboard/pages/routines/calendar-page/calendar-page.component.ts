@@ -1,3 +1,4 @@
+import { ChildService } from './../../../../../shared/services/child.service';
 import { UsersService } from '../../../../../shared/services/users.service';
 import {
   Component,
@@ -65,6 +66,9 @@ export class CalendarPageComponent {
 
   calendarVisible = signal(true);
 
+
+  childService = inject(ChildService);
+
   allEvents: IActivity[] = [];
   currentEvents: MyEvent[] = [];
   selectedDateEvents: MyEvent[] = [];
@@ -78,6 +82,13 @@ export class CalendarPageComponent {
     if (familia == null || !this.calendarComponent) return;
 
     try {
+      // Cargar los niños de la familia seleccionada
+      const children = await this.childService.getChildrenByFamily(String(familia.id));
+      console.log(children, 'Niños de la familia seleccionada');
+
+
+
+
       // Cargar los eventos de la familia seleccionada
       const activities = await this.activityService.getActivitiesFamily(
         String(familia.id)
