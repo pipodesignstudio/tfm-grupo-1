@@ -11,7 +11,7 @@ import { EditProfileComponent } from './features/dashboard/pages/profiles/edit-p
 import { ObjectivesPageComponent } from './features/dashboard/pages/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './features/dashboard/components/objectives-form/objectives-form.component';
 import { LandingPageComponent } from './features/landing-page/pages/landing-page/landing-page.component';
-import { CreateRoutineComponent } from './create-routine/create-routine.component';
+import { CreateRoutineComponent } from './features/auth/pages/create-routine/create-routine.component';
 import { Mensaje2Component } from './features/auth/pages/mensaje2/mensaje2.component';
 import { RoutineFormPageComponent } from './features/dashboard/pages/routines/routine-form-page/routine-form-page.component';
 import { RoutineListPageComponent } from './features/dashboard/pages/routines/routine-list-page/routine-list-page.component';
