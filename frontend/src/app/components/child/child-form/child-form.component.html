@@ -11,86 +11,141 @@
     </h2>
 
     <form
-      [formGroup]="form"
+      [formGroup]="childProfileForm"
       (ngSubmit)="onSubmit()"
-      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
+      class="flex flex-col gap-3"
     >
-      <input
-        type="text"
-        placeholder="Nombre"
-        pInputText
-        formControlName="nombre"
-        class="p-3 rounded-md"
-      />
-      <input
-        type="text"
-        placeholder="Apellido"
-        pInputText
-        formControlName="apellido"
-        class="p-3 rounded-md"
-      />
-
-      <p-datepicker
-        formControlName="fechaNacimiento"
-        [appendTo]="'body'"
-        [showIcon]="true"
-        class="border-0 rounded-md"
-        placeholder="Fecha de nacimiento"
-      ></p-datepicker>
-
-      <p-select
-        [options]="generos"
-        formControlName="genero"
-        optionLabel="label"
-        [optionValue]="'value'"
-        placeholder="Género"
-      ></p-select>
-      <div>
-        <textarea
-          placeholder="Descripción"
-          pTextarea
-          formControlName="descripcion"
-          class="p-3 rounded-md w-full h-19"
-        ></textarea>
-      </div>
-      <input
-        type="number"
-        pInputText
-        placeholder="Peso (kg)"
-        formControlName="peso"
-        class="p-3 rounded-md"
-      />
-      <input
-        type="number"
-        pInputText
-        placeholder="Altura (cm)"
-        formControlName="altura"
-        class="p-3 rounded-md"
-      />
-      <input
-        type="text"
-        pInputText
-        placeholder="URL de imagen de perfil"
-        formControlName="imgPerfil"
-        class="p-3 rounded-md"
-      />
-
-      <div class="flex justify-end gap-2 mt-4 shrink-0">
-        <button
-          type="button"
-          (click)="cerrarModal()"
-          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+      <div class="flex flex-col gap-2">
+        <label for="name"
+          >Nombre <span class="required-asterisk">*</span></label
         >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          [disabled]="form.invalid"
-          class="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-        >
-          Guardar
-        </button>
+        <input
+          type="text"
+          id="nombre"
+          pInputText
+          formControlName="nombre"
+          placeholder="Nombre del niño/a"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['nombre'].invalid && f['nombre'].touched
+          }"
+        />
+        @if (f['nombre'].invalid && f['nombre'].dirty) {
+        <small class="p-error">
+          @if (f['nombre'].errors?.['required']) { El nombre es obligatorio. }
+        </small>
+        }
       </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="apellido"
+          >Apellido <span class="required-asterisk">*</span></label
+        >
+        <input
+          type="text"
+          id="apellido"
+          pInputText
+          formControlName="apellido"
+          placeholder="Apellido del niño/a"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['apellido'].invalid && f['apellido'].touched
+          }"
+        />
+        @if (f['apellido'].invalid && f['apellido'].dirty) {
+        <small class="p-error">
+          @if (f['apellido'].errors?.['required']) { El apellido es obligatorio.
+          }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="fecha_nacimiento"
+          >Fecha de Nacimiento <span class="required-asterisk">*</span></label
+        >
+        <p-date-picker
+          inputId="fecha_nacimiento"
+          formControlName="fecha_nacimiento"
+          dateFormat="dd-mm-yy"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+        ></p-date-picker>
+        @if (f['fecha_nacimiento'].invalid && f['fecha_nacimiento'].dirty) {
+        <small class="p-error">
+          @if (f['fecha_nacimiento'].errors?.['required']) { La fecha de
+          nacimiento es obligatoria. }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="genero">Género (Opcional)</label>
+        <p-dropdown
+          inputId="genero"
+          formControlName="genero"
+          [options]="genderOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona el género"
+          [showClear]="true"
+        ></p-dropdown>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="altura">Altura (cm - Opcional)</label>
+        <input
+          type="number"
+          id="altura"
+          pInputText
+          formControlName="altura"
+          placeholder="Ej: 90"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['altura'].invalid && f['altura'].touched
+          }"
+        />
+        @if (f['altura'].invalid && f['altura'].dirty) {
+        <small class="p-error">
+          @if (f['altura'].errors?.['min'] || f['altura'].errors?.['max']) {
+          Introduce una altura válida (1-300 cm). }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="peso">Peso (kg - Opcional)</label>
+        <input
+          type="number"
+          step="0.1"
+          id="peso"
+          pInputText
+          formControlName="peso"
+          placeholder="Ej: 15.5"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['peso'].invalid && f['peso'].touched
+          }"
+        />
+        @if (f['peso'].invalid && f['peso'].dirty) {
+        <small class="p-error">
+          @if (f['peso'].errors?.['min'] || f['peso'].errors?.['max']) {
+          Introduce un peso válido (0.1-200 kg). }
+        </small>
+        }
+      </div>
+
+      @if (errorMessage) {
+      <small class="p-error">{{ errorMessage }}</small>
+      }
+      <button
+        type="button"
+        (click)="cerrarModal()"
+        class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+      >
+        Cancelar
+      </button>
+      <button pButton type="submit"
+          class="px-4 py-2 rounded-md ">
+        @if (editMode) { Actualizar Niño } @else { Crear Niño }
+      </button>
     </form>
   </div>
 </div>

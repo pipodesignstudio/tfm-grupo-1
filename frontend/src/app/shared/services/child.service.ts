@@ -26,8 +26,17 @@ export class ChildService {
     return response.data.data;
   }
 
+  async addChild(childData: Partial<IChild>): Promise<IChild> {
+    const response = await axios.post<{ data: IChild }>(
+      `${this.apiUrl}/ninos`,
+      childData
+    );
+    return response.data.data;
+  }
 
-
+  async deleteChild(id: number): Promise<void> {
+    await axios.delete(`${this.apiUrl}/ninos/${id}`);
+  }
 
 
 
@@ -58,7 +67,7 @@ export class ChildService {
     }
   }
 
-  addChild(childData: Omit<ChildProfile, 'id'>): void {
+  addChildLocalStorage(childData: Omit<ChildProfile, 'id'>): void {
     const newChild: ChildProfile = {
       ...childData,
       id: this.nextId++,
