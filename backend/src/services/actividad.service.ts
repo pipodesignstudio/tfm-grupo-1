@@ -111,59 +111,50 @@ export class ActividadService {
     return;
   }
 
-  public async exportActivitiesToPdf(dto: ExportActivitiesDto): Promise<PDFKit.PDFDocument | null> {
-    try {
-      const actividades: IActividad[] = await prisma.actividades.findMany({
-        where: { id: { in: dto.activityIds } },
-      });
-      
-      if (actividades.length !== dto.activityIds.length) {
-        throw new NotFoundError(
-          'Algunas actividades no encontradas',
-          { error: 'ACTIVIDADES_NOT_FOUND' },
-          false
-        );
-      }
-      const activitiesPdf = await this.transformActivitiesToPdfDto(actividades);
-      const docDefinitions = activitiesPdfGenerator(activitiesPdf);
-      console.log(docDefinitions);
-      return this.printerService.createPdf(docDefinitions);
-    } catch (error) {
-      throw new InternalServerError('Error interno al exportar actividades', {
-        error: 'INTERNAL_SERVER_ERROR',
-        detalle: error,
+  public async exportActivitiesToPdf(
+    dto: ExportActivitiesDto,
+  ): Promise<PDFKit.PDFDocument> {
+    const actividades = await prisma.actividades.findMany({
+      where: { id: { in: dto.activityIds } },
+      include: {
+        rutinas: { select: { nombre: true } },
+        ninos:   { select: { nombre: true } },
+      },
+    });
+  
+    if (actividades.length !== dto.activityIds.length) {
+      throw new NotFoundError('Algunas actividades no encontradas', {
+        error: 'ACTIVIDADES_NOT_FOUND',
       });
     }
-  }
-
-
-  private async transformActivitiesToPdfDto(actividades: IActividad[]): Promise<IActividadPdf[]> {
-    const response: IActividadPdf[] = [];
-    actividades.forEach(async (actividad) => {
-      let rutina_name = '';
-      if (actividad.rutina_id) {
-        const rutina = await prisma.rutinas.findUnique({ where: { id: actividad.rutina_id } });
-        rutina_name = rutina?.nombre ?? '';
-      }
-      const nino = await prisma.ninos.findUnique({ where: { id: actividad.ninos_id } });
-      const responsable = await prisma.usuarios.findUnique({ where: { id: actividad.usuario_responsable } });
-      const pdfactividad: IActividadPdf = {
-        rutina_name,
-        nino: nino?.nombre ?? '',
-        responsable: responsable?.nombre ?? '',
-        title: actividad.titulo ?? '',
-        description: actividad.descripcion ?? '',
-        fecha_realizacion: actividad.fecha_realizacion ?? new Date(),
-        hora_inicio: actividad.hora_inicio,
-        hora_fin: actividad.hora_fin,
-        color: actividad.color ?? '',
-        tipo: actividad.tipo,
-      }
-      response.push(pdfactividad);
+  
+    const responsableIds = [
+      ...new Set(actividades.map(a => a.usuario_responsable)),
+    ];
+    const responsables = await prisma.usuarios.findMany({
+      where: { id: { in: responsableIds } },
+      select: { id: true, nombre: true },
     });
-    return response;
+    const responsablesMap = new Map(
+      responsables.map(r => [r.id, r.nombre ?? '']),
+    );
+  
+    const actividadesPdf: IActividadPdf[] = actividades.map(a => ({
+      rutina_name:       a.rutinas?.nombre ?? '',
+      nino:              a.ninos?.nombre   ?? '',
+      responsable:       responsablesMap.get(a.usuario_responsable) ?? '',
+      title:             a.titulo ?? '',
+      description:       a.descripcion ?? '',
+      fecha_realizacion: a.fecha_realizacion,
+      hora_inicio:       a.hora_inicio,
+      hora_fin:          a.hora_fin,
+      color:             a.color ?? '',
+      tipo:              a.tipo,
+    })) satisfies IActividadPdf[];
+  
+    const docDef = activitiesPdfGenerator(actividadesPdf);
+    return this.printerService.createPdf(docDef);
   }
-
   async validateExportRequest(activityIds: number[], user_id: number): Promise<boolean> {
     const rows = await prisma.actividades.findMany({
       where: { id: { in: activityIds } },
