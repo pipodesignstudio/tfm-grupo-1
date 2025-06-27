@@ -132,10 +132,6 @@ export const routes: Routes = [
         component: AboutUsPageComponent,
       },
       {
-        path: 'create-routine',
-        component: CreateRoutineComponent,
-      },
-      {
         path: 'calendar',
         component: CalendarPageComponent,
       },
