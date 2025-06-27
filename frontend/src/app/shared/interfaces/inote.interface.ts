@@ -1,7 +1,18 @@
 export interface INote {
   id: number;
-  ninosId: number;
-  titulo?: string | null;
-  texto?: string | null;
-  fechaCreacion: string;
+  ninos_id: number;
+  titulo: string;
+  texto: string;
+  fecha_creacion: string;
+}
+
+export interface INoteCreate {
+  ninos_id: number;
+  titulo: string;
+  texto: string;
+}
+
+export interface INoteUpdate {
+  titulo?: string;
+  texto?: string;
 }
