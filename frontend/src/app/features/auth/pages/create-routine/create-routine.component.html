@@ -1,0 +1,42 @@
+<h1 class="text-2xl font-semibold mb-5">¿Cómo quieres crear tu rutina?</h1>
+
+<div class="flex flex-col gap-5">
+  <div
+    class="card-secondary cursor-pointer hover:shadow-lg transition-shadow flex flex-col items-center p-6"
+    (click)="createFromScratch()"
+    tabindex="0"
+    role="button"
+    aria-label="Crear rutina desde cero"
+  >
+    <p class="text-lg font-semibold mb-2">Desde cero</p>
+    <p class="text-gray-600 text-center">
+      Diseña cada paso de la rutina a tu medida.
+    </p>
+  </div>
+
+  <div
+    class="card-secondary cursor-pointer hover:shadow-lg transition-shadow flex flex-col items-center p-6"
+    (click)="choosePredefined()"
+    tabindex="0"
+    role="button"
+    aria-label="Elegir una propuesta"
+  >
+    <p class="text-lg font-semibold mb-2">Nuestras propuestas</p>
+    <p class="text-gray-600 text-center">
+      Explora nuestras plantillas populares para empezar rápidamente.
+    </p>
+  </div>
+
+  <div
+    class="card-secondary cursor-pointer hover:shadow-lg transition-shadow flex flex-col items-center p-6"
+    (click)="passTest()"
+    tabindex="0"
+    role="button"
+    aria-label="Hacer el test"
+  >
+    <p class="text-lg font-semibold mb-2">Hacer el test</p>
+    <p class="text-gray-600 text-center">
+      Responde unas preguntas sencillas y te sugeriremos la rutina ideal.
+    </p>
+  </div>
+</div>

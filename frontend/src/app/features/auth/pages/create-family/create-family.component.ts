@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Inject, inject, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -9,29 +9,33 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
 import { InputTextModule } from 'primeng/inputtext';
-import { CalendarModule } from 'primeng/calendar';
-import { DropdownModule } from 'primeng/dropdown';
+import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
-import {
-  ChildProfile,
-  ChildService,
-} from '../../../../shared/services/child.service';
+import { MessageModule } from 'primeng/message';
+import { ToastModule } from 'primeng/toast';
+import { AutoFocusModule } from 'primeng/autofocus';
+import { ChildProfile, ChildService } from '../../../../shared/services';
+import { Calendar } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-create-family',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
     CommonModule,
+    ReactiveFormsModule,
     InputTextModule,
-    CalendarModule,
-    DropdownModule,
+    PasswordModule,
+    RouterModule,
     ButtonModule,
+    ToastModule,
+    MessageModule,
+    AutoFocusModule,
+    Calendar,
+    DropdownModule,
   ],
   templateUrl: './create-family.component.html',
-  styleUrl: './create-family.component.css',
 })
 export class CreateFamilyComponent implements OnInit {
   childProfileForm!: FormGroup;
@@ -68,23 +72,6 @@ export class CreateFamilyComponent implements OnInit {
     return this.childProfileForm.controls;
   }
 
-  // OPCIONAL: Añadir foto de perfil niño
-  // onFileSelected(event: Event): void {
-  //   const input = event.target as HTMLInputElement;
-  //   if (input.files && input.files[0]) {
-  //     const file = input.files[0];
-  //     const reader = new FileReader();
-
-  //     reader.onload = (e) => {
-  //       this.profileImageUrl = reader.result;
-  //     };
-
-  //     reader.readAsDataURL(file);
-  //   } else {
-  //     this.profileImageUrl = null;
-  //   }
-  // }
-
   onSubmit(): void {
     this.errorMessage = '';
 
@@ -103,6 +90,6 @@ export class CreateFamilyComponent implements OnInit {
     this.childService.addChild(newChild);
 
     console.log('Niño añadido:', newChild);
-    this.router.navigate(['/dashboard/my-family']);
+    this.router.navigate(['/auth/my-family']);
   }
 }
