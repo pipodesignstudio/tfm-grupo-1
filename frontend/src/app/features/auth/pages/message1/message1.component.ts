@@ -37,6 +37,6 @@ export class Message1Component {
   constructor(private router: Router) {}
 
   continueToCreateFamily(): void {
-    this.router.navigate(['auth/create-family']);
+    this.router.navigate(['/auth/create-family']);
   }
 }

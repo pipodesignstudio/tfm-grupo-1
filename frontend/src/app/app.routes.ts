@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { LoginPageComponent } from './features/auth/pages/login-page/login-page.component';
 import { RegisterPageComponent } from './features/auth/pages/register-page/register-page.component';
 import { CalendarPageComponent } from './features/dashboard/pages/routines/calendar-page/calendar-page.component';
-import { CreateFamilyComponent } from './features/onboarding/pages/create-family/create-family.component';
+import { CreateFamilyComponent } from './features/auth/pages/create-family/create-family.component';
 import { ChildProfileComponent } from './features/dashboard/pages/profiles/child-profile/child-profile.component';
 import { MyFamilyComponent } from './features/onboarding/pages/my-family/my-family.component';
 import { AboutUsPageComponent } from './features/dashboard/pages/about-us-page/about-us-page.component';
@@ -130,10 +130,6 @@ export const routes: Routes = [
       {
         path: 'about-us',
         component: AboutUsPageComponent,
-      },
-      {
-        path: 'create-family',
-        component: CreateFamilyComponent,
       },
       {
         path: 'my-family',

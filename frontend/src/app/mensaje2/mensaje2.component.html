@@ -1,15 +1,11 @@
-<div class="welcome-container">
-  <div class="welcome-content">
-    <img src="nido.ico" alt="Logo de Nido" class="logo" />
-    <h1 class="welcome-title">¡Genial!</h1>
-    <p class="welcome-description">
-      Ya tenemos a tus pequeños en Nido. Ahora, vamos a crear la primera rutina
-      para empezar a organizar su día.
-    </p>
-    <p-button
-      label="Continuar"
-      [raised]="true"
-      (onClick)="continueToCreateRoutine()"
-    />
-  </div>
-</div>
+<h1 class="text-2xl font-semibold mb-5">¡Genial!</h1>
+<p class="">Ya tenemos a tus pequeños en Nido.</p>
+<p class="mb-3">
+  Ahora, vamos a crear la primera rutina para empezar a organizar su día.
+</p>
+<p-button
+  styleClass="w-full mt-5"
+  label="Continuar"
+  [raised]="true"
+  (onClick)="continueToCreateRoutine()"
+/>

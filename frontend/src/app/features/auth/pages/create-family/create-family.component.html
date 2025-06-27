@@ -1,10 +1,11 @@
-<h1 class="text-2xl font-semibold my-3">Perfil del Niño 👶🏻</h1>
+<h1 class="text-2xl font-semibold mb-3">Datos del niño 👶🏻</h1>
 
 <form
   [formGroup]="childProfileForm"
   (ngSubmit)="onSubmit()"
   class="flex flex-col gap-3"
 >
+  <!-- Nombre -->
   <div class="flex flex-col gap-2">
     <label for="name">Nombre <span class="required-asterisk">*</span></label>
     <input
@@ -16,18 +17,20 @@
       [ngClass]="{
         'ng-invalid ng-dirty': f['name'].invalid && f['name'].touched
       }"
+      [pAutoFocus]="true"
     />
     @if (f['name'].invalid && f['name'].dirty) {
-    <small class="p-error">
+    <p-message severity="error">
       @if (f['name'].errors?.['required']) { El nombre es obligatorio. }
-    </small>
+    </p-message>
     }
   </div>
 
+  <!-- Fecha de nacimiento -->
   <div class="flex flex-col gap-2">
-    <label for="dob"
-      >Fecha de Nacimiento <span class="required-asterisk">*</span></label
-    >
+    <label for="dob">
+      Fecha de Nacimiento <span class="required-asterisk">*</span>
+    </label>
     <p-calendar
       inputId="dob"
       formControlName="dob"
@@ -35,19 +38,21 @@
       [readonlyInput]="true"
       dateFormat="dd-mm-yy"
       [showIcon]="true"
+      fluid
       [iconDisplay]="'input'"
       [ngClass]="{
         'ng-invalid ng-dirty': f['dob'].invalid && f['dob'].touched
       }"
     ></p-calendar>
     @if (f['dob'].invalid && f['dob'].dirty) {
-    <small class="p-error">
+    <p-message severity="error">
       @if (f['dob'].errors?.['required']) { La fecha de nacimiento es
       obligatoria. }
-    </small>
+    </p-message>
     }
   </div>
 
+  <!-- Género -->
   <div class="flex flex-col gap-2">
     <label for="gender">Género (Opcional)</label>
     <p-dropdown
@@ -61,6 +66,7 @@
     ></p-dropdown>
   </div>
 
+  <!-- Altura -->
   <div class="flex flex-col gap-2">
     <label for="heightCm">Altura (cm - Opcional)</label>
     <input
@@ -74,13 +80,14 @@
       }"
     />
     @if (f['heightCm'].invalid && f['heightCm'].dirty) {
-    <small class="p-error">
+    <p-message severity="error">
       @if (f['heightCm'].errors?.['min'] || f['heightCm'].errors?.['max']) {
       Introduce una altura válida (1-300 cm). }
-    </small>
+    </p-message>
     }
   </div>
 
+  <!-- Peso -->
   <div class="flex flex-col gap-2">
     <label for="weightKg">Peso (kg - Opcional)</label>
     <input
@@ -95,21 +102,23 @@
       }"
     />
     @if (f['weightKg'].invalid && f['weightKg'].dirty) {
-    <small class="p-error">
+    <p-message severity="error">
       @if (f['weightKg'].errors?.['min'] || f['weightKg'].errors?.['max']) {
       Introduce un peso válido (0.1-200 kg). }
-    </small>
+    </p-message>
     }
   </div>
 
+  <!-- Mensaje de error general -->
   @if (errorMessage) {
-  <small class="p-error">{{ errorMessage }}</small>
+  <p-message severity="error">{{ errorMessage }}</p-message>
   }
 
-  <button
-    pButton
+  <p-button
     type="submit"
-    label="Enviar"
+    label="Guardar perfil"
     styleClass="mt-5 w-full"
-  ></button>
+    [disabled]="childProfileForm.invalid"
+    (click)="onSubmit()"
+  />
 </form>
