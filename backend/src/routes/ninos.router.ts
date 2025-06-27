@@ -57,7 +57,7 @@ const router = Router();
  */
 router.post(
   '/',
-  authMiddleware,
+ /*  authMiddleware, */
   validationMiddleware(CreateNinoDto),
   asyncMiddlewareWrapper(controller.create.bind(controller))
 );

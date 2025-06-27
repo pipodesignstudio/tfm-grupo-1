@@ -3,70 +3,74 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DropdownModule } from 'primeng/dropdown';
-import { SelectModule } from 'primeng/select';
 
 
 import { IChild } from '../../../shared/interfaces/ichild.interface';
 
 @Component({
   selector: 'app-child-form',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     InputTextModule,
-    TextareaModule,
     DatePickerModule,
     DropdownModule,
-    SelectModule
   ],
   templateUrl: './child-form.component.html',
   styleUrl: './child-form.component.css',
 })
 export class ChildFormComponent {
   @Input() childInfo: Partial<IChild> | null = null;
-  @Output() guardar = new EventEmitter<Partial<IChild>>();
+  @Output() addChild = new EventEmitter<Partial<IChild>>();
   @Output() cerrar = new EventEmitter<void>();
 
-  form: FormGroup;
+  childProfileForm: FormGroup;
   editMode = false;
 
-  generos = [
+  errorMessage: string | null = null;
+
+  genderOptions = [
     { label: 'Masculino', value: 'masculino' },
     { label: 'Femenino', value: 'femenino' },
-    { label: 'Otro', value: 'otro' },
   ];
 
+  maxDate: Date = new Date(); // para evitar fechas futuras
+
   constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
+    this.childProfileForm = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
+      fecha_nacimiento: ['', Validators.required],
       genero: [null],
-      descripcion: [''],
-      peso: [null],
-      altura: [null],
-      imgPerfil: [''],
+      altura: [null, [Validators.min(1), Validators.max(300)]],
+      peso: [null, [Validators.min(0.1), Validators.max(200)]],
     });
   }
 
   ngOnInit() {
     if (this.childInfo) {
-      this.form.patchValue(this.childInfo);
+      this.childProfileForm.patchValue(this.childInfo);
       this.editMode = true;
     }
   }
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.guardar.emit(this.form.value);
-    } else {
-      this.form.markAllAsTouched();
-    }
+  get f() {
+    return this.childProfileForm.controls;
   }
+
+  onSubmit() {
+  if (this.childProfileForm.valid) {
+    this.addChild.emit(this.childProfileForm.value);
+    this.errorMessage = null;
+  } else {
+    this.errorMessage = 'Por favor, corrige los errores antes de continuar.';
+    this.childProfileForm.markAllAsTouched();
+  }
+}
 
   cerrarModal() {
     this.cerrar.emit();

@@ -100,8 +100,8 @@ export class CreateFamilyComponent implements OnInit {
       profileImageUrl: this.profileImageUrl as string,
     };
 
-    this.childService.addChild(newChild);
-
+/*     this.childService.addChild(newChild);
+ */
     console.log('Niño añadido:', newChild);
     this.router.navigate(['/dashboard/my-family']);
   }
