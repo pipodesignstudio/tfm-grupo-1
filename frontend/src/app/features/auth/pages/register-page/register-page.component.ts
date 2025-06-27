@@ -34,7 +34,6 @@ import { AutoFocusModule } from 'primeng/autofocus';
     ToastModule,
     MessageModule,
     AutoFocusModule,
-    
   ],
 })
 export class RegisterPageComponent implements OnInit {
@@ -101,13 +100,13 @@ export class RegisterPageComponent implements OnInit {
   async onSubmit(): Promise<void> {
     this.isLoading = true;
     this.errorMessage = '';
-  
+
     const { username, email, password } = this.registerForm.value;
     const dto: RegisterDto = { nick: username, email, contrasena: password };
-  
+
     const response = await this.authService.register(dto);
     this.isLoading = false;
-  
+
     if (!response?.data) {
       this.messageService.add({
         severity: 'error',
@@ -116,7 +115,7 @@ export class RegisterPageComponent implements OnInit {
       });
       return;
     }
-  
-    this.router.navigate(['onboarding/complete']);
+
+    this.router.navigate(['dashboard/message1']);
   }
 }

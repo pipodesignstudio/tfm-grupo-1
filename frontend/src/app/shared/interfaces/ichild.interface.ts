@@ -1,10 +1,11 @@
 export interface IChild {
   id: number;
-  perfilesAprendizajeId: number;
+  familia_id: number;
+  perfiles_aprendizaje_id: number;
   nombre: string;
   apellido: string;
-  imgPerfil?: string | null;
-  fechaNacimiento: string;
+  img_perfil?: string | null;
+  fecha_nacimiento: string;
   descripcion?: string | null;
   genero?: string | null;
   peso?: number | null;

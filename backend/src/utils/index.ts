@@ -6,3 +6,4 @@ export * from './lista-alergias';
 export * from './logger.util';
 export * from './pdf-definitions.util';
 export * from './success-api-response.util';
+export * from './watermark-base64.util';

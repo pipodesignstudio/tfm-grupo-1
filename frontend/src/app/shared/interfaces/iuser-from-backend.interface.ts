@@ -5,7 +5,7 @@ export interface IUserFromBackend {
     img_perfil: Uint8Array  | null; 
     email: string; 
     primera_sesion: boolean; 
-    fecha_creacion: Date; 
+    fecha_creacion: string; 
     borrado: boolean; 
     email_verificado: boolean; 
 }

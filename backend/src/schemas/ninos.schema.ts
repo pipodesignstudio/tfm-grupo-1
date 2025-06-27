@@ -9,7 +9,7 @@ export const CreateNinoSchema = {
     fecha_nacimiento: { type: 'string', format: 'date' },
     descripcion: { type: ['string', 'null'] },
     genero: { type: ['string', 'null'] },
-    peso: { type: ['integer', 'null'], minimum: 0 },
+    peso: { type: ['float', 'null'], minimum: 0 },
     altura: { type: ['integer', 'null'], minimum: 0 },
     img_perfil: { type: ['string', 'null'], description: 'Base64' }
   },

@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, IsDateString, Min, IsPositive } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, IsDateString, Min, IsPositive, IsNumber } from 'class-validator';
 
 export class CreateNinoDto {
   @IsInt() 
@@ -14,7 +14,8 @@ export class CreateNinoDto {
 
   @IsOptional() @IsString() descripcion?: string;
   @IsOptional() @IsString() genero?: string;
-  @IsOptional() @IsInt() @Min(0) peso?: number;
+  @IsOptional() @IsNumber() @Min(0) peso?: number;
   @IsOptional() @IsInt() @Min(0) altura?: number;
   @IsOptional() img_perfil?: string; // Base64 opcional
 }
+

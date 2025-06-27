@@ -12,6 +12,8 @@ export const stylesDictionary: StyleDictionary = {
       fontSize: 12,
       margin: [0, 0, 0, 0],
     },
+      tableHeader: { bold: true, fontSize: 9, margin: [0, 5, 0, 5] },
+      tableCell:   { fontSize: 9, margin: [2, 2, 2, 2] },
     list: {
       margin: [30, 0, 0, 0],
       alignment: 'justify',
