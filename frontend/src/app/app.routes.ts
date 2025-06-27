@@ -5,14 +5,14 @@ import { RegisterPageComponent } from './features/auth/pages/register-page/regis
 import { CalendarPageComponent } from './features/dashboard/pages/routines/calendar-page/calendar-page.component';
 import { CreateFamilyComponent } from './features/auth/pages/create-family/create-family.component';
 import { ChildProfileComponent } from './features/dashboard/pages/profiles/child-profile/child-profile.component';
-import { MyFamilyComponent } from './features/onboarding/pages/my-family/my-family.component';
+import { MyFamilyComponent } from './features/auth/pages/my-family/my-family.component';
 import { AboutUsPageComponent } from './features/dashboard/pages/about-us-page/about-us-page.component';
 import { EditProfileComponent } from './features/dashboard/pages/profiles/edit-profile/edit-profile.component';
 import { ObjectivesPageComponent } from './features/dashboard/pages/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './features/dashboard/components/objectives-form/objectives-form.component';
 import { LandingPageComponent } from './features/landing-page/pages/landing-page/landing-page.component';
 import { CreateRoutineComponent } from './create-routine/create-routine.component';
-import { Mensaje2Component } from './mensaje2/mensaje2.component';
+import { Mensaje2Component } from './features/auth/pages/mensaje2/mensaje2.component';
 import { RoutineFormPageComponent } from './features/dashboard/pages/routines/routine-form-page/routine-form-page.component';
 import { RoutineListPageComponent } from './features/dashboard/pages/routines/routine-list-page/routine-list-page.component';
 import { AuthLayoutComponent } from './features/auth/layouts/auth-layout/auth-layout.component';
@@ -130,14 +130,6 @@ export const routes: Routes = [
       {
         path: 'about-us',
         component: AboutUsPageComponent,
-      },
-      {
-        path: 'my-family',
-        component: MyFamilyComponent,
-      },
-      {
-        path: 'message2',
-        component: Mensaje2Component,
       },
       {
         path: 'create-routine',

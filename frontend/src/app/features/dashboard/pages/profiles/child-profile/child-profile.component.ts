@@ -7,7 +7,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 
-
 interface Vacuna {
   id: number;
   nombre: string;
@@ -24,15 +23,13 @@ interface Vacuna {
     InputTextModule,
     InputNumberModule,
     CalendarModule,
-    DropdownModule
+    DropdownModule,
   ],
   templateUrl: './child-profile.component.html',
-  styleUrls: ['./child-profile.component.css']
+  styleUrls: ['./child-profile.component.css'],
 })
 export class ChildProfileComponent implements OnInit {
   today: Date = new Date();
-
-  
 
   // Estados de edición por card
   editProfile = false;
@@ -40,7 +37,7 @@ export class ChildProfileComponent implements OnInit {
   editHealth = false;
   generos = [
     { label: 'Masculino', value: 'Masculino' },
-    { label: 'Femenino', value: 'Femenino' }
+    { label: 'Femenino', value: 'Femenino' },
   ];
 
   // 🔍 Referencia a todos los calendarios (usado para toggle desde icono)
@@ -57,20 +54,20 @@ export class ChildProfileComponent implements OnInit {
     genero: 'Masculino',
     peso: 12.5,
     altura: 90,
-    imgPerfil: 'https://picsum.photos/150'
+    imgPerfil: 'https://picsum.photos/150',
   };
 
   // Datos de salud
   salud = {
     alergias: 'Ninguna',
     enfermedades: 'Asma',
-    pediatra: 'Dra. López'
+    pediatra: 'Dra. López',
   };
 
   // Vacunas
   vacunas: Vacuna[] = [
     { id: 1, nombre: 'Triple Viral', fecha: '2023-01-15' },
-    { id: 2, nombre: 'Polio', fecha: '2023-06-10' }
+    { id: 2, nombre: 'Polio', fecha: '2023-06-10' },
   ];
 
   edadCalculada = '';

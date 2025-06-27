@@ -90,6 +90,6 @@ export class CreateFamilyComponent implements OnInit {
     this.childService.addChild(newChild);
 
     console.log('Niño añadido:', newChild);
-    this.router.navigate(['/dashboard/my-family']);
+    this.router.navigate(['/auth/my-family']);
   }
 }
