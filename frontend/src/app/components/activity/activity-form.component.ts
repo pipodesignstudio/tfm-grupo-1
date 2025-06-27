@@ -11,6 +11,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 
 import { UbicacionComponent } from '../ubicacion/ubicacion.component';
+import { IChild } from '../../shared/interfaces';
+import { IFamiliaUsuario } from '../../shared/interfaces/ifamily-users.interface';
 
 @Component({
   selector: 'app-activity-form',
@@ -33,6 +35,8 @@ import { UbicacionComponent } from '../ubicacion/ubicacion.component';
 export class ActivityFormComponent {
   @Input() actividadInfo: IActivity | null = null;
   @Input() tipo: 'evento' | 'objetivo' | 'rutina' | null = null;
+  @Input() children: IChild[] = [];
+  @Input() usersFamily: IFamiliaUsuario[] = [];
 
   @Output() editar = new EventEmitter<Partial<IActivity>>();
   @Output() cerrar = new EventEmitter<void>();
@@ -42,15 +46,9 @@ export class ActivityFormComponent {
 
   editMode = false;
 
-  filtroOpciones = [
-    { label: 'Lucas', value: 1 },
-    { label: 'Sofía', value: 2 },
-  ];
-  usuariosResponsables = [
-    { label: 'Usuario 1', value: 1 },
-    { label: 'Usuario 2', value: 2 },
-    { label: 'Usuario 3', value: 3 },
-  ];
+  filtroOpciones: { label: string; value: number | null }[] = [];
+
+  usuariosResponsables: { label: string; value: number | null }[] = [];
 
   form: FormGroup;
 
@@ -59,7 +57,7 @@ export class ActivityFormComponent {
       {
         titulo: ['', Validators.required],
         descripcion: [''],
-        nino_id: [null, Validators.required],
+        ninos_id: [null, Validators.required],
         fecha_realizacion: ['', Validators.required],
         hora_inicio: ['', Validators.required],
         hora_fin: ['', Validators.required],
@@ -75,9 +73,29 @@ export class ActivityFormComponent {
   }
 
   ngOnInit() {
+    this.filtroOpciones = this.children.map((child) => ({
+      label: child.nombre,
+      value: Number(child.id),
+    }));
+
+    this.usuariosResponsables = this.usersFamily.map((user) => ({
+      label: user.usuarios.nick,
+      value: Number(user.usuarios.id),
+    }));
+
     if (this.actividadInfo) {
-      this.form.patchValue(this.actividadInfo);
+      const data = { ...this.actividadInfo };
+
+      // Transformar strings ISO en objetos Date
+      data.fecha_realizacion = new Date(data.fecha_realizacion);
+      data.hora_inicio = new Date(data.hora_inicio);
+      data.hora_fin = new Date(data.hora_fin);
+
+      this.form.get('ninos_id')?.disable();
+
+      this.form.patchValue(data);
       this.editMode = true;
+      console.log('values form', this.form.value);
     }
   }
 
@@ -103,8 +121,19 @@ export class ActivityFormComponent {
   }
 
   editarActividad() {
+    console.log(this.actividadInfo);
     if (this.form.valid) {
-      this.editar.emit();
+      console.log('Editar actividad:', this.form.value);
+      this.editar.emit({
+        ...this.form.value,
+        id: this.actividadInfo ? this.actividadInfo.id : undefined,
+        tipo:
+          this.tipo == 'evento'
+            ? 'Evento'
+            : this.tipo == 'objetivo'
+            ? 'Objetivo'
+            : undefined,
+      });
     } else {
       this.form.markAllAsTouched();
     }

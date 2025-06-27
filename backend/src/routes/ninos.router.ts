@@ -227,8 +227,8 @@ router.delete(
  */
 router.get(
   '/familia/:familiaId',
-  authMiddleware,
-  asyncMiddlewareWrapper(controller.listByFamilia.bind(controller))
+/*   authMiddleware,
+ */  asyncMiddlewareWrapper(controller.listByFamilia.bind(controller))
 );
 
 export default router;

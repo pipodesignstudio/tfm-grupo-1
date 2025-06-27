@@ -7,6 +7,9 @@ import { activitiesPdfGenerator } from "../templates/pdf/activities-export.layou
 import { NotFoundError, InternalServerError } from '../utils';
 import { PdfGeneratorService } from "./printer.service";
 
+import { Prisma } from '@prisma/client';
+
+
 
 export class ActividadService {
 
@@ -54,14 +57,15 @@ export class ActividadService {
   }
 
   public async getAllActivitiesByFamily(id_familia: number) {
-  return await prisma.actividades.findMany({
-    where: {
-      ninos: {
-        familia_id: id_familia
+    return await prisma.actividades.findMany({
+      where: {
+        ninos: {
+          familia_id: id_familia
+        },
+        rutina_id: null // Filtrar actividades que no pertenecen a una rutina
       }
-    }
-  });
-}
+    });
+  }
   public async updateActividad(id_nino: number, id: number, dto: UpdateActividadDto) {
     const result = await prisma.actividades.updateMany({
       where: { id, ninos_id: id_nino },
@@ -74,7 +78,7 @@ export class ActividadService {
         hora_inicio: dto.hora_inicio,
         hora_fin: dto.hora_fin,
         color: dto.color,
-        ubicacion: dto.ubicacion ?? undefined,
+        ubicacion: dto.ubicacion ? JSON.parse(JSON.stringify(dto.ubicacion)) : Prisma.JsonNull,
         usuario_responsable: dto.usuario_responsable,
         completado: dto.completado,
       }
@@ -107,39 +111,46 @@ export class ActividadService {
     return;
   }
 
-  public async exportActivitiesToPdf(dto: ExportActivitiesDto, nino_id: number):Promise<PDFKit.PDFDocument | null> {
+  public async exportActivitiesToPdf(dto: ExportActivitiesDto): Promise<PDFKit.PDFDocument | null> {
     try {
-      const nino = await prisma.ninos.findUnique({ where: { id: nino_id } });
-      if (!nino) {
+      const actividades: IActividad[] = await prisma.actividades.findMany({
+        where: { id: { in: dto.activityIds } },
+      });
+      
+      if (actividades.length !== dto.activityIds.length) {
         throw new NotFoundError(
-          'Nino no encontrado',
-          { error: 'NINO_NOT_FOUND' },
+          'Algunas actividades no encontradas',
+          { error: 'ACTIVIDADES_NOT_FOUND' },
           false
         );
       }
-      const activitiesPdf = await this.transformActivitiesToPdfDto(dto.activities, `${nino.nombre} ${nino.apellido}`);
+      const activitiesPdf = await this.transformActivitiesToPdfDto(actividades);
       const docDefinitions = activitiesPdfGenerator(activitiesPdf);
-      return  this.printerService.createPdf(docDefinitions);
+      console.log(docDefinitions);
+      return this.printerService.createPdf(docDefinitions);
     } catch (error) {
       throw new InternalServerError('Error interno al exportar actividades', {
         error: 'INTERNAL_SERVER_ERROR',
         detalle: error,
-      });  
+      });
     }
   }
 
 
-  private async transformActivitiesToPdfDto(actividades: IActividad[], nino_name:string):Promise<IActividadPdf[]> {
-    const response:IActividadPdf[] = [];
+  private async transformActivitiesToPdfDto(actividades: IActividad[]): Promise<IActividadPdf[]> {
+    const response: IActividadPdf[] = [];
     actividades.forEach(async (actividad) => {
       let rutina_name = '';
       if (actividad.rutina_id) {
         const rutina = await prisma.rutinas.findUnique({ where: { id: actividad.rutina_id } });
         rutina_name = rutina?.nombre ?? '';
       }
-      const pdfactividad:IActividadPdf = {
+      const nino = await prisma.ninos.findUnique({ where: { id: actividad.ninos_id } });
+      const responsable = await prisma.usuarios.findUnique({ where: { id: actividad.usuario_responsable } });
+      const pdfactividad: IActividadPdf = {
         rutina_name,
-        nino: nino_name,
+        nino: nino?.nombre ?? '',
+        responsable: responsable?.nombre ?? '',
         title: actividad.titulo ?? '',
         description: actividad.descripcion ?? '',
         fecha_realizacion: actividad.fecha_realizacion ?? new Date(),
@@ -151,6 +162,29 @@ export class ActividadService {
       response.push(pdfactividad);
     });
     return response;
+  }
+
+  async validateExportRequest(activityIds: number[], user_id: number): Promise<boolean> {
+    const rows = await prisma.actividades.findMany({
+      where: { id: { in: activityIds } },
+      select: { ninos_id: true },
+    });
+    if (rows.length !== activityIds.length) return false;   
+  
+    const childIds = [...new Set(rows.map(r => r.ninos_id))];
+  
+    const familiaIds = await prisma.familia_usuarios.findMany({
+      where: { usuarios_id: user_id },
+      select: { familia_id: true },
+    }).then(f => f.map(x => x.familia_id));
+  
+    if (!familiaIds.length) return false;
+  
+    const cnt = await prisma.ninos.count({
+      where: { id: { in: childIds }, familia_id: { in: familiaIds } },
+    });
+  
+    return cnt === childIds.length;
   }
 
 }

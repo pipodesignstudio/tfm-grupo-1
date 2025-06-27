@@ -2,20 +2,15 @@ import { Content, StyleDictionary } from "pdfmake/interfaces";
 
 export const stylesDictionary: StyleDictionary = {
     header: {
-      fontSize: 14,
+      fontSize: 16,
       bold: true,
       alignment: 'center',
       margin: [10, 40, 10, 20],
     },
     body: {
       alignment: 'justify',
-      fontSize: 10,
-      margin: [0, 0, 0, 0],
-    },
-    clausula: {
       fontSize: 12,
-      bold: true,
-      margin: [0, 0, 0, 20],
+      margin: [0, 0, 0, 0],
     },
     list: {
       margin: [30, 0, 0, 0],
