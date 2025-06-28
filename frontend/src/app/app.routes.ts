@@ -27,6 +27,7 @@ import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
 import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
 import { Message1Component } from './features/auth/pages/message1/message1.component';
+import { NotesPageComponent } from './features/dashboard/pages/notes-page/notes-page.component';
 
 export const routes: Routes = [
   {
@@ -170,6 +171,10 @@ export const routes: Routes = [
       {
         path: 'routine-list',
         component: RoutineListPageComponent,
+      },
+      {
+        path: 'notas',
+        component: NotesPageComponent,
       },
       {
         path: '**',
