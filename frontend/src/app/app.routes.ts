@@ -27,6 +27,7 @@ import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
 import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
 import { Message1Component } from './features/auth/pages/message1/message1.component';
+import { ActivityFormComponent } from './components/activity/activity-form.component';
 
 export const routes: Routes = [
   {
@@ -164,8 +165,8 @@ export const routes: Routes = [
         component: ObjectivesFormComponent,
       },
       {
-        path: 'routine-form',
-        component: RoutineFormPageComponent,
+        path: 'activity-form',
+        component: ActivityFormComponent,
       },
       {
         path: 'routine-list',
