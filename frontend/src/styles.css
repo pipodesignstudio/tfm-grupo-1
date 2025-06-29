@@ -29,11 +29,11 @@ body {
 }
 
 .card {
-  @apply dark:bg-[#9ed2c5] shadow-md bg-[#9ed2c5] p-6 rounded-lg text-white dark:text-gray-700;
+  @apply dark:bg-[#9ed2c5] shadow-md bg-[#9ed2c5] p-6 rounded-lg text-white dark:bg-gray-800 dark:text-white;
 }
 
 .card-secondary {
-  @apply shadow-md bg-[#ffffff] p-6 rounded-lg text-gray-700 dark:text-white;
+  @apply shadow-md bg-[#ffffff] p-6 rounded-lg text-gray-700 dark:bg-gray-800 dark:text-white;
   border: 1.5px solid transparent;
   transition: box-shadow 0.2s, border-color 0.2s;
 }
