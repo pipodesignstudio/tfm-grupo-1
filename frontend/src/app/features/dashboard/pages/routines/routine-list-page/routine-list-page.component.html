@@ -1,1 +1,72 @@
-<p>routine-list-page works!</p>
+<div class="min-h-screen bg-[#C8E6F0] p-6">
+    <div class="max-w-6xl mx-auto">
+  
+      <!-- Cabecera -->
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-[#3A3A3A]">Rutinas</h1>
+        <button pButton 
+                class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold transition shadow rounded-lg text-sm px-4 py-2"
+                (click)="nuevaRutina()">
+          <i class="pi pi-plus mr-2"></i>Crear Nueva Rutina
+        </button>
+      </div>
+  
+      <!-- Selector de niño -->
+      <p-dropdown
+        class="mb-6 w-full sm:w-1/2"
+        [options]="children"
+        [(ngModel)]="selectedChild"
+        optionLabel="nombre"
+        placeholder="Selecciona un niño"
+        (onChange)="cargarRutinasPorNino()"
+        inputStyleClass="bg-[#E6F7F9] text-[#3A3A3A]"
+        panelStyleClass="bg-[#E6F7F9] border border-[#9ED2C5] text-[#3A3A3A] rounded-xl shadow"
+      ></p-dropdown>
+  
+      <!-- Lista de rutinas -->
+      <div *ngIf="rutinas.length; else noRutinas">
+        @for (rutina of rutinas; track rutina.id) {
+          <div class="bg-white/90 rounded-3xl p-6 mb-8 shadow-xl border border-[#9ED2C5]/40">
+  
+            <!-- Encabezado -->
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h2 class="text-2xl font-bold text-[#3A3A3A]">{{ rutina.nombre }}</h2>
+                <p class="text-sm text-[#3A3A3A] mt-1" *ngIf="rutina.descripcion">{{ rutina.descripcion }}</p>
+                <p class="text-sm text-[#9ED2C5] mt-2 font-medium">{{ rutina.frecuencia }}</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="text-[#9ED2C5] hover:underline" (click)="editarRutina(rutina.id)">Editar</button>
+                <button class="text-red-500 hover:underline" (click)="eliminarRutina(rutina.id)">Eliminar</button>
+              </div>
+            </div>
+  
+            <!-- Actividades -->
+            <ul class="space-y-3 mt-3">
+              @for (actividad of rutina.actividades; track actividad.id) {
+  
+                <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+                  <span class="text-[#3A3A3A]">{{ actividad.titulo }}</span>
+                  <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(actividad.hora_inicio) }}</span>
+                </li>
+              }
+            </ul>
+  
+          </div>
+        }
+      </div>
+  
+      <!-- Sin rutinas -->
+      <ng-template #noRutinas>
+        <div class="text-center py-20 text-[#3A3A3A]">
+          <p>No hay rutinas para este niño</p>
+          <button pButton 
+                  class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold mt-4"
+                  (click)="nuevaRutina()">
+            Crear primera rutina
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  
