@@ -165,8 +165,6 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
       },
     });
 
-    console.log(response)
-
     return response.data.data.familias; // ✅ Esto es IUsersFamilies[]
   } catch (error) {
     console.error('Error al obtener las familias del usuario:', error);
