@@ -1,38 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule, FormSubmittedEvent } from '@angular/forms';
-
-
-interface IActividad {
-  titulo: string;
-  hora_inicio: string;
-}
-
-interface IRutina {
-  nombre: string;
-  descripcion: string;
-  frecuencia: {
-    lunes: boolean;
-    martes: boolean;
-    miercoles: boolean;
-    jueves: boolean;
-    viernes: boolean;
-    sabado: boolean;
-    domingo: boolean;
-  };
-  actividades: IActividad[];
-}
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-routine-form-page',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './routine-form-page.component.html',
+  templateUrl: './routine-form-page.component.html'
 })
-export class RoutineFormPageComponent {
-  editMode = false;
-
-  rutina: IRutina = {
+export class RoutineFormPageComponent implements OnInit {
+  rutina = {
     nombre: '',
     descripcion: '',
     frecuencia: {
@@ -45,23 +22,19 @@ export class RoutineFormPageComponent {
       domingo: false,
     },
     actividades: [
-      { titulo: 'Desayunar', hora_inicio: '07:30' },
-      { titulo: 'Vestirse', hora_inicio: '07:50' }
+      { titulo: '', hora_inicio: '' },
+      { titulo: '', hora_inicio: '' },
+      { titulo: '', hora_inicio: '' }
     ]
   };
 
   constructor(private router: Router) {}
 
-  guardarRutina(): void {
-    if (this.editMode) {
-      console.log('Actualizando rutina:', this.rutina);
-      // Aquí puedes llamar a un servicio para actualizar
-    } else {
-      console.log('Creando nueva rutina:', this.rutina);
-      // Aquí puedes llamar a un servicio para guardar
-    }
+  ngOnInit(): void {}
 
-    this.router.navigate(['/dashboard/routine-list']);
+  guardarRutina(): void {
+    console.log('Rutina guardada:', this.rutina);
+    // Aquí enviarías la rutina al backend
   }
 
   cancelar(): void {
@@ -69,10 +42,21 @@ export class RoutineFormPageComponent {
   }
 
   agregarActividad(): void {
-    this.rutina.actividades.push({ titulo: '', hora_inicio: '' });
+    const maxActividades = 3;
+    const disponibles = this.rutina.actividades.filter(a => !a.titulo && !a.hora_inicio);
+    if (this.rutina.actividades.length < maxActividades || disponibles.length > 0) {
+      const index = this.rutina.actividades.findIndex(a => !a.titulo && !a.hora_inicio);
+      if (index !== -1) {
+        this.rutina.actividades[index] = { titulo: '', hora_inicio: '' };
+      } else {
+        this.rutina.actividades.push({ titulo: '', hora_inicio: '' });
+      }
+    }
   }
 
   eliminarActividad(index: number): void {
-    this.rutina.actividades.splice(index, 1);
+    if (index >= 0 && index < this.rutina.actividades.length) {
+      this.rutina.actividades[index] = { titulo: '', hora_inicio: '' };
+    }
   }
 }

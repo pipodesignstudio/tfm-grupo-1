@@ -1,144 +1,164 @@
-<div class="min-h-screen bg-blue-100 flex items-center justify-center p-6">
-    <div class="w-full max-w-3xl bg-white rounded-xl shadow-md p-8">
+<div class="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold text-center mb-6">Crear Rutina</h2>
   
-      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
-        {{ editMode ? 'Editar Rutina' : 'Crear Nueva Rutina' }}
-      </h2>
-  
+    <form (ngSubmit)="guardarRutina()">
       <!-- Nombre -->
-      <div class="mb-4">
-        <label class="block text-gray-700 font-medium mb-1">Nombre</label>
-        <input
-          type="text"
-          pInputText
-          [(ngModel)]="rutina.nombre"
-          placeholder="Ej: Rutina de la mañana"
-          class="w-full"
-        />
-      </div>
+      <label class="block mb-2 font-semibold text-gray-800">Nombre de la Rutina</label>
+      <input
+        type="text"
+        class="w-full p-3 rounded bg-blue-50 border border-gray-300 mb-4"
+        placeholder="Ej: Rutina Matutina"
+        [(ngModel)]="rutina.nombre"
+        name="nombre"
+        required
+      />
   
       <!-- Descripción -->
-      <div class="mb-4">
-        <label class="block text-gray-700 font-medium mb-1">Descripción</label>
-        <textarea
-          rows="3"
-          pInputTextarea
-          [(ngModel)]="rutina.descripcion"
-          placeholder="Describe la rutina..."
-          class="w-full"
-        ></textarea>
+      <label class="block mb-2 font-semibold text-gray-800">Descripción</label>
+      <textarea
+        class="w-full p-3 rounded bg-blue-50 border border-gray-300 mb-4"
+        placeholder="Descripción de la rutina"
+        [(ngModel)]="rutina.descripcion"
+        name="descripcion"
+      ></textarea>
+  
+      <!-- Días de la Semana -->
+      <label class="block mb-2 font-semibold text-gray-800">Días de la Semana</label>
+      <div class="grid grid-cols-4 gap-2 mb-6">
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.lunes" name="lunes" />
+          <span>Lunes</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.martes" name="martes" />
+          <span>Martes</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.miercoles" name="miercoles" />
+          <span>Miércoles</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.jueves" name="jueves" />
+          <span>Jueves</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.viernes" name="viernes" />
+          <span>Viernes</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.sabado" name="sabado" />
+          <span>Sábado</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia.domingo" name="domingo" />
+          <span>Domingo</span>
+        </label>
       </div>
   
-      <!-- Frecuencia -->
+      <!-- Actividades (máx. 3, estáticas) -->
       <div class="mb-6">
-        <label class="block text-gray-700 font-medium mb-2">Frecuencia (Días activos)</label>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.lunes"></p-inputSwitch>
-            <label>Lunes</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.martes"></p-inputSwitch>
-            <label>Martes</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.miercoles"></p-inputSwitch>
-            <label>Miércoles</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.jueves"></p-inputSwitch>
-            <label>Jueves</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.viernes"></p-inputSwitch>
-            <label>Viernes</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.sabado"></p-inputSwitch>
-            <label>Sábado</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <p-inputSwitch [(ngModel)]="rutina.frecuencia.domingo"></p-inputSwitch>
-            <label>Domingo</label>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Actividades (2 bloques fijos) -->
-      <div class="mb-6">
-        <label class="block text-gray-700 font-medium mb-2">Actividades</label>
+        <label class="font-semibold text-gray-800 mb-2 block">Actividades</label>
   
         <!-- Actividad 1 -->
-        <div class="flex flex-col md:flex-row items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg">
+        <div class="bg-blue-50 p-3 mb-3 rounded-md flex items-center gap-2">
           <input
             type="text"
-            pInputText
+            class="flex-1 px-3 py-2 rounded border border-gray-300"
             [(ngModel)]="rutina.actividades[0].titulo"
-            placeholder="Título actividad 1"
-            class="w-full md:w-2/3"
+            placeholder="Nombre de la actividad"
+            name="titulo0"
           />
           <input
             type="time"
-            pInputText
+            class="w-28 px-2 py-2 rounded border border-gray-300"
             [(ngModel)]="rutina.actividades[0].hora_inicio"
-            class="w-full md:w-1/3"
+            name="hora0"
           />
           <button
-            pButton
-            icon="pi pi-trash"
-            class="p-button-danger p-button-text"
+            type="button"
             (click)="eliminarActividad(0)"
-          ></button>
+            class="bg-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200 text-sm"
+          >
+            Eliminar
+          </button>
         </div>
   
         <!-- Actividad 2 -->
-        <div class="flex flex-col md:flex-row items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg">
+        <div class="bg-blue-50 p-3 mb-3 rounded-md flex items-center gap-2">
           <input
             type="text"
-            pInputText
+            class="flex-1 px-3 py-2 rounded border border-gray-300"
             [(ngModel)]="rutina.actividades[1].titulo"
-            placeholder="Título actividad 2"
-            class="w-full md:w-2/3"
+            placeholder="Nombre de la actividad"
+            name="titulo1"
           />
           <input
             type="time"
-            pInputText
+            class="w-28 px-2 py-2 rounded border border-gray-300"
             [(ngModel)]="rutina.actividades[1].hora_inicio"
-            class="w-full md:w-1/3"
+            name="hora1"
           />
           <button
-            pButton
-            icon="pi pi-trash"
-            class="p-button-danger p-button-text"
+            type="button"
             (click)="eliminarActividad(1)"
-          ></button>
+            class="bg-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200 text-sm"
+          >
+            Eliminar
+          </button>
         </div>
   
-        <!-- Botón para agregar más -->
+        <!-- Actividad 3 -->
+        <div class="bg-blue-50 p-3 mb-3 rounded-md flex items-center gap-2">
+          <input
+            type="text"
+            class="flex-1 px-3 py-2 rounded border border-gray-300"
+            [(ngModel)]="rutina.actividades[2].titulo"
+            placeholder="Nombre de la actividad"
+            name="titulo2"
+          />
+          <input
+            type="time"
+            class="w-28 px-2 py-2 rounded border border-gray-300"
+            [(ngModel)]="rutina.actividades[2].hora_inicio"
+            name="hora2"
+          />
+          <button
+            type="button"
+            (click)="eliminarActividad(2)"
+            class="bg-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200 text-sm"
+          >
+            Eliminar
+          </button>
+        </div>
+  
+        <!-- Agregar actividad -->
         <button
-          pButton
-          icon="pi pi-plus"
-          label="Agregar actividad"
-          class="p-button-sm"
+          type="button"
           (click)="agregarActividad()"
-        ></button>
+          class="text-orange-500 font-medium hover:underline"
+        >
+          + Agregar Actividad
+        </button>
       </div>
   
       <!-- Botones -->
       <div class="flex justify-center gap-4 mt-6">
         <button
           pButton
+          type="submit"
           label="Guardar"
-          class="p-button-success px-6"
-          (click)="guardarRutina()"
+          class="p-button-rounded p-button-lg"
+          style="background-color: #fc7643; border: none; color: white;"
         ></button>
+  
         <button
           pButton
+          type="button"
           label="Cancelar"
-          class="p-button-secondary px-6"
+          class="p-button-rounded p-button-lg p-button-secondary"
           (click)="cancelar()"
         ></button>
       </div>
-    </div>
+    </form>
   </div>
   
