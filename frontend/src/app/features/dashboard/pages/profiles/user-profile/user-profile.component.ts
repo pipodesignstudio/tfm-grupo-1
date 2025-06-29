@@ -21,6 +21,7 @@ import { IActivity } from '../../../../../shared/interfaces/iactivity.interface'
 import { IUserFromBackend } from '../../../../../shared/interfaces/iuser-from-backend.interface';
 import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
 import { MessageModalComponent } from '../../../../../components/message-modal/message-modal.component';
+import { UserFormComponent } from '../../../../../components/user-form/user-form.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -30,6 +31,7 @@ import { MessageModalComponent } from '../../../../../components/message-modal/m
     ChildFormComponent,
     FamilyFormComponent,
     MessageModalComponent,
+    UserFormComponent,
   ],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
@@ -248,7 +250,7 @@ export class UserProfileComponent {
   hideModalEliminarFamiliar() {
     this.modalEliminarVisible = false;
     this.familiarAEliminarEditar = null;
-   this.changeDetector.detectChanges();
+    this.changeDetector.detectChanges();
   }
 
   eliminarFamiliar(familiar: IFamiliaUsuario | null) {
@@ -276,5 +278,26 @@ export class UserProfileComponent {
       .catch((error) => {
         console.error('Error al eliminar familiar:', error);
       });
+  }
+
+  showUserFormModal = false;
+
+  openUserFormModal() {
+    this.showUserFormModal = true;
+  }
+
+  closeUserFormModal() {
+    this.showUserFormModal = false;
+  }
+
+  editarUsuario(userData: Partial<IUser>) {
+    console.log('Usuario editado:', userData);
+    this.userService.editUser(userData).then((result) => {
+      if (result?.success) {
+        console.log('Usuario editado con éxito', result);
+      } else {
+        console.error('Error al editar el usuario:', result?.message);
+      }
+    });
   }
 }

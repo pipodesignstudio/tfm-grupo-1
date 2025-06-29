@@ -9,6 +9,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
+import { PasswordModule } from 'primeng/password';
 
 import { MessageModule } from 'primeng/message';
 import { Router } from '@angular/router';
@@ -27,6 +28,7 @@ import { Router } from '@angular/router';
     ColorPickerModule,
     TextareaModule,
     ButtonModule,
+    PasswordModule,
     InputTextModule,
   ],
   templateUrl: './user-form.component.html',
@@ -47,9 +49,11 @@ export class UserFormComponent implements OnInit {
   constructor(private router: Router, private fb: FormBuilder) {}
 
   ngOnInit() {
+
     this.createForm();
     if (this.tipo === 'edit' && this.userInfo) {
       this.form.patchValue(this.userInfo);
+      this.form.get('email')?.disable();
       this.profileImageUrl = this.userInfo.imagen;
     }
   }
@@ -57,28 +61,35 @@ export class UserFormComponent implements OnInit {
   createForm() {
     const base = {
       email: ['', [Validators.required, Validators.email]],
+    };
+
+    const loginExtras = {
       password: ['', [Validators.required, Validators.minLength(6)]],
     };
 
     const registerExtras = {
-      username: ['', [Validators.required, Validators.minLength(3)]],
+      nick: ['', [Validators.required, Validators.minLength(3)]],
       confirmPassword: ['', Validators.required],
     };
 
     const editExtras = {
+      nick: ['', [Validators.required, Validators.minLength(3)]],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       imagen: [null],
     };
 
     let groupConfig: any = base;
+    if (this.tipo === 'login') {
+      groupConfig = { ...base, ...loginExtras };
+    }
 
     if (this.tipo === 'register') {
       groupConfig = { ...registerExtras, ...base };
     }
 
     if (this.tipo === 'edit') {
-      groupConfig = { ...registerExtras, ...editExtras, ...base };
+      groupConfig = {...editExtras, ...base };
     }
 
     this.form = this.fb.group(groupConfig, {

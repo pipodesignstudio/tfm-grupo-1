@@ -1,3 +1,4 @@
+import { IUser } from './../../../../../shared/interfaces/iuser.interface';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { InputSwitchModule } from 'primeng/inputswitch';
@@ -6,10 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { ISettingItem } from '../../../../../shared/interfaces/isetting-item.interface';
 import { ThemeService } from '../../../../../shared/services/theme.service';
 
+import { UserFormComponent } from '../../../../../components/user-form/user-form.component';
+import { UsersService } from '../../../../../shared/services/users.service';
+
 
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, InputSwitchModule],
+  imports: [FormsModule, InputSwitchModule , UserFormComponent],
   templateUrl: './settings-profile.component.html',
 })
 export class SettingsComponent {
@@ -20,6 +24,11 @@ export class SettingsComponent {
   darkMode = false;
   notifications = true;
   vacationMode = false;
+
+  userService = inject(UsersService);
+  userInfo = this.userService.user();
+
+  showUserFormModal = false;
 
   constructor(private router: Router) {}
 
@@ -42,7 +51,7 @@ export class SettingsComponent {
       icon: 'pi pi-user',
       label: 'Editar Perfil',
       hasArrow: true,
-      onClick: () =>  this.router.navigate(['/settings/edit-profile']),
+      onClick: () =>  this.openUserFormModal(),
     },
     {
       icon: 'pi pi-cog',
@@ -92,4 +101,23 @@ export class SettingsComponent {
       onClick: () => console.log('Soporte clicked'),
     },
   ];
+
+  openUserFormModal() {
+    this.showUserFormModal = true;
+  }
+
+  closeUserFormModal() {
+    this.showUserFormModal = false;
+  }
+
+  editarUsuario(userData: Partial<IUser>) {
+    console.log('Usuario editado:', userData);
+    this.userService.editUser(userData).then((result) => {
+      if (result?.success) {
+        console.log('Usuario editado con éxito', result);
+      } else {
+        console.error('Error al editar el usuario:', result?.message);
+      }
+    });
+  }
 }

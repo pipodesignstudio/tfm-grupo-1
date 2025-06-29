@@ -5,6 +5,7 @@ import { TokenService } from '../../features/auth/services';
 import { IUserFromBackend } from '../interfaces/iuser-from-backend.interface';
 import { Router } from '@angular/router';
 import { IUsersFamilies } from '../interfaces/iusers-families.interface';
+import { IUser } from '../interfaces';
 
 interface UserApiResponse {
   success: boolean;
@@ -172,5 +173,24 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
   }
 }
 
+public async editUser(userData: Partial<IUser>) {
+  try {
+    const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/update`, userData, {
+      headers: {
+        Authorization: `Bearer ${this.tokenService.token()}`,
+      },
+    });
+
+    if (!response.data.success) {
+      return { success: false, message: response.data.message };
+    }
+
+    this._user.set(response.data.data.user);
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    console.error('Error al editar el usuario:', error);
+    return { success: false, message: 'Error al editar el usuario' };
+  }
+}
 
 }

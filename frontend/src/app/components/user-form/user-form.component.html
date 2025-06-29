@@ -18,34 +18,8 @@
       (ngSubmit)="onSubmit()"
       class="flex flex-col gap-4"
     >
-      @if (tipo !== 'login') {
-      <div class="flex flex-col">
-        <label for="username">Nombre de Usuario</label>
-        <input
-          id="username"
-          type="text"
-          pInputText
-          formControlName="username"
-        />
-      </div>
-      } @if (tipo === 'edit') {
-      <div class="flex gap-2">
-        <div class="flex flex-col flex-1">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" type="text" pInputText formControlName="nombre" />
-        </div>
-        <div class="flex flex-col flex-1">
-          <label for="apellido">Apellido</label>
-          <input
-            id="apellido"
-            type="text"
-            pInputText
-            formControlName="apellido"
-          />
-        </div>
-      </div>
+      @if (tipo === 'edit') {
 
-      <!-- Imagen -->
       <div class="profile-picture-section">
         <input
           type="file"
@@ -58,25 +32,50 @@
           class="profile-picture-placeholder cursor-pointer"
           (click)="fileInput.click()"
         >
-          @if (profileImageUrl) {
           <img
-            [src]="profileImageUrl"
+            [src]="
+              profileImageUrl
+                ? profileImageUrl
+                : 'https://img.icons8.com/?size=40&id=85103&format=png&color=000000'
+            "
             alt="Foto de Perfil"
             class="profile-image"
           />
-          } @else {
-          <img
-            src="https://img.icons8.com/?size=40&id=85103&format=png&color=000000"
-          />
-          }
         </div>
       </div>
+      } @if (tipo !== 'login') {
+      <div class="flex flex-col">
+        <label for="nick">Nombre de Usuario</label>
+        <input id="nick" type="text" pInputText formControlName="nick" />
+      </div>
+      } @if (tipo === 'edit') {
+
+      <div class="flex flex-wrap gap-4 w-full">
+        <div class="flex flex-col flex-1 min-w-[150px]">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" type="text" pInputText formControlName="nombre" />
+        </div>
+        <div class="flex flex-col flex-1 min-w-[150px]">
+          <label for="apellido">Apellido</label>
+          <input
+            id="apellido"
+            type="text"
+            pInputText
+            formControlName="apellido"
+          />
+        </div>
+      </div>
+
+      <!-- Imagen -->
+
       }
 
       <div class="flex flex-col">
         <label for="email">Email</label>
         <input id="email" type="email" pInputText formControlName="email" />
       </div>
+
+      @if (tipo !== 'edit') {
 
       <div class="flex flex-col">
         <label for="password">Contraseña</label>
@@ -86,8 +85,7 @@
           feedback="false"
         />
       </div>
-
-      @if (tipo !== 'login') {
+      } @if (tipo === 'register') {
       <div class="flex flex-col">
         <label for="confirmPassword">Confirmar Contraseña</label>
         <p-password
@@ -100,18 +98,23 @@
       @if (form.errors?.['mismatch'] && form.dirty) {
       <p-message severity="error">Las contraseñas no coinciden.</p-message>
       } }
+      <div class="flex justify-end gap-2 mt-4">
+        @if(tipo === 'edit') {
+        <p-button label="Cancelar" (click)="cerrarModal()"></p-button>
+        }
 
-      <p-button
-        [label]="
-          tipo === 'login'
-            ? 'Iniciar sesión'
-            : tipo === 'register'
-            ? 'Registrarse'
-            : 'Guardar Cambios'
-        "
-        type="submit"
-        [disabled]="form.invalid"
-      />
+        <p-button
+          [label]="
+            tipo === 'login'
+              ? 'Iniciar sesión'
+              : tipo === 'register'
+              ? 'Registrarse'
+              : 'Guardar Cambios'
+          "
+          type="submit"
+          [disabled]="form.invalid"
+        />
+      </div>
     </form>
     <div class="mt-5">
       @if(tipo === 'login') {

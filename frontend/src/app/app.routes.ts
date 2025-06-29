@@ -7,7 +7,6 @@ import { CreateFamilyComponent } from './features/auth/pages/create-family/creat
 import { ChildProfileComponent } from './features/dashboard/pages/profiles/child-profile/child-profile.component';
 import { MyFamilyComponent } from './features/auth/pages/my-family/my-family.component';
 import { AboutUsPageComponent } from './features/dashboard/pages/about-us-page/about-us-page.component';
-import { EditProfileComponent } from './features/dashboard/pages/profiles/edit-profile/edit-profile.component';
 import { ObjectivesPageComponent } from './features/dashboard/pages/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './features/dashboard/components/objectives-form/objectives-form.component';
 import { LandingPageComponent } from './features/landing-page/pages/landing-page/landing-page.component';
@@ -131,10 +130,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         component: SettingsComponent,
-      },
-      {
-        path: 'settings/edit-profile',
-        component: EditProfileComponent,
+        
       },
       {
         path: 'objectives',

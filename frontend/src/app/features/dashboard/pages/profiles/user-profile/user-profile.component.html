@@ -174,7 +174,7 @@
         </p>
       </div>
       <button
-        (click)="goToEditarPerfil()"
+        (click)="openUserFormModal()"
         class="bg-purple-500 hover:bg-purple-600 dark:bg-gray-800 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-md shadow"
       >
         Editar Perfil
@@ -343,5 +343,14 @@
     (eliminar)="eliminarFamiliar(familiarAEliminarEditar)"
     (cerrar)="hideModalEliminarFamiliar()"
   ></app-message-modal>
+  }
+
+   @if (showUserFormModal) {
+  <app-user-form
+    [tipo]="'edit'"
+    [userInfo]="this.user"
+    (cerrar)="closeUserFormModal()"
+    (edit)="editarUsuario($event)"
+  ></app-user-form>
   }
 </div>
