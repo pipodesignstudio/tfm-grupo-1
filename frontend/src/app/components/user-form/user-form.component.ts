@@ -107,7 +107,7 @@ export class UserFormComponent implements OnInit {
       this.register.emit(value);
     } else if (this.tipo === 'edit') {
       delete value.confirmPassword;
-      this.edit.emit(value);
+      this.edit.emit(this.form.value);
     }
   }
 

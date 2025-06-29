@@ -121,40 +121,20 @@ export const routes: Routes = [
         component: UserProfileComponent,
       },
       {
-        path: 'settings',
-        component: SettingsComponent,
-      },
-      {
-        path: 'settings/edit-profile',
-        component: EditProfileComponent,
-      },
-      {
         path: 'about-us',
         component: AboutUsPageComponent,
-      },
-      {
-        path: 'calendar',
-        component: CalendarPageComponent,
       },
       {
         path: 'child-profile',
         component: ChildProfileComponent,
       },
       {
-        path: 'user-profile',
-        component: UserProfileComponent,
-      },
-      {
         path: 'settings',
         component: SettingsComponent,
       },
       {
         path: 'settings/edit-profile',
         component: EditProfileComponent,
-      },
-      {
-        path: 'about-us',
-        component: AboutUsPageComponent,
       },
       {
         path: 'objectives',
