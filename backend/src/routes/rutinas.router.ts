@@ -14,6 +14,8 @@ const rutinasController = new RutinasController();
  *   get:
  *     summary: Lista todas las rutinas de un niño
  *     tags: [Rutinas]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -33,7 +35,7 @@ const rutinasController = new RutinasController();
  */
 rutinasRouter.get(
     '/', 
-    authMiddleware,
+    asyncMiddlewareWrapper(authMiddleware),
     asyncMiddlewareWrapper(rutinasController.list.bind(rutinasController)));
 
 /**
@@ -42,6 +44,8 @@ rutinasRouter.get(
  *   post:
  *     summary: Crea una nueva rutina para un niño
  *     tags: [Rutinas]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -74,7 +78,7 @@ rutinasRouter.get(
  */
 rutinasRouter.post(
     '/', 
-    authMiddleware,
+    asyncMiddlewareWrapper(authMiddleware),
     validationMiddleware(CreateRutinaDto), 
     asyncMiddlewareWrapper(rutinasController.create.bind(rutinasController)));
 
@@ -84,6 +88,8 @@ rutinasRouter.post(
  *   put:
  *     summary: Actualiza una rutina existente
  *     tags: [Rutinas]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -117,7 +123,7 @@ rutinasRouter.post(
  */
 rutinasRouter.put(
     '/:id', 
-    authMiddleware,
+    asyncMiddlewareWrapper(authMiddleware),
     validationMiddleware(UpdateRutinaDto, true), 
     asyncMiddlewareWrapper(rutinasController.update.bind(rutinasController)));
 
@@ -127,6 +133,8 @@ rutinasRouter.put(
  *   delete:
  *     summary: Elimina una rutina
  *     tags: [Rutinas]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -150,7 +158,7 @@ rutinasRouter.put(
  */
 rutinasRouter.delete(
     '/:id', 
-    authMiddleware,
+    asyncMiddlewareWrapper(authMiddleware),
     asyncMiddlewareWrapper(rutinasController.delete.bind(rutinasController)));
 
 export default rutinasRouter;

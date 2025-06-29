@@ -15,6 +15,8 @@ const objetivosRouter = Router({ mergeParams: true });
  *   get:
  *     summary: Lista todos los objetivos de un niño
  *     tags: [Objetivos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -35,7 +37,7 @@ const objetivosRouter = Router({ mergeParams: true });
  */
 objetivosRouter.get(
   '/', 
-  authMiddleware, 
+  asyncMiddlewareWrapper(authMiddleware), 
   asyncMiddlewareWrapper(objController.list.bind(objController)));
 
 /**
@@ -44,6 +46,8 @@ objetivosRouter.get(
  *   post:
  *     summary: Crea un nuevo objetivo para un niño
  *     tags: [Objetivos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -76,7 +80,7 @@ objetivosRouter.get(
  */
 objetivosRouter.post(
   '/',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(CreateObjetivoDto),
   asyncMiddlewareWrapper(objController.create.bind(objController))
 );
@@ -87,6 +91,8 @@ objetivosRouter.post(
  *   put:
  *     summary: Actualiza un objetivo
  *     tags: [Objetivos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -122,7 +128,7 @@ objetivosRouter.post(
  */
 objetivosRouter.put(
   '/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(UpdateObjetivoDto, true),
   asyncMiddlewareWrapper(objController.update.bind(objController))
 );
@@ -133,6 +139,8 @@ objetivosRouter.put(
  *   delete:
  *     summary: Elimina un objetivo
  *     tags: [Objetivos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -156,7 +164,7 @@ objetivosRouter.put(
  */
 objetivosRouter.delete(
   '/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(objController.delete.bind(objController))
 );
 
