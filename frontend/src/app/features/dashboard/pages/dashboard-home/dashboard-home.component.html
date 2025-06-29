@@ -1,14 +1,15 @@
 <div class="p-4 space-y-6 max-w-xl mx-auto">
-  <!-- Personalized greeting -->
   <div class="flex flex-col items-start">
-    <h1 class="text-2xl font-bold text-primary-700">
-      Hello,
+    <h1 class="text-2xl font-bold">
+      ¡Hola Paula!
       <!--{{ user.name }}!-->
     </h1>
-    <span class="text-gray-500"><!--{{ date | date : "fullDate" }}--></span>
+    <span class="text-gray-500"
+      >Lunes, 20 mayo 2025<!--{{ date | date : "fullDate" }}--></span
+    >
   </div>
 
-  <!-- Daily routine card -->
+  <!-- Card -->
   <div class="relative flex items-center">
     <!-- Left button: disabled if only one child -->
     <button
@@ -20,22 +21,58 @@
       <i class="pi pi-chevron-left"></i>
     </button>
 
-    <!-- All routine cards, only one visible -->
+    <!-- routine -->
     <div class="flex-1">
-      <div
-        class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center transition-all duration-300 surface-card"
-      >
+      <div class="card-secondary">
+        <img
+          [src]="children[activeChild].photoUrl"
+          [alt]="children[activeChild].name + ' photo'"
+          class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto"
+        />
+
         <h2 class="text-lg font-semibold mb-2">
           Rutina de {{ children[activeChild].name }}
         </h2>
-        <ul class="list-disc pl-5 space-y-1">
-          @for (activity of children[activeChild].routine; track $index) {
-          <li>{{ activity }}</li>
+        <ul class="w-full space-y-2">
+          @for (task of children[activeChild].routine; track $index) {
+          <li
+            class="flex items-center px-3 py-2 rounded-lg shadow-sm transition-all duration-300 group"
+            [ngClass]="getTaskBgClass(task.type)"
+            [class.opacity-60]="task.completed"
+            [@fadeIn]
+          >
+            <!-- Checkbox -->
+            <input
+              type="checkbox"
+              class="mr-3 accent-green-500"
+              [checked]="task.completed"
+              (change)="toggleTaskComplete(task)"
+              aria-label="Marcar como completada"
+            />
+            <!-- Emoji -->
+            <span class="text-2xl mr-3">
+              @if (task.icon.startsWith('pi')) {
+              <i [class]="task.icon + ' text-xl text-primary-600'"></i>
+              } @else {
+              {{ task.icon }}
+              }
+            </span>
+            <!-- Nombre de la tarea -->
+            <span
+              class="flex-1 text-gray-900"
+              [class.line-through]="task.completed"
+            >
+              {{ task.label }}
+            </span>
+            <!-- Hora -->
+            <span class="font-mono text-sm text-gray-700 w-14 text-right ml-3">
+              {{ task.time }}
+            </span>
+          </li>
           }
         </ul>
       </div>
     </div>
-
     <!-- Right button: disabled if only one child -->
     <button
       class="bg-primary-100 p-2 rounded-full shadow ml-2 disabled:opacity-50"
