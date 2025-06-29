@@ -123,11 +123,13 @@
         <div>
             <button
               class="text-blue-500 hover:text-blue-700"
+              (click)="showEditFamilyModal(member)"
             >
               <i class="pi pi-pen-to-square"></i>
             </button>
             <button
               class="text-red-500 hover:text-red-700 ml-2"
+              (click)="showModalEliminarFamiliar(member)"
               
             >
               <i class="pi pi-trash"></i>
@@ -292,12 +294,14 @@
           </div>
           <div>
             <button
-              class="text-blue-500 hover:text-blue-700"
+              class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
+              (click)="showEditFamilyModal(member)"
             >
               <i class="pi pi-pen-to-square"></i>
             </button>
             <button
-              class="text-red-500 hover:text-red-700 ml-2"
+              class="text-red-500 hover:text-red-700 ml-2 hover:cursor-pointer"
+              (click)="showModalEliminarFamiliar(member)"
               
             >
               <i class="pi pi-trash"></i>
@@ -316,7 +320,7 @@
         <strong>{{ children.length }}</strong> Niños registrados
       </div>
       <div>
-        <strong>{{ familyMembers.length }}</strong> Miembros de familia
+        <strong>{{ usersFamily.length }}</strong> Miembros de familia
       </div>
     </div>
   </div>
@@ -324,7 +328,20 @@
   <app-child-form (cerrar)="hideChildModal()"  (addChild)="addChild($event)"> </app-child-form>
 
   } @if (familyModalVisible) {
-  <app-family-form (cerrar)="hideFamilyModal()"> </app-family-form>
+  <app-family-form
+    [familiar]="familiarAEliminarEditar"
+    (cerrar)="hideEditFamilyModal()"
+    (guardar)="enviarInvitacion($event)"
+    (editar)="editarFamiliar($event)"
+  ></app-family-form>
 
+  }
+
+  @if (modalEliminarVisible) {
+  <app-message-modal
+    [message]="'¿Estás seguro de que quieres eliminar a ' + familiarAEliminarEditar?.usuarios?.nick + ' de la familia?'"
+    (eliminar)="eliminarFamiliar(familiarAEliminarEditar)"
+    (cerrar)="hideModalEliminarFamiliar()"
+  ></app-message-modal>
   }
 </div>

@@ -107,8 +107,8 @@ familiaUsuariosRoutes.post(
  */
 familiaUsuariosRoutes.put(
   '/:usuarioId',
-  asyncMiddlewareWrapper(authMiddleware),
-  validationMiddleware(UpdateRolUsuarioDto),
+/*   asyncMiddlewareWrapper(authMiddleware),
+ */  validationMiddleware(UpdateRolUsuarioDto),
   controller.changeRol
 );
 
@@ -141,8 +141,8 @@ familiaUsuariosRoutes.put(
  */
 familiaUsuariosRoutes.delete(
   '/:usuarioId',
-  asyncMiddlewareWrapper(authMiddleware),
-  controller.delete
+/*   asyncMiddlewareWrapper(authMiddleware),
+ */  controller.delete
 );
 
 export default familiaUsuariosRoutes;
