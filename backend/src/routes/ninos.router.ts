@@ -16,6 +16,8 @@ const router = Router();
  *   post:
  *     summary: Crea un nuevo niño
  *     tags: [Niños]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -57,7 +59,7 @@ const router = Router();
  */
 router.post(
   '/',
- /*  authMiddleware, */
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(CreateNinoDto),
   asyncMiddlewareWrapper(controller.create.bind(controller))
 );
@@ -68,6 +70,8 @@ router.post(
  *   get:
  *     summary: Obtiene un niño por ID
  *     tags: [Niños]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -97,7 +101,7 @@ router.post(
  */
 router.get(
   '/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.getById.bind(controller))
 );
 
@@ -107,6 +111,8 @@ router.get(
  *   put:
  *     summary: Actualiza un niño
  *     tags: [Niños]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -146,7 +152,7 @@ router.get(
  */
 router.put(
   '/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(UpdateNinoDto, true),
   asyncMiddlewareWrapper(controller.update.bind(controller))
 );
@@ -157,6 +163,8 @@ router.put(
  *   delete:
  *     summary: Elimina un niño
  *     tags: [Niños]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -186,7 +194,7 @@ router.put(
  */
 router.delete(
   '/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.delete.bind(controller))
 );
 
@@ -196,6 +204,8 @@ router.delete(
  *   get:
  *     summary: Lista niños por familia
  *     tags: [Niños]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: familiaId
@@ -227,8 +237,8 @@ router.delete(
  */
 router.get(
   '/familia/:familiaId',
-/*   authMiddleware,
- */  asyncMiddlewareWrapper(controller.listByFamilia.bind(controller))
+  asyncMiddlewareWrapper(authMiddleware),
+  asyncMiddlewareWrapper(controller.listByFamilia.bind(controller))
 );
 
 export default router;
