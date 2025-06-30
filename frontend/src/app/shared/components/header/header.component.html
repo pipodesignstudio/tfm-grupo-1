@@ -1,9 +1,9 @@
 <div
-  class="grid grid-cols-3 items-center bg-[#9ed2c5] dark:bg-gray-800 dark:text-white px-3"
+  class="grid grid-cols-3 items-center bg-white dark:bg-gray-800 dark:text-white px-9"
 >
   <!-- Aparece solo en pantallas grandes -->
   <button (click)="goToDashboard()" class="w-fit">
-   <app-logo />
+    <app-logo />
   </button>
 
   <!-- Aparece solo en pantallas pequeñas y medianas -->
@@ -28,21 +28,38 @@
 
     <!-- Botón que activa el popover -->
     <button
-    pButton
-    type="button"
-    icon="pi pi-cog"
-    (click)="menu.toggle($event)"
-    class="bg-[#ff7f50] dark:bg-gray-700 text-white px-5 py-4 rounded"
-    >
-    </button>
+      pButton
+      type="button"
+      icon="pi pi-cog"
+      (click)="menu.toggle($event)"
+      class="px-5 py-3 rounded-full"
+    ></button>
     <p-overlayPanel #menu>
       <div class="flex flex-col gap-2 p-2 min-w-[150px]">
         <!-- Opción 1: Ir a perfil -->
-        <button *ngIf="!isOnRoute('/dashboard/user-profile')" pButton label="Mi perfil" (click)="goToProfile(); menu.hide()" class="w-full"></button>
+        <button
+          *ngIf="!isOnRoute('/dashboard/user-profile')"
+          pButton
+          label="Mi perfil"
+          (click)="goToProfile(); menu.hide()"
+          class="w-full"
+        ></button>
         <!-- Opción 2: Ir a ajustes -->
-        <button *ngIf="!isOnRoute('/dashboard/settings')" pButton label="Configuración" (click)="goToSettings(); menu.hide()" class="w-full"></button>
+        <button
+          *ngIf="!isOnRoute('/dashboard/settings')"
+          pButton
+          label="Configuración"
+          (click)="goToSettings(); menu.hide()"
+          class="w-full"
+        ></button>
         <!-- Opción 3: Cerrar sesión -->
-        <button pButton label="Cerrar sesión" severity="danger" (click)="logout()" class="w-full"></button>
+        <button
+          pButton
+          label="Cerrar sesión"
+          severity="danger"
+          (click)="logout()"
+          class="w-full"
+        ></button>
       </div>
     </p-overlayPanel>
   </div>

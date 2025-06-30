@@ -30,7 +30,7 @@ export class HeaderComponent {
   private routeTitles: { [key: string]: string } = {
     '/create-family': 'Crear familia',
     '/my-family': 'Mi familia',
-    '/dashboard': 'Home',
+    '/dashboard': '',
     '/calendar': 'Calendario',
     '/child-profile': 'Perfil del niño',
     '/dashboard/user-profile': 'Mi perfil',
@@ -51,7 +51,7 @@ export class HeaderComponent {
   }
 
   isOnRoute(path: string): boolean {
-  return this.currentPath === path;
+    return this.currentPath === path;
   }
 
   goBack() {
@@ -63,20 +63,18 @@ export class HeaderComponent {
     this.router.navigate(['/']); // DANI: Redirige después del logout
   }
   goToProfile() {
-  this.router.navigate(['/dashboard/user-profile']);
- }
+    this.router.navigate(['/dashboard/user-profile']);
+  }
 
   toggleDarkMode() {
     this.themeService.toggleDarkMode();
   }
 
   goToSettings() {
-  this.router.navigate(['/dashboard/settings']);
+    this.router.navigate(['/dashboard/settings']);
   }
 
   goToDashboard() {
-  this.router.navigate(['/dashboard']);
- }
-
-
+    this.router.navigate(['/dashboard']);
+  }
 }
