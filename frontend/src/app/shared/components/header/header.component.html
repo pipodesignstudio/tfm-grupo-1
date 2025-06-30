@@ -2,16 +2,9 @@
   class="grid grid-cols-3 items-center bg-white dark:bg-gray-800 dark:text-white px-9 shadow mb-5 px-7"
 >
   <!-- Aparece solo en pantallas grandes -->
-  <button (click)="goToDashboard()" class="w-fit">
+  <button (click)="goToHome()" class="w-fit">
     <app-logo />
   </button>
-
-  <!-- Aparece solo en pantallas pequeñas y medianas -->
-  <!-- <div class="flex justify-start md:hidden px-4 pt-2">
-    <button (click)="goBack()" class="text-white text-base" aria-label="Volver">
-      <i class="pi pi-arrow-left text-gray-700 dark:text-white text-sm"></i>
-    </button>
-  </div> -->
   <!-- Centro -->
   <h1 class="text-xl font-bold text-center">{{ pageTitle }}</h1>
 
@@ -26,7 +19,7 @@
       (click)="menu.toggle($event)"
       class="px-5 py-3 rounded-full"
     ></button>
-    <p-overlayPanel #menu>
+    <p-popover  #menu>
       <div class="flex flex-col gap-2 p-2 min-w-[150px]">
         
         <!-- Opción 1: Ir a inicio -->
@@ -37,11 +30,11 @@
         <button pButton *ngIf="!isOnRoute('/dashboard/settings')" (click)="toggleDarkMode(); menu.hide()" [label]="isDarkMode() ? '☀️ Modo claro' : '🌙 Modo oscuro'" class="w-full"></button>
         <!-- Opción 4: Ir a ajustes -->
         <button *ngIf="!isOnRoute('/dashboard/settings')" pButton label="Configuración" (click)="goToSettings(); menu.hide()" class="w-full"></button>
-        <!-- Opción 5: Ir a ajustes -->
+        <!-- Opción 5: Ir a Sobre Nosotros -->
         <button *ngIf="!isOnRoute('/dashboard/settings') && !isOnRoute('/dashboard/about-us')" pButton label="Sobre Nosotros" (click)="goToAboutUs(); menu.hide()" class="w-full"></button>
         <!-- Opción 6: Cerrar sesión -->
         <button pButton label="Cerrar sesión" severity="danger" (click)="logout()" class="w-full"></button>
       </div>
-    </p-overlayPanel>
+    </p-popover >
   </div>
 </div>

@@ -6,7 +6,7 @@ import { ThemeService } from '../../services';
 import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
 import { ButtonModule } from 'primeng/button';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { PopoverModule } from 'primeng/popover';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [CommonModule, LogoComponent, ButtonModule, OverlayPanelModule],
+  imports: [CommonModule, LogoComponent, ButtonModule, PopoverModule],
 })
 export class HeaderComponent {
   private router = inject(Router);
@@ -54,21 +54,20 @@ export class HeaderComponent {
     return this.currentPath === path;
   }
 
-  goBack() {
-    this.location.back();
-  }
-
   logout() {
     this.authService.logOut();
-    this.router.navigate(['/']); // DANI: Redirige después del logout
+    this.router.navigate(['/']);
   }
-  goToHome() {
-  this.router.navigate(['/dashboard']);
- }
+
   goToProfile() {
+    console.log('Navegando a perfil');
     this.router.navigate(['/dashboard/user-profile']);
   }
 
+  goToHome() {
+  this.router.navigate(['/dashboard']);
+ }
+ 
   toggleDarkMode() {
     this.themeService.toggleDarkMode();
   }
@@ -76,10 +75,6 @@ export class HeaderComponent {
   goToSettings() {
     this.router.navigate(['/dashboard/settings']);
   }
-
-  goToDashboard() {
-  this.router.navigate(['/dashboard']);
- }
 
   goToAboutUs() {
   this.router.navigate(['/dashboard/about-us']);
