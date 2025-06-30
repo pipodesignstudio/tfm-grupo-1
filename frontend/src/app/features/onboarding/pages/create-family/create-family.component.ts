@@ -16,7 +16,7 @@ import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { AutoFocusModule } from 'primeng/autofocus';
 import { ChildProfile, ChildService } from '../../../../shared/services';
-import { Calendar } from 'primeng/calendar';
+import { Calendar, CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
@@ -32,8 +32,8 @@ import { DropdownModule } from 'primeng/dropdown';
     ToastModule,
     MessageModule,
     AutoFocusModule,
-    Calendar,
     DropdownModule,
+    CalendarModule,
   ],
   templateUrl: './create-family.component.html',
 })
@@ -46,7 +46,6 @@ export class CreateFamilyComponent implements OnInit {
   genderOptions = [
     { label: 'Masculino', value: 'male' },
     { label: 'Femenino', value: 'female' },
-    { label: 'Otro', value: 'other' },
     { label: 'Prefiero no especificar', value: null },
   ];
 
