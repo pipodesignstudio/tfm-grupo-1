@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import axios from 'axios';
 import { IChild } from '../interfaces';
+import { TokenService } from '../../features/auth/services';
 
 export interface ChildProfile {
   id: number;
@@ -19,9 +20,16 @@ export interface ChildProfile {
 export class ChildService {
   private apiUrl: string = 'http://localhost:3000/api';
 
+
+    private readonly tokenService = inject(TokenService);
+
+
   async getChildrenByFamily(id_familia: string): Promise<IChild[]> {
     const response = await axios.get<{ data: IChild[] }>(
-      `${this.apiUrl}/ninos/familia/${id_familia}`
+      `${this.apiUrl}/ninos/familia/${id_familia}`,
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
     );
     return response.data.data;
   }
@@ -29,13 +37,19 @@ export class ChildService {
   async addChild(childData: Partial<IChild>): Promise<IChild> {
     const response = await axios.post<{ data: IChild }>(
       `${this.apiUrl}/ninos`,
-      childData
+      childData,
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
     );
     return response.data.data;
   }
 
   async deleteChild(id: number): Promise<void> {
-    await axios.delete(`${this.apiUrl}/ninos/${id}`);
+    await axios.delete(`${this.apiUrl}/ninos/${id}`,
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      });
   }
 
 
