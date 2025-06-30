@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { Location } from '@angular/common';
 import { ThemeService } from '../../services';
 import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
@@ -19,7 +18,6 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent {
   private router = inject(Router);
   private themeService = inject(ThemeService);
-  private location = inject(Location);
   private authService = inject(AuthService);
 
   isDarkMode = this.themeService.darkTheme;

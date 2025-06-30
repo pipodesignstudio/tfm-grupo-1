@@ -21,19 +21,50 @@
     ></button>
     <p-popover  #menu>
       <div class="flex flex-col gap-2 p-2 min-w-[150px]">
-        
+
         <!-- Opción 1: Ir a inicio -->
-        <button *ngIf="!isOnRoute('/dashboard')" pButton label="Inicio" (click)="goToHome(); menu.hide()" class="w-full"></button>
+        <button pButton label="Inicio" 
+                (click)="goToHome(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard')" 
+                class="w-full">
+        </button>
+
         <!-- Opción 2: Ir a perfil -->
-        <button *ngIf="!isOnRoute('/dashboard/user-profile')" pButton label="Mi perfil" (click)="goToProfile(); menu.hide()" class="w-full"></button>
+        <button pButton label="Mi perfil" 
+                (click)="goToProfile(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard/user-profile')" 
+                class="w-full">
+        </button>
+
         <!-- Opción 3: Darkmode -->
-        <button pButton *ngIf="!isOnRoute('/dashboard/settings')" (click)="toggleDarkMode(); menu.hide()" [label]="isDarkMode() ? '☀️ Modo claro' : '🌙 Modo oscuro'" class="w-full"></button>
+        <button pButton 
+                (click)="toggleDarkMode(); menu.hide()" 
+                [label]="isDarkMode() ? '☀️ Modo claro' : '🌙 Modo oscuro'" 
+                [hidden]="isOnRoute('/dashboard/settings')" 
+                class="w-full">
+        </button>
+
         <!-- Opción 4: Ir a ajustes -->
-        <button *ngIf="!isOnRoute('/dashboard/settings')" pButton label="Configuración" (click)="goToSettings(); menu.hide()" class="w-full"></button>
+        <button pButton label="Configuración" 
+                (click)="goToSettings(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard/settings')" 
+                class="w-full">
+        </button>
+
         <!-- Opción 5: Ir a Sobre Nosotros -->
-        <button *ngIf="!isOnRoute('/dashboard/settings') && !isOnRoute('/dashboard/about-us')" pButton label="Sobre Nosotros" (click)="goToAboutUs(); menu.hide()" class="w-full"></button>
+        <button pButton label="Sobre Nosotros" 
+                (click)="goToAboutUs(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard/settings') || isOnRoute('/dashboard/about-us')" 
+                class="w-full">
+        </button>
+
         <!-- Opción 6: Cerrar sesión -->
-        <button pButton label="Cerrar sesión" severity="danger" (click)="logout()" class="w-full"></button>
+        <button pButton label="Cerrar sesión" 
+                severity="danger" 
+                (click)="logout()" 
+                class="w-full">
+        </button>
+
       </div>
     </p-popover >
   </div>
