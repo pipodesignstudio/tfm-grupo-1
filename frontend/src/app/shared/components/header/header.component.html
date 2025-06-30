@@ -17,15 +17,7 @@
 
   <!-- Derecha -->
   <div class="text-right">
-    <!-- <button
-      pButton
-      (click)="toggleDarkMode()"
-      class="bg-[#ff7f50] dark:bg-gray-700 text-white px-4 py-2 rounded"
-    >
-      @if (isDarkMode()) { 🌙 Modo oscuro } @else { ☀️ Modo claro }
-    </button>
-    <p-button severity="danger" label="Cerrar sesión" (click)="logout()" /> -->
-
+    
     <!-- Botón que activa el popover -->
     <button
     pButton
@@ -37,11 +29,18 @@
     </button>
     <p-overlayPanel #menu>
       <div class="flex flex-col gap-2 p-2 min-w-[150px]">
-        <!-- Opción 1: Ir a perfil -->
+        
+        <!-- Opción 1: Ir a inicio -->
+        <button *ngIf="!isOnRoute('/dashboard')" pButton label="Inicio" (click)="goToHome(); menu.hide()" class="w-full"></button>
+        <!-- Opción 2: Ir a perfil -->
         <button *ngIf="!isOnRoute('/dashboard/user-profile')" pButton label="Mi perfil" (click)="goToProfile(); menu.hide()" class="w-full"></button>
-        <!-- Opción 2: Ir a ajustes -->
+        <!-- Opción 3: Darkmode -->
+        <button pButton *ngIf="!isOnRoute('/dashboard/settings')" (click)="toggleDarkMode(); menu.hide()" [label]="isDarkMode() ? '☀️ Modo claro' : '🌙 Modo oscuro'" class="w-full"></button>
+        <!-- Opción 4: Ir a ajustes -->
         <button *ngIf="!isOnRoute('/dashboard/settings')" pButton label="Configuración" (click)="goToSettings(); menu.hide()" class="w-full"></button>
-        <!-- Opción 3: Cerrar sesión -->
+        <!-- Opción 5: Ir a ajustes -->
+        <button *ngIf="!isOnRoute('/dashboard/settings') && !isOnRoute('/dashboard/about-us')" pButton label="Sobre Nosotros" (click)="goToAboutUs(); menu.hide()" class="w-full"></button>
+        <!-- Opción 6: Cerrar sesión -->
         <button pButton label="Cerrar sesión" severity="danger" (click)="logout()" class="w-full"></button>
       </div>
     </p-overlayPanel>
