@@ -4,9 +4,11 @@
     <h1 class="text-4xl font-bold pb-4 pt-3">
       ¡Hola
       <span
-        class="underline decoration-yellow-400 decoration-4 underline-offset-4 text-black dark:text-white"
-        >{{ userName }}</span
+        class="relative inline-block text-black dark:text-white underline-animate"
+        [class.underline-in]="underlineIn"
       >
+        {{ userName }}
+      </span>
       !
     </h1>
 

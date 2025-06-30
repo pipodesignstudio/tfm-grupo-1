@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -38,10 +38,10 @@ export class DashboardHomeComponent {
   date = new Date();
 
   links = [
-    { url: '/routines', icon: 'pi pi-list', label: 'Rutinas' },
-    { url: '/goals', icon: 'pi pi-star', label: 'Objetivos' },
-    { url: '/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
-    { url: '/notes', icon: 'pi pi-pencil', label: 'Notas' },
+    { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
+    { url: '/dashboard/objectives', icon: 'pi pi-star', label: 'Objetivos' },
+    { url: '/dashboard/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
+    { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
   children: Child[] = [
@@ -145,5 +145,11 @@ export class DashboardHomeComponent {
 
   toggleTaskComplete(task: RoutineTask) {
     task.completed = !task.completed;
+  }
+
+  underlineIn = false;
+
+  ngOnInit() {
+    setTimeout(() => (this.underlineIn = true), 100); // pequeño delay para ver la animación
   }
 }
