@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import axios from 'axios';
+import { TokenService } from '../../features/auth/services';
 
 
 
@@ -8,18 +9,26 @@ import axios from 'axios';
 })
 export class FamiliaUsuariosService {
   private apiUrl: string = 'http://localhost:3000/api';
+    private readonly tokenService = inject(TokenService);
+
 
   async editarUsuarioFamilia(id_familia: number, id_usuario: number, rol: 'cuidador' | 'admin'): Promise<any> {
     const response = await axios.put<{ data: any }>(
       `${this.apiUrl}/familia/${id_familia}/usuarios/${id_usuario}`,
-      { rol }
+      { rol },
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
     );
     return response.data
   }
 
     async eliminarUsuarioFamilia(id_familia: number, id_usuario: number): Promise<any> {
         const response = await axios.delete<{ data: any }>(
-        `${this.apiUrl}/familia/${id_familia}/usuarios/${id_usuario}`
+        `${this.apiUrl}/familia/${id_familia}/usuarios/${id_usuario}`,
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
         );
         return response.data;
     }
