@@ -1,44 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { IRoutine } from '../interfaces';
-import { firstValueFrom } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class RoutineService {
-  private readonly API_URL = 'http://localhost:3000/api/ninos';
+  private baseUrl = '/api/ninos';
 
   constructor(private http: HttpClient) {}
 
-  getAllRoutines(ninoId: number): Promise<IRoutine[]> {
-    return firstValueFrom(
-      this.http.get<IRoutine[]>(`${this.API_URL}/${ninoId}/rutinas`)
-    );
+  // ✔ Obtener todas las rutinas de un niño
+  getAllRoutines(idNino: number): Observable<IRoutine[]> {
+    return this.http.get<IRoutine[]>(`${this.baseUrl}/${idNino}/rutinas`);
   }
 
-  getRoutineById(ninoId: number, rutinaId: number): Promise<IRoutine> {
-    return firstValueFrom(
-      this.http.get<IRoutine>(`${this.API_URL}/${ninoId}/rutinas/${rutinaId}`)
-    );
+  // ✔ Obtener una rutina específica de un niño
+  getRoutine(idNino: number, idRutina: number): Observable<{ data: IRoutine }> {
+    return this.http.get<{ data: IRoutine }>(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`);
   }
 
-  createRoutine(ninoId: number, rutina: IRoutine): Promise<IRoutine> {
-    return firstValueFrom(
-      this.http.post<IRoutine>(`${this.API_URL}/${ninoId}/rutinas`, rutina)
-    );
+  // ✔ Actualizar una rutina
+  updateRoutine(idNino: number, idRutina: number, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`, data);
   }
 
-  updateRoutine(ninoId: number, rutinaId: number, rutina: IRoutine): Promise<IRoutine> {
-    return firstValueFrom(
-      this.http.put<IRoutine>(`${this.API_URL}/${ninoId}/rutinas/${rutinaId}`, rutina)
-    );
+  // ✔ Eliminar una rutina
+  deleteRoutine(idNino: number, idRutina: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`);
   }
 
-  // ✅ Solución: usando HttpClient en lugar de axios
-  deleteRoutine(ninoId: number, rutinaId: number): Promise<void> {
-    return firstValueFrom(
-      this.http.delete<void>(`${this.API_URL}/${ninoId}/rutinas/${rutinaId}`)
-    );
+  // ✔ Crear una rutina
+  crearRutina(idNino: number, data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${idNino}/rutinas`, data);
   }
 }
