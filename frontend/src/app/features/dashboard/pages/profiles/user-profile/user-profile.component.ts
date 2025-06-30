@@ -134,12 +134,9 @@ export class UserProfileComponent {
     return `${anios} años y ${meses} meses`;
   }
 
-  goToEditarPerfil() {
-    this.router.navigate(['/dashboard/perfil/editar']);
-  }
 
   goToNino(childId: number) {
-    this.router.navigate(['/dashboard/children', childId]);
+    this.router.navigate(['dashboard','children', childId]);
   }
 
   showChildModal() {
