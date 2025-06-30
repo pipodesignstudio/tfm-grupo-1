@@ -1,3 +1,4 @@
+import { IInvitation } from './../../../../../shared/interfaces/iinvitation.interface';
 import { UsersService } from '../../../../../shared/services/users.service';
 import { NgClass } from '@angular/common';
 import {
@@ -22,6 +23,7 @@ import { IUserFromBackend } from '../../../../../shared/interfaces/iuser-from-ba
 import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
 import { MessageModalComponent } from '../../../../../components/message-modal/message-modal.component';
 import { UserFormComponent } from '../../../../../components/user-form/user-form.component';
+import { InvitationsService } from '../../../../../shared/services/invitations.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -49,6 +51,8 @@ export class UserProfileComponent {
   calendarVisible = signal(true);
 
   familiaUsuariosService = inject(FamiliaUsuariosService);
+
+  invitationsService = inject(InvitationsService)
 
   userService = inject(UsersService);
   user = this.userService.user();
@@ -193,10 +197,33 @@ export class UserProfileComponent {
       .catch((error) => {
         console.error('Error al añadir niño:', error);
       });
-  }
+  } 
 
-  enviarInvitacion(familiar: IFamiliaUsuario) {
+
+  enviarInvitacion(familiar: Partial<IInvitation>) {
+
     console.log('Enviando invitación a familiar:', familiar);
+    // Solo permitir roles válidos: 'admin' o 'cuidador'
+    const allowedRoles: Array<'admin' | 'cuidador'> = ['admin', 'cuidador'];
+    const rol: 'admin' | 'cuidador' = allowedRoles.includes(familiar.rol as any)
+      ? (familiar.rol as 'admin' | 'cuidador')
+      : 'cuidador';
+
+    // Verificar que el emailDestinatario esté definido
+    if (!familiar.emailDestinatario) {
+      console.error('El emailDestinatario es obligatorio para enviar la invitación');
+      return;
+    }
+
+    this.invitationsService.sendInvitationUser({
+      id_familia: this.familiesStore.familiaSeleccionada()?.id || 0,
+      emailDestinatario: familiar.emailDestinatario,
+      rol, // Solo pasa roles permitidos
+    }).then(() => {
+      console.log('Invitación enviada correctamente');
+    }).catch((error: any) => {
+      console.error('Error al enviar invitación:', error);
+    });
   }
 
   modalEliminarVisible = false;
@@ -295,6 +322,18 @@ export class UserProfileComponent {
     this.userService.editUser(userData).then((result) => {
       if (result?.success) {
         console.log('Usuario editado con éxito', result);
+        this.closeUserFormModal(); // Cerrar el modal después de editar
+        console.log(this.user) // Actualizar la información del usuario
+        if (this.user) {
+          this.user = {
+            ...this.user,
+            nick: userData.nick ?? this.user.nick,
+            nombre: userData.nombre ?? this.user.nombre,
+            apellido: userData.apellido ?? this.user.apellido,
+            
+          };
+        }
+        this.changeDetector.detectChanges();
       } else {
         console.error('Error al editar el usuario:', result?.message);
       }

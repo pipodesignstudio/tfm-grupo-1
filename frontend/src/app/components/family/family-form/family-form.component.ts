@@ -41,7 +41,7 @@ export class FamilyFormComponent {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      emailDestinatario: ['', [Validators.required, Validators.email]],
       rol: [null, Validators.required],
     });
   }

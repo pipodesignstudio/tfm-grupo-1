@@ -27,6 +27,7 @@ import { dashboardGuard } from './shared/guards/dashboard.guard';
 import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
 import { Message1Component } from './features/auth/pages/message1/message1.component';
 import { ActivityFormComponent } from './components/activity/activity-form.component';
+import { SettingsFamilyComponent } from './features/dashboard/pages/profiles/settings-family/settings-family.component';
 
 export const routes: Routes = [
   {
@@ -131,6 +132,10 @@ export const routes: Routes = [
         path: 'settings',
         component: SettingsComponent,
         
+      },
+      {
+        path: 'settings-family',
+        component: SettingsFamilyComponent,
       },
       {
         path: 'objectives',

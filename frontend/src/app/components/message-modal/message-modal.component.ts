@@ -6,6 +6,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { SelectModule } from 'primeng/select';
 
+import { ButtonModule } from 'primeng/button';
+
 
 @Component({
   selector: 'app-message-modal',
@@ -16,22 +18,25 @@ import { SelectModule } from 'primeng/select';
     ReactiveFormsModule,
     InputTextModule,
     DropdownModule,
-    SelectModule
+    SelectModule,
+    ButtonModule
   ],
   templateUrl: './message-modal.component.html',
 })
 export class MessageModalComponent {
 
   @Input() message: string = '';
+  @Input() buttonText: string = '';
 
-  @Output() eliminar = new EventEmitter<void>();
+  @Output() button = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
 
 
 
 
-  eliminarButton() {
-    this.eliminar.emit();
+
+  submitButton() {
+    this.button.emit();
   }
 
   cerrarModal() {
