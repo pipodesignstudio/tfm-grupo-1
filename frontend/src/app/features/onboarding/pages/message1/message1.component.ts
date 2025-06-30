@@ -14,7 +14,7 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { AutoFocusModule } from 'primeng/autofocus';
-import { AuthService, TokenService } from '../../services';
+import { AuthService, TokenService } from '../../../auth/services';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
@@ -37,6 +37,6 @@ export class Message1Component {
   constructor(private router: Router) {}
 
   continueToCreateFamily(): void {
-    this.router.navigate(['/auth/create-family']);
+    this.router.navigate(['/onboarding/create-family']);
   }
 }

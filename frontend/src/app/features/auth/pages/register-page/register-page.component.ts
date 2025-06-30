@@ -99,6 +99,6 @@ export class RegisterPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate(['dashboard/message1']);
+    this.router.navigate(['onboarding/message1']);
   }
 }
