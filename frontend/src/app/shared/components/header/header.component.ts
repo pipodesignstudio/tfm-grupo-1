@@ -6,13 +6,15 @@ import { ThemeService } from '../../services';
 import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
 import { ButtonModule } from 'primeng/button';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [LogoComponent, ButtonModule],
+  imports: [CommonModule, LogoComponent, ButtonModule, OverlayPanelModule],
 })
 export class HeaderComponent {
   private router = inject(Router);
@@ -31,19 +33,25 @@ export class HeaderComponent {
     '/dashboard': 'Home',
     '/calendar': 'Calendario',
     '/child-profile': 'Perfil del niño',
-    '/user-profile': 'Mi perfil',
-    '/settings': 'Configuración',
-    '/settings/edit-profile': 'Editar perfil',
+    '/dashboard/user-profile': 'Mi perfil',
+    '/dashboard/settings': 'Configuración',
+    '/dashboard/settings/edit-profile': 'Editar perfil',
     '/about-us': 'Sobre nosotros',
   };
+
+  currentPath: string = '';
 
   constructor() {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        const path = event.urlAfterRedirects;
-        this.pageTitle = this.routeTitles[path] || '';
+        this.currentPath = event.urlAfterRedirects;
+        this.pageTitle = this.routeTitles[this.currentPath] || '';
       });
+  }
+
+  isOnRoute(path: string): boolean {
+  return this.currentPath === path;
   }
 
   goBack() {
@@ -52,9 +60,23 @@ export class HeaderComponent {
 
   logout() {
     this.authService.logOut();
+    this.router.navigate(['/']); // DANI: Redirige después del logout
   }
+  goToProfile() {
+  this.router.navigate(['/dashboard/user-profile']);
+ }
 
   toggleDarkMode() {
     this.themeService.toggleDarkMode();
   }
+
+  goToSettings() {
+  this.router.navigate(['/dashboard/settings']);
+  }
+
+  goToDashboard() {
+  this.router.navigate(['/dashboard']);
+ }
+
+
 }
