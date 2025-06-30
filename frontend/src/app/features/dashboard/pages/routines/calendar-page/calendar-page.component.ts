@@ -34,6 +34,7 @@ import { Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { IChild, IUser } from '../../../../../shared/interfaces';
 import { IFamiliaUsuario } from '../../../../../shared/interfaces/ifamily-users.interface';
+import esLocale from '@fullcalendar/core/locales/es';
 
 
 @Component({
@@ -113,8 +114,7 @@ export class CalendarPageComponent {
     }
   });
 
-  selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
-
+  selectedDate = format(new Date(), 'MMMM, do, EEE'); 
   filtroSeleccionado: number | null = null;
 
   async filtrarEventos() {
@@ -178,6 +178,7 @@ export class CalendarPageComponent {
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
     eventDidMount: this.eventDidMount.bind(this),
+    locale: esLocale,
   });
 
   // Metodo para añadir el dot

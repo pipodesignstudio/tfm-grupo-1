@@ -22,7 +22,7 @@ export const startServer = async (): Promise<void> => {
     console.log('✅ Conectado a la base de datos MySQL (Prisma)');
 
     // --- Conexión a MongoDB (Mongoose) ---
-    //await connectMongoDB(); 
+    await connectMongoDB(); 
     console.log('✅ Conectado a la base de datos MongoDB (Mongoose)');
 
     app.listen(PORT, () => {

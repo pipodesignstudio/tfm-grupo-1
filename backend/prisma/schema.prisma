@@ -70,7 +70,7 @@ model ninos {
   fecha_nacimiento        DateTime             @db.Date
   descripcion             String?              @db.Text
   genero                  String?              @db.VarChar(45)
-  peso                    Float?
+  peso                    Int?
   altura                  Int?
   actividades             actividades[]
   alergias                alergias[]

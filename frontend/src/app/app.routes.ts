@@ -100,8 +100,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    canActivate: [authGuard],
-    canActivateChild: [dashboardGuard],
+    // canActivate: [authGuard],
+    // canActivateChild: [dashboardGuard],
     children: [
       {
         path: '',
@@ -150,12 +150,12 @@ export const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'create-family',
+        redirectTo: '',
         pathMatch: 'full',
       },
     ],
   },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  { path: '**', redirectTo: 'landing', pathMatch: 'full' },
 ];
 
 @NgModule({

@@ -18,14 +18,13 @@ services:
 
   # Nueva instancia de MongoDB
   mongodb:
-    image: mongo:latest 
-    container_name: nidodb_mongo 
-    restart: always 
+    image: mongo:latest
+    container_name: nidodb_mongo
+    restart: always
     ports:
-      - "27017:27017" 
+      - "27017:27017"
     volumes:
       - ./db/data/mongodb:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root_mongo_password
-      MONGO_INITDB_DATABASE: nidodb_mongo 
+      MONGO_INITDB_ROOT_PASSWORD: root_mongo_password 
