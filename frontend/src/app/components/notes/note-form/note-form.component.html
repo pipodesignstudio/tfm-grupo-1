@@ -19,18 +19,12 @@
         placeholder="Selecciona Niño"></p-select>
 
       <div class="flex justify-end gap-2 mt-4 shrink-0">
-        <button type="button" (click)="cerrarModal()"
-          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300">
-          Cancelar
-        </button>
-        <button type="submit" [disabled]="form.invalid"
-          class="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500">
-          @if (editMode) {
-          Actualizar Nota
-          } @else {
-          Guardar Nota
-          }
-        </button>
+        <p-button label="Cancelar" (onClick)="cerrarModal()" severity="secondary"/>
+          <p-button
+            [disabled]="form.invalid"
+            severity="primary"
+            [label]="editMode ? 'Actualizar Nota' : 'Guardar Nota'"
+          />
       </div>
     </form>
   </div>

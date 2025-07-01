@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
@@ -14,7 +15,8 @@ import { INote } from '../../../shared/interfaces/inote.interface';
     ReactiveFormsModule,
     InputTextModule,
     TextareaModule,
-    SelectModule
+    SelectModule,
+    ButtonModule
   ],
   templateUrl: './note-form.component.html',
   styleUrls: ['./note-form.component.css'],
