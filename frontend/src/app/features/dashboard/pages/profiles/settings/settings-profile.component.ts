@@ -9,6 +9,7 @@ import { ThemeService } from '../../../../../shared/services/theme.service';
 
 import { UserFormComponent } from '../../../../../components/user-form/user-form.component';
 import { UsersService } from '../../../../../shared/services/users.service';
+import { AuthService } from '../../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -17,6 +18,8 @@ import { UsersService } from '../../../../../shared/services/users.service';
 })
 export class SettingsComponent {
   private themeService = inject(ThemeService);
+    private authService = inject(AuthService);
+  
   isDarkMode = this.themeService.darkTheme;
 
   darkMode = true;
@@ -34,7 +37,7 @@ export class SettingsComponent {
   ) {}
 
   logout() {
-    console.log('Logging out...');
+    this.authService.logOut();
     this.router.navigate(['/']);
   }
 
@@ -103,7 +106,7 @@ export class SettingsComponent {
       icon: 'pi pi-info-circle',
       label: 'Sobre Nosotros',
       hasArrow: true,
-      onClick: () => this.router.navigate(['/about-us']),
+      onClick: () => this.router.navigate(['dashboard','about-us']),
     },
     {
       icon: 'pi pi-question-circle',
@@ -126,22 +129,36 @@ export class SettingsComponent {
     this.userService.editUser(userData).then((result) => {
       if (result?.success) {
         console.log('Usuario editado con éxito', result);
-        this.closeUserFormModal(); // Cerrar el modal después de editar
-        console.log('Usuario editado con éxito', result);
-        this.closeUserFormModal(); // Cerrar el modal después de editar
         console.log(this.userInfo); // Actualizar la información del usuario
+        const img_usuario_editado = userData.img_perfil;
         if (this.userInfo) {
           this.userInfo = {
             ...this.userInfo,
             nick: userData.nick ?? this.userInfo.nick,
             nombre: userData.nombre ?? this.userInfo.nombre,
             apellido: userData.apellido ?? this.userInfo.apellido,
+            img_perfil: typeof img_usuario_editado === 'string'
+              ? this.base64ToUint8Array(img_usuario_editado)
+              : (img_usuario_editado ?? this.userInfo.img_perfil),
           };
         }
-        this.changeDetector.detectChanges(); // Asegurarse de que los cambios se reflejen en la vista
+        
+
+
+        this.closeUserFormModal(); // Cerrar el modal después de editar
+        this.changeDetector.detectChanges();
       } else {
         console.error('Error al editar el usuario:', result?.message);
       }
     });
+  }
+
+  private base64ToUint8Array(data: string): Uint8Array {
+    if (!data) return new Uint8Array();
+    // Si viene como "data:image/jpeg;base64,....", quita el prefijo
+    const base64 = data.includes(',') ? data.split(',')[1] : data;
+
+    const binary = atob(base64); // decodifica Base‑64
+    return Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
   }
 }
