@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,7 +19,7 @@ import { INote } from '../../../shared/interfaces/inote.interface';
   templateUrl: './note-form.component.html',
   styleUrls: ['./note-form.component.css'],
 })
-export class NoteFormComponent implements OnInit {
+export class NoteFormComponent implements OnChanges {
   @Input() notaInfo: INote | null = null;
   @Input() children: { label: string; value: number }[] = [];
 
@@ -30,19 +30,23 @@ export class NoteFormComponent implements OnInit {
   form!: FormGroup;
   editMode = false;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) {}
 
-  ngOnInit(): void {
-    this.editMode = !!this.notaInfo;
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('notaInfo' in changes || 'children' in changes) {
+      this.editMode = !!this.notaInfo;
 
-    this.form = this.fb.group({
-      titulo: [this.notaInfo?.titulo ?? '', Validators.required],
-      texto: [this.notaInfo?.texto ?? '', Validators.required],
-      ninos_id: [this.notaInfo?.ninos_id ?? null, Validators.required],
-    });
-
-    if (this.editMode) {
-      this.form.get('ninos_id')?.disable();
+      this.form = this.fb.group({
+        titulo: [this.notaInfo?.titulo ?? '', Validators.required],
+        texto: [this.notaInfo?.texto ?? '', Validators.required],
+        ninos_id: this.fb.control(
+          {
+            value: this.notaInfo?.ninos_id ?? null,
+            disabled: this.editMode
+          },
+          Validators.required
+        )
+      });
     }
   }
 

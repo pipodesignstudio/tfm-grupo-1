@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { INote } from '../../../../shared/interfaces/inote.interface';
 import { NotesService } from '../../../../shared/services/notes.service';
@@ -52,8 +52,9 @@ export class NotesPageComponent implements OnInit {
     private childService: ChildService,
     private familiesStore: FamiliesStore,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
-  ) { }
+    private confirmationService: ConfirmationService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.notesService.notes$.subscribe((notes) => {
@@ -95,6 +96,12 @@ export class NotesPageComponent implements OnInit {
     });
   }
 
+  private mostrarFormulario(note: INote | null): void {
+    this.noteToEdit = note;
+    this.showForm = true;
+    this.cdr.detectChanges();
+  }
+
   async openNewNoteForm(): Promise<void> {
     const familia = this.familiesStore.familiaSeleccionada();
     if (!familia) return;
@@ -106,8 +113,7 @@ export class NotesPageComponent implements OnInit {
         value: Number(child.id),
       }));
 
-      this.noteToEdit = null;
-      this.showForm = true;
+      this.mostrarFormulario(null);
     } catch (error) {
       console.error('Error al cargar niños:', error);
     }
@@ -124,8 +130,7 @@ export class NotesPageComponent implements OnInit {
         value: Number(child.id),
       }));
 
-      this.noteToEdit = note;
-      this.showForm = true;
+      this.mostrarFormulario(note);
     } catch (error) {
       console.error('Error al cargar niños:', error);
     }

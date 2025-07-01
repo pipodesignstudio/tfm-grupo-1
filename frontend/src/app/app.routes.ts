@@ -173,7 +173,7 @@ export const routes: Routes = [
         component: RoutineListPageComponent,
       },
       {
-        path: 'notas',
+        path: 'notes',
         component: NotesPageComponent,
       },
       {
