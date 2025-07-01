@@ -18,8 +18,8 @@ const app = express();
 
 app.use(cors(corsConfig))
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiDocsConfig));

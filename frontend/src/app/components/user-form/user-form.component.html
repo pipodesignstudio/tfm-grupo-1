@@ -19,9 +19,9 @@
       class="flex flex-col gap-4  overflow-y-auto grow pr-1 scroll-invisible"
     >
       @if (tipo === 'edit') {
-
+        <div class="flex justify-center align-middle">
       <div
-        class="profile-picture-section flex justify-center mb-4 align-middle"
+        class="profile-picture-section flex justify-center  align-middle w-32 h-32 rounded-full overflow-hidden"
       >
         <input
           type="file"
@@ -32,13 +32,13 @@
           id="img_perfil"
         />
         <div
-          class="profile-picture-placeholder cursor-pointer"
+          class="profile-picture-placeholder cursor-pointer flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full"
           (click)="fileInput.click()"
         >
           <img
             [src]="
               profileImageUrl
-                ? profileImageUrl
+                ? imgFromDB ? formatImgPerfil(profileImageUrl) : profileImageUrl
                 : 'https://img.icons8.com/?size=40&id=85103&format=png&color=' +
                   (isDarkMode() ? 'ffffff' : '000000')
             "
@@ -46,6 +46,7 @@
             class="profile-image"
           />
         </div>
+      </div>
       </div>
       } @if (tipo !== 'login') {
       <div class="flex flex-col">

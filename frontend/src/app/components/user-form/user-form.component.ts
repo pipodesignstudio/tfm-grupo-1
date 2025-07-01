@@ -22,6 +22,7 @@ import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
 import { Router } from '@angular/router';
 import { ThemeService } from '../../shared/services/theme.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-form',
@@ -57,19 +58,26 @@ export class UserFormComponent implements OnInit {
 
   private themeService = inject(ThemeService);
   isDarkMode = this.themeService.darkTheme;
+  imgFromDB: boolean = false;
+  base64String: string = '';
 
   constructor(
     private router: Router,
     private changeDetector: ChangeDetectorRef,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
     this.createForm();
     if (this.tipo === 'edit' && this.userInfo) {
+      console.log(this.userInfo);
       this.form.patchValue(this.userInfo);
       this.form.get('email')?.disable();
-      this.profileImageUrl = this.userInfo.imagen;
+      if(this.userInfo.img_perfil) {
+        this.imgFromDB = true;
+      }
+      this.profileImageUrl = this.userInfo.img_perfil;
     }
   }
 
@@ -126,6 +134,10 @@ export class UserFormComponent implements OnInit {
 
     const value = { ...this.form.value };
 
+    if(this.tipo === 'edit' && this.imgFromDB) {
+      value.img_perfil = this.base64String;
+    }
+
     if (this.tipo === 'login') {
       this.login.emit(value);
     } else if (this.tipo === 'register') {
@@ -133,11 +145,12 @@ export class UserFormComponent implements OnInit {
       this.register.emit(value);
     } else if (this.tipo === 'edit') {
       console.log('value', value);
-      this.edit.emit(this.form.value);
+      this.edit.emit(value);
     }
   }
 
   onFileSelected(event: Event) {
+    this.imgFromDB = false;
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
 
@@ -146,12 +159,22 @@ export class UserFormComponent implements OnInit {
       reader.onload = () => {
         this.profileImageUrl = reader.result as string;
 
-        const base64Data = (reader.result as string).split(',')[1]; 
+        const base64Data = (reader.result as string).split(',')[1];
         this.form.patchValue({ img_perfil: base64Data });
         this.changeDetector.detectChanges();
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  formatImgPerfil(img: string | Uint8Array | null | undefined): SafeUrl | null {
+    if (!img) return null;
+
+    const byteArray = Object.values(img) as number[];
+    const uint8Array = new Uint8Array(byteArray);
+    this.base64String = btoa(String.fromCharCode(...uint8Array));
+    const imgURL = `data:image/jpeg;base64,${this.base64String}`;
+    return this.sanitizer.bypassSecurityTrustUrl(imgURL);
   }
 
   cerrarModal() {

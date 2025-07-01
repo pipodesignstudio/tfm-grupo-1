@@ -82,7 +82,6 @@ export class UserProfileComponent {
     if (familia == null || this.user == null) return;
 
     try {
-
       console.log('familia seleccionada:', this.user);
       // Cargar los niños de la familia seleccionada
       this.children = await this.childService.getChildrenByFamily(
@@ -95,10 +94,19 @@ export class UserProfileComponent {
         String(familia.id)
       );
 
-      this.rolFamilia =
+      const usuarioLogeado =
         this.usersFamily.find(
           (miembro) => miembro.usuarios.email === this.user?.email
-        )?.rol || null;
+        );
+
+      this.rolFamilia = usuarioLogeado?.rol || null;
+
+      if (usuarioLogeado) {
+        this.usersFamily = this.usersFamily.filter(
+          (miembro) => miembro.usuarios.email !== this.user?.email
+        );
+        this.usersFamily.push(usuarioLogeado);
+      }
 
       this.filtroOpciones = this.children.map((child) => ({
         label: child.nombre,
@@ -344,20 +352,68 @@ export class UserProfileComponent {
     this.userService.editUser(userData).then((result) => {
       if (result?.success) {
         console.log('Usuario editado con éxito', result);
-        this.closeUserFormModal(); // Cerrar el modal después de editar
         console.log(this.user); // Actualizar la información del usuario
+        const img_usuario_editado = userData.img_perfil;
         if (this.user) {
           this.user = {
             ...this.user,
             nick: userData.nick ?? this.user.nick,
             nombre: userData.nombre ?? this.user.nombre,
             apellido: userData.apellido ?? this.user.apellido,
+            img_perfil: typeof img_usuario_editado === 'string'
+              ? this.base64ToUint8Array(img_usuario_editado)
+              : (img_usuario_editado ?? this.user.img_perfil),
           };
         }
+        //Actualizar el usuario editado en la lista de familiares
+        const copyUserFamily = this.usersFamily.find(
+          (member) => member.usuarios.email === this.user?.email
+        );
+
+        this.usersFamily = this.usersFamily.filter(
+          (member) => member.usuarios.email !== this.user?.email
+        );
+
+
+        
+        this.usersFamily = [...this.usersFamily, {
+          familia_id: copyUserFamily?.familia_id || 0,
+          usuarios_id: copyUserFamily?.usuarios_id || 0,
+          rol: copyUserFamily?.rol || 'cuidador',
+          usuarios: { 
+            id: copyUserFamily?.usuarios.id || 0,
+            apellido: copyUserFamily?.usuarios?.apellido || null,
+            nombre: copyUserFamily?.usuarios?.nombre || null,
+            nick: copyUserFamily?.usuarios?.nick || '',
+            img_perfil: typeof img_usuario_editado === 'string'
+              ? this.base64ToUint8Array(img_usuario_editado)
+              : (img_usuario_editado ?? (this.user?.img_perfil )),
+            email: copyUserFamily?.usuarios?.email || '',
+            contrasena: copyUserFamily?.usuarios?.contrasena || '',
+            primeraSesion: copyUserFamily?.usuarios?.primeraSesion || false,
+            fechaCreacion: copyUserFamily?.usuarios?.fechaCreacion || new Date().toISOString(),
+            borrado: copyUserFamily?.usuarios?.borrado || false,
+            emailVerificado: copyUserFamily?.usuarios?.emailVerificado || false,
+            ...this.user // Asegurarse de que se actualicen los datos del usuario
+          }
+        }];
+
+
+
+        this.closeUserFormModal(); // Cerrar el modal después de editar
         this.changeDetector.detectChanges();
       } else {
         console.error('Error al editar el usuario:', result?.message);
       }
     });
+  }
+
+  private base64ToUint8Array(data: string): Uint8Array {
+    if (!data) return new Uint8Array();
+    // Si viene como "data:image/jpeg;base64,....", quita el prefijo
+    const base64 = data.includes(',') ? data.split(',')[1] : data;
+
+    const binary = atob(base64); // decodifica Base‑64
+    return Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
   }
 }
