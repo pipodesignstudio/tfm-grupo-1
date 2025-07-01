@@ -26,7 +26,7 @@
           </p>
           }
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ this.rolFamilia }}
+            {{ rolFamilia }}
           </p>
         </div>
       </div>
@@ -36,7 +36,7 @@
         @for (child of children; track child) {
         <button
           (click)="selectChild(child)"
-          [class.bg-orange-100]="child === selectedChild"
+          [class.bg-orange-200]="child === selectedChild"
           [class.text-orange-700]="child === selectedChild"
           [class.bg-gray-200]="child !== selectedChild"
           class="rounded-full w-19 h-19 flex items-center justify-center hover:cursor-pointer transition-colors duration-200"
@@ -180,7 +180,7 @@
           {{ user?.email }}
         </p>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Rol: {{ this.rolFamilia == "admin" ? "Administrador" : "Cuidador" }}
+          Rol: {{ rolFamilia == "admin" ? "Administrador" : "Cuidador" }}
         </p>
         <p class="text-sm text-gray-500 dark:text-gray-400">
           Miembro desde {{ formatearFecha(user?.fecha_creacion || "") }}
@@ -281,7 +281,7 @@
       </div>
 
       <div class="grid grid-cols-3 gap-4">
-        @for (member of usersFamily; track member) {
+        @for (member of usersFamily; track member.usuarios) {
         <div
           class="bg-white dark:bg-gray-800 shadow rounded-xl p-4 flex items-center justify-between"
         >
