@@ -16,6 +16,8 @@ const router = Router({ mergeParams: true });
  *     summary: Obtiene todas las alergias de un niño
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -28,7 +30,7 @@ const router = Router({ mergeParams: true });
  */
 router.get(
   '/alergias',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.listarAlergias.bind(controller))
 );
 
@@ -39,6 +41,8 @@ router.get(
  *     summary: Crea una nueva alergia para un niño
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -57,7 +61,7 @@ router.get(
  */
 router.post(
   '/alergias',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(CreateAlergiaDto),
   asyncMiddlewareWrapper(controller.crearAlergia.bind(controller))
 );
@@ -69,6 +73,8 @@ router.post(
  *     summary: Actualiza una alergia existente
  *     tags:
  *       -  Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -92,7 +98,7 @@ router.post(
  */
 router.put(
   '/alergias/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(UpdateAlergiaDto, true),
   asyncMiddlewareWrapper(controller.actualizarAlergias.bind(controller))
 );
@@ -104,6 +110,8 @@ router.put(
  *     summary: Elimina una alergia
  *     tags:
  *       -  Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -121,7 +129,7 @@ router.put(
  */
 router.delete(
   '/alergias/:id',
-  authMiddleware,
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.borrarAlergias.bind(controller))
 );
 
@@ -134,6 +142,8 @@ router.delete(
  *     summary: Crea una nueva enfermedad para un niño
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -159,6 +169,8 @@ router.post('/enfermedades', asyncMiddlewareWrapper(authMiddleware), validationM
  *     summary: Actualiza una enfermedad existente
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -189,6 +201,8 @@ router.patch('/enfermedades/:id', asyncMiddlewareWrapper(authMiddleware), valida
  *     summary: Obtiene todas las enfermedades de un niño
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -208,6 +222,8 @@ router.get('/enfermedades', asyncMiddlewareWrapper(authMiddleware), controller.l
  *     summary: Obtiene una enfermedad por su ID
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -232,6 +248,8 @@ router.get('/enfermedades', asyncMiddlewareWrapper(authMiddleware), controller.l
  *     summary: Elimina una enfermedad
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -258,6 +276,8 @@ router.delete('/enfermedades/:id', asyncMiddlewareWrapper(authMiddleware), contr
  *     summary: Crea una nueva vacuna para un niño
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -283,6 +303,8 @@ router.post('/vacunas', asyncMiddlewareWrapper(authMiddleware), validationMiddle
  *     summary: Actualiza una vacuna existente
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -313,6 +335,8 @@ router.patch('/vacunas/:id', asyncMiddlewareWrapper(authMiddleware), validationM
  *     summary: Elimina una vacuna
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -337,6 +361,8 @@ router.patch('/vacunas/:id', asyncMiddlewareWrapper(authMiddleware), validationM
  *     summary: Obtiene todas las vacunas de un niño
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -356,6 +382,8 @@ router.get('/vacunas', asyncMiddlewareWrapper(authMiddleware), controller.listar
  *     summary: Obtiene una vacuna por su ID
  *     tags:
  *       - Salud
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino

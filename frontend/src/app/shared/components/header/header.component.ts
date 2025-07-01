@@ -1,23 +1,23 @@
 import { Component, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { Location } from '@angular/common';
 import { ThemeService } from '../../services';
 import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
 import { ButtonModule } from 'primeng/button';
+import { PopoverModule } from 'primeng/popover';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [LogoComponent, ButtonModule],
+  imports: [CommonModule, LogoComponent, ButtonModule, PopoverModule],
 })
 export class HeaderComponent {
   private router = inject(Router);
   private themeService = inject(ThemeService);
-  private location = inject(Location);
   private authService = inject(AuthService);
 
   isDarkMode = this.themeService.darkTheme;
@@ -28,33 +28,54 @@ export class HeaderComponent {
   private routeTitles: { [key: string]: string } = {
     '/create-family': 'Crear familia',
     '/my-family': 'Mi familia',
-    '/dashboard': 'Home',
+    '/dashboard': 'Inicio',
     '/calendar': 'Calendario',
     '/child-profile': 'Perfil del niño',
-    '/user-profile': 'Mi perfil',
-    '/settings': 'Configuración',
-    '/settings/edit-profile': 'Editar perfil',
-    '/about-us': 'Sobre nosotros',
+    '/dashboard/user-profile': 'Mi perfil',
+    '/dashboard/settings': 'Configuración',
+    '/dashboard/settings/edit-profile': 'Editar perfil',
+    '/dashboard/about-us': 'Sobre nosotros',
   };
+
+  currentPath: string = '';
 
   constructor() {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        const path = event.urlAfterRedirects;
-        this.pageTitle = this.routeTitles[path] || '';
+        this.currentPath = event.urlAfterRedirects;
+        this.pageTitle = this.routeTitles[this.currentPath] || '';
       });
   }
 
-  goBack() {
-    this.location.back();
+  isOnRoute(path: string): boolean {
+    return this.currentPath === path;
   }
 
   logout() {
     this.authService.logOut();
+    this.router.navigate(['/']);
   }
 
+  goToProfile() {
+    console.log('Navegando a perfil');
+    this.router.navigate(['/dashboard/user-profile']);
+  }
+
+  goToHome() {
+  this.router.navigate(['/dashboard']);
+ }
+ 
   toggleDarkMode() {
     this.themeService.toggleDarkMode();
   }
+
+  goToSettings() {
+    this.router.navigate(['/dashboard/settings']);
+  }
+
+  goToAboutUs() {
+  this.router.navigate(['/dashboard/about-us']);
+ }
+
 }

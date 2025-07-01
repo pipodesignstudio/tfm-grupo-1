@@ -1,1 +1,114 @@
-<p>dashboard-home works!</p>
+<div class="p-4 max-w-xl mx-auto md:max-w-6xl space-y-6">
+  <!-- Saludo -->
+  <div class="flex flex-col items-start">
+    <h1 class="text-4xl font-bold pb-4 pt-3">
+      ¡Hola
+      <span
+        class="relative inline-block text-black dark:text-white underline-animate"
+        [class.underline-in]="underlineIn"
+      >
+        {{ userName }}
+      </span>
+      !
+    </h1>
+
+    <span class="text-gray-500">{{ date | date : "fullDate" }}</span>
+  </div>
+
+  <!-- Rutina -->
+  <div class="relative flex items-center md:justify-center">
+    <!-- Flecha izquierda -->
+    <button
+      class="p-2 pr-6"
+      (click)="previousChild()"
+      [disabled]="children.length <= 1"
+      aria-label="Niño anterior"
+    >
+      <i class="pi pi-chevron-left"></i>
+    </button>
+
+    <div class="flex-1">
+      <div class="mb-8">
+        <img
+          [src]="children[activeChild].photoUrl"
+          [alt]="children[activeChild].name + ' photo'"
+          class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto"
+        />
+        <h2 class="text-xl font-semibold mb-6 text-center">
+          Rutina de {{ children[activeChild].name }}
+        </h2>
+        <ul class="w-full space-y-2">
+          @for (task of children[activeChild].routine; track $index) {
+          <li
+            class="flex items-center px-3 py-2 rounded-lg shadow-sm transition-all duration-300 group bg-white dark:bg-gray-700"
+            [class.opacity-60]="task.completed"
+            [@fadeIn]
+          >
+            <!-- Emoji -->
+            <span
+              class="w-12 h-12 mr-3 rounded-full flex items-center justify-center bg-white border-4 dark:bg-gray-400"
+              [ngClass]="getTaskColorClass(task.type)"
+            >
+              @if (task.icon.startsWith('pi')) {
+              <i [class]="task.icon + ' text-xl'"></i>
+              } @else {
+              <span class="text-2xl">{{ task.icon }}</span>
+              }
+            </span>
+
+            <!-- Nombre de la tarea -->
+            <span
+              class="flex-1 text-gray-900 dark:text-white"
+              [class.line-through]="task.completed"
+            >
+              {{ task.label }}
+            </span>
+
+            <!-- Hora -->
+            <span class="font-mono text-sm text-gray-700 w-14 text-right ml-3">
+              {{ task.time }}
+            </span>
+            <!-- Checkbox -->
+            <input
+              type="checkbox"
+              class="mx-3 accent-green-500"
+              [checked]="task.completed"
+              (change)="toggleTaskComplete(task)"
+              aria-label="Marcar como completada"
+            />
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Flecha derecha -->
+    <button
+      class="p-2 pl-6"
+      (click)="nextChild()"
+      [disabled]="children.length <= 1"
+      aria-label="Niño siguiente"
+    >
+      <i class="pi pi-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Enlaces directos -->
+  <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+    @for (link of links; track $index) {
+    <a
+      class="bg-primary hover:bg-[#ff7f50] hover:text-white rounded-xl p-4 flex flex-col justify-between items-start shadow transition dark:bg-gray-800 dark:hover:bg-gray-700 h-24 md:h-40 w-full"
+      [routerLink]="link.url"
+    >
+      <span class="flex-shrink-0">
+        <i [class]="link.icon + ' text-2xl md:text-3xl lg:text-3xl'"></i>
+      </span>
+      <span
+        class="w-full text-right text-base md:text-xl font-semibold tracking-wide"
+      >
+        {{ link.label }}
+      </span>
+    </a>
+    }
+  </div>
+</div>

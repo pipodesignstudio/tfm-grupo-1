@@ -1,1 +1,88 @@
-<p>routine-list-page works!</p>
+<div class="min-h-screen bg-[#C8E6F0] p-6">
+  <div class="max-w-6xl mx-auto">
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-[#3A3A3A]">Rutinas</h1>
+      <button
+        pButton
+        class="bg-[#FF7F50] hover:bg-[#ff9a72] text-white font-semibold transition shadow rounded-lg text-sm px-4 py-2"
+        (click)="nuevaRutina()">
+        <i class="pi pi-plus mr-2"></i>Crear Nueva Rutina
+      </button>
+    </div>
+
+    <!-- Selector de niño -->
+    <p-dropdown
+      class="mb-6 w-full sm:w-1/2"
+      [options]="children"
+      [(ngModel)]="selectedChild"
+      optionLabel="nombre"
+      placeholder="{{ selectedChild && selectedChild.nombre ? selectedChild.nombre : 'Selecciona un niño' }}"
+      (onChange)="cargarRutinasPorNino()"
+      [style]="{ backgroundColor: '#FFFFFF', border: '1px solid #9ED2C5', borderRadius: '0.75rem' }"
+      inputStyleClass="text-[#3A3A3A] px-4 py-2"
+      panelStyleClass="bg-white text-[#3A3A3A] border border-[#9ED2C5] rounded-xl shadow-md"
+      dropdownIcon="pi pi-chevron-down">
+    </p-dropdown>
+
+    <!-- Rutina 1 -->
+    <div class="bg-white/90 rounded-3xl p-6 mb-8 shadow-xl border border-[#9ED2C5]/40">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h2 class="text-2xl font-bold text-[#3A3A3A]">{{ rutinas[0].nombre }}</h2>
+          <p class="text-sm text-[#3A3A3A] mt-1">{{ rutinas[0].descripcion }}</p>
+          <p class="text-sm text-[#9ED2C5] mt-2 font-medium">{{ formatearFrecuencia(rutinas[0].frecuencia) }}</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="text-[#9ED2C5] hover:underline" (click)="editarRutina(rutinas[0].id)">Editar</button>
+          <button class="text-red-500 hover:underline" (click)="eliminarRutina(rutinas[0].id)">Eliminar</button>
+        </div>
+      </div>
+
+      <ul class="space-y-3 mt-3">
+        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+          <span class="text-[#3A3A3A]">{{ rutinas[0].actividades[0].titulo }}</span>
+          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[0].actividades[0].hora_inicio) }}</span>
+        </li>
+        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+          <span class="text-[#3A3A3A]">{{ rutinas[0].actividades[1].titulo }}</span>
+          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[0].actividades[1].hora_inicio) }}</span>
+        </li>
+        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+          <span class="text-[#3A3A3A]">{{ rutinas[0].actividades[2].titulo }}</span>
+          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[0].actividades[2].hora_inicio) }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Rutina 2 -->
+    <div class="bg-white/90 rounded-3xl p-6 mb-8 shadow-xl border border-[#9ED2C5]/40">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h2 class="text-2xl font-bold text-[#3A3A3A]">{{ rutinas[1].nombre }}</h2>
+          <p class="text-sm text-[#3A3A3A] mt-1">{{ rutinas[1].descripcion }}</p>
+          <p class="text-sm text-[#9ED2C5] mt-2 font-medium">{{ formatearFrecuencia(rutinas[1].frecuencia) }}</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="text-[#9ED2C5] hover:underline" (click)="editarRutina(rutinas[1].id)">Editar</button>
+          <button class="text-red-500 hover:underline" (click)="eliminarRutina(rutinas[1].id)">Eliminar</button>
+        </div>
+      </div>
+
+      <ul class="space-y-3 mt-3">
+        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+          <span class="text-[#3A3A3A]">{{ rutinas[1].actividades[0].titulo }}</span>
+          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[1].actividades[0].hora_inicio) }}</span>
+        </li>
+        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+          <span class="text-[#3A3A3A]">{{ rutinas[1].actividades[1].titulo }}</span>
+          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[1].actividades[1].hora_inicio) }}</span>
+        </li>
+        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+          <span class="text-[#3A3A3A]">{{ rutinas[1].actividades[2].titulo }}</span>
+          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[1].actividades[2].hora_inicio) }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

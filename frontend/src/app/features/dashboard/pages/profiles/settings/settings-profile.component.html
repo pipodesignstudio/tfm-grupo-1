@@ -1,84 +1,99 @@
 <div class="min-h-screen">
-  
+  <div
+    class="max-w-md mx-auto dark:bg-gray-700 bg-white mt-4 rounded-lg shadow-sm"
+  >
+    <!-- General Section -->
+    <div class="p-6">
+      <h2
+        class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+      >
+        General
+      </h2>
 
-    <div class="max-w-md mx-auto dark:bg-gray-700 bg-[#9ed2c5] mt-4 rounded-lg shadow-sm">
-      <!-- General Section -->
-      <div class="p-6">
-        <h2 class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4">
-          General
-        </h2>
-  
-        @for (item of settingsItems; track item; let idx = $index) {
+      @for (item of settingsItems; track item; let idx = $index) {
+      <div
+        class="flex items-center justify-between py-4 cursor-pointer -mx-2 px-2 rounded-md transition-colors"
+        (click)="!item.hasToggle && item.onClick?.()"
+      >
+        <div class="flex items-center space-x-3">
           <div
-            class="flex items-center justify-between py-4  cursor-pointer  -mx-2 px-2 rounded-md transition-colors "
-            (click)="!item.hasToggle && item.onClick?.()"
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300"
           >
-            <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
-                <i [class]="item.icon + ' text-gray-600 text-sm'"></i>
-              </div>
-              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ item.label }}</span>
-            </div>
-  
-            <div class="flex items-center space-x-2">
-              @if (item.hasToggle) {
-                <p-inputSwitch
-                  [ngModel]="item.toggleValue"
-                  (onChange)="item.onToggle?.()"
-                ></p-inputSwitch>
-              }
-              @if (item.hasArrow) {
-                <i class="pi pi-chevron-right text-gray-400 text-sm"></i>
-              }
-            </div>
+            <i [class]="item.icon + ' text-gray-700 text-sm'"></i>
           </div>
-  
-          
-             @if (idx < aboutItems.length - 1) {
-            <div class="h-px bg-gray-100 mx-2"></div>
-          } 
-          
-        }
+          <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+            item.label
+          }}</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          @if (item.hasToggle) {
+          <p-inputSwitch
+            [ngModel]="item.toggleValue"
+            (onChange)="item.onToggle?.()"
+          ></p-inputSwitch>
+          } @if (item.hasArrow) {
+          <i class="pi pi-chevron-right text-gray-400 text-sm"></i>
+          }
+        </div>
       </div>
-  
-      <!-- About Section -->
-      <div class="px-6 pb-6">
-        <h2 class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4">
-          About Us
-        </h2>
-  
-        @for (item of aboutItems; track item; let idx = $index) {
-          <div
-            class="flex items-center justify-between py-4 cursor-pointer  hover:bg-gray-50 -mx-2 px-2 rounded-md transition-colors"
-            (click)="item.onClick?.()"
-          >
-            <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 flex items-center justify-center rounded-full  bg-gray-100">
-                <i [class]="item.icon + ' text-gray-600 text-sm'"></i>
-              </div>
-              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ item.label }}</span>
-            </div>
-            <i class="pi pi-chevron-right text-gray-400 text-sm"></i>
-          </div>
-  
-          @if (idx < aboutItems.length - 1) {
-            <div class="h-px bg-gray-100 mx-2"></div>
-          } 
-        }
-      </div>
-  
-      <!-- Logout -->
-      <div class="px-6 pb-6">
-        <div class="h-px bg-gray-200 mb-4"></div>
-        <button
-          class="w-full flex items-center text-red-600 hover:text-red-700 hover:bg-red-50 font-medium p-2 rounded"
-          (click)="logout()"
-        >
-          <i class="pi pi-sign-out mr-3 text-sm"></i>
-          Cerrar sesión
-        </button>
-      </div>
+
+      @if (idx < aboutItems.length - 1) {
+      <div class="h-px bg-gray-300 mx-2"></div>
+      } }
     </div>
-  
-    <div class="h-20"></div>
+
+    <!-- About Section -->
+    <div class="px-6 pb-6">
+      <h2
+        class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+      >
+        About Us
+      </h2>
+
+      @for (item of aboutItems; track item; let idx = $index) {
+      <div
+        class="flex items-center justify-between py-4 cursor-pointer  -mx-2 px-2 rounded-md transition-colors"
+        (click)="item.onClick?.()"
+      >
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300"
+          >
+            <i [class]="item.icon + ' text-gray-600 text-sm'"></i>
+          </div>
+          <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+            item.label
+          }}</span>
+        </div>
+        <i class="pi pi-chevron-right text-gray-400 text-sm"></i>
+      </div>
+
+      @if (idx < aboutItems.length - 1) {
+      <div class="h-px bg-gray-300 mx-2"></div>
+      } }
+    </div>
+
+    <!-- Logout -->
+    <div class="px-6 pb-6">
+      <div class="h-px bg-gray-300 mb-4"></div>
+      <button
+        class="w-full flex items-center text-red-600  font-medium p-2 rounded"
+        (click)="logout()"
+      >
+        <i class="pi pi-sign-out mr-3 text-sm"></i>
+        Cerrar sesión
+      </button>
+    </div>
   </div>
+
+  <div class="h-20"></div>
+  @if (showUserFormModal) {
+  <app-user-form
+    [tipo]="'edit'"
+    [userInfo]="this.userInfo"
+    (cerrar)="closeUserFormModal()"
+    (edit)="editarUsuario($event)"
+  ></app-user-form>
+  }
+</div>

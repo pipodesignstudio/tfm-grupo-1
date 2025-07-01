@@ -698,9 +698,11 @@ export const NidoTheme = definePreset(Aura, {
         },
         dark: {
           primary: {
-            hover: {
-              color: '{surface.0}',
-            },
+            color: '#FFFFFF',
+            background: '#364153',
+            width: 'auto',
+            borderColor: 'none',
+            hover: {},
           },
         },
       },

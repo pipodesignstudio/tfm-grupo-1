@@ -5,6 +5,7 @@ import { TokenService } from '../../features/auth/services';
 import { IUserFromBackend } from '../interfaces/iuser-from-backend.interface';
 import { Router } from '@angular/router';
 import { IUsersFamilies } from '../interfaces/iusers-families.interface';
+import { IUser } from '../interfaces';
 
 interface UserApiResponse {
   success: boolean;
@@ -165,14 +166,35 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
       },
     });
 
-    console.log(response)
-
-    return response.data.data.familias; // ✅ Esto es IUsersFamilies[]
+    return response.data.data.familias;
   } catch (error) {
     console.error('Error al obtener las familias del usuario:', error);
     return null;
   }
 }
 
+public async editUser(userData: Partial<IUser>) {
+  try {
+    const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/update`, userData, {
+      headers: {
+        Authorization: `Bearer ${this.tokenService.token()}`,
+      },
+    });
+
+    if (!response.data.success) {
+      
+      // Optionally update the local user state even on failure, if needed:
+      this._user.set(null);
+      this.getUser(); // Refresh user data
+      return { success: false, message: response.data.message };
+    }
+
+    this._user.set(response.data.data.user);
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    console.error('Error al editar el usuario:', error);
+    return { success: false, message: 'Error al editar el usuario' };
+  }
+}
 
 }

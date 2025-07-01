@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/button';
 export class Mensaje2Component {
   constructor(private router: Router) {}
 
-  continueToCreateRoutine(): void {
-    this.router.navigate(['/auth/create-routine']);
+  continueToDashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 }

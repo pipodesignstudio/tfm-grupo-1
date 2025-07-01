@@ -1,3 +1,4 @@
+import { IInvitation } from './../../../../../shared/interfaces/iinvitation.interface';
 import { UsersService } from '../../../../../shared/services/users.service';
 import { NgClass } from '@angular/common';
 import {
@@ -19,58 +20,25 @@ import { IFamiliaUsuario } from '../../../../../shared/interfaces/ifamily-users.
 import { SelectModule } from 'primeng/select';
 import { IActivity } from '../../../../../shared/interfaces/iactivity.interface';
 import { IUserFromBackend } from '../../../../../shared/interfaces/iuser-from-backend.interface';
+import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
+import { MessageModalComponent } from '../../../../../components/message-modal/message-modal.component';
+import { UserFormComponent } from '../../../../../components/user-form/user-form.component';
+import { InvitationsService } from '../../../../../shared/services/invitations.service';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [AvatarModule, NgClass, ChildFormComponent, FamilyFormComponent],
+  imports: [
+    AvatarModule,
+    NgClass,
+    ChildFormComponent,
+    FamilyFormComponent,
+    MessageModalComponent,
+    UserFormComponent,
+  ],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent {
-  userAs = {
-    name: 'Juan',
-    surname: 'Pérez',
-    nick: 'jperez',
-    rol: 'Administrador',
-    email: 'Juanan@gmail.com',
-    createdAt: '2023-10-01',
-    avatar:
-      'https://www.primefaces.org/cdn/primevue/images/avatar/amyelsner.png',
-  };
-
-  childrenArray = [
-    {
-      id: 1,
-      name: 'Emilio',
-      age: '2 años, 8 meses',
-      fecha_nacimiento: '2021-01-15',
-      altura: 90,
-      peso: 12,
-      genero: 'Masculino',
-      image: 'https://picsum.photos/536/354',
-      descripcion:
-        'Emilio es un niño muy juguetón y alegre. Le encanta correr y jugar con sus juguetes. Es muy cariñoso con su familia y amigos.',
-    },
-    {
-      id: 2,
-      name: 'Lucía',
-      age: '5 años, 1 mes',
-      fecha_nacimiento: '2018-09-10',
-      altura: 110,
-      peso: 18,
-      genero: 'Femenino',
-      image: 'https://picsum.photos/536/354',
-      descripcion:
-        'Lucía es una niña muy curiosa y activa. Le encanta explorar y aprender cosas nuevas. Es muy sociable y le gusta jugar con otros niños.',
-    },
-  ];
-
-  familyMembers = [
-    { name: 'María', role: 'Administrador', color: 'pink' },
-    { name: 'Carlos', role: 'Cuidador', color: 'green' },
-    { name: 'Lucía', role: 'Cuidador', color: 'blue' },
-  ];
-
   childModalVisible = false;
 
   constructor(
@@ -81,6 +49,10 @@ export class UserProfileComponent {
   familiesStore = inject(FamiliesStore);
 
   calendarVisible = signal(true);
+
+  familiaUsuariosService = inject(FamiliaUsuariosService);
+
+  invitationsService = inject(InvitationsService)
 
   userService = inject(UsersService);
   user = this.userService.user();
@@ -106,8 +78,6 @@ export class UserProfileComponent {
     if (familia == null) return;
 
     try {
-      console.log(this.user, 'usuario desde el efecto');
-      
       // Cargar los niños de la familia seleccionada
       this.children = await this.childService.getChildrenByFamily(
         String(familia.id)
@@ -120,13 +90,9 @@ export class UserProfileComponent {
       );
 
       this.rolFamilia =
-        this.usersFamily.find((miembro) => miembro.usuarios.email === this.user?.email)
-          ?.rol || null;
-
-
-      console.log(this.children);
-
-      console.log('usuarios de la familia:', this.usersFamily);
+        this.usersFamily.find(
+          (miembro) => miembro.usuarios.email === this.user?.email
+        )?.rol || null;
 
       this.filtroOpciones = this.children.map((child) => ({
         label: child.nombre,
@@ -168,12 +134,9 @@ export class UserProfileComponent {
     return `${anios} años y ${meses} meses`;
   }
 
-  goToEditarPerfil() {
-    this.router.navigate(['/dashboard/perfil/editar']);
-  }
 
   goToNino(childId: number) {
-    this.router.navigate(['/dashboard/children', childId]);
+    this.router.navigate(['dashboard','children', childId]);
   }
 
   showChildModal() {
@@ -213,23 +176,164 @@ export class UserProfileComponent {
     this.selectedChild = child;
   }
 
-
   addChild(child: Partial<IChild>) {
     console.log('Añadiendo niño:', child);
 
+    this.childService
+      .addChild({
+        ...child,
+        perfiles_aprendizaje_id: 1, // Asignar un perfil de aprendizaje por defecto
+        familia_id: this.familiesStore.familiaSeleccionada()?.id || 0,
+      })
+      .then(() => {
+        console.log('Niño añadido correctamente');
+        console.log(child);
+        this.changeDetector.detectChanges();
+        this.hideChildModal();
+      })
+      .catch((error) => {
+        console.error('Error al añadir niño:', error);
+      });
+  } 
 
-    this.childService.addChild({
-      ...child,
-      perfiles_aprendizaje_id: 1, // Asignar un perfil de aprendizaje por defecto
-      familia_id: this.familiesStore.familiaSeleccionada()?.id || 0,
+
+  enviarInvitacion(familiar: Partial<IInvitation>) {
+
+    console.log('Enviando invitación a familiar:', familiar);
+    // Solo permitir roles válidos: 'admin' o 'cuidador'
+    const allowedRoles: Array<'admin' | 'cuidador'> = ['admin', 'cuidador'];
+    const rol: 'admin' | 'cuidador' = allowedRoles.includes(familiar.rol as any)
+      ? (familiar.rol as 'admin' | 'cuidador')
+      : 'cuidador';
+
+    // Verificar que el emailDestinatario esté definido
+    if (!familiar.emailDestinatario) {
+      console.error('El emailDestinatario es obligatorio para enviar la invitación');
+      return;
+    }
+
+    this.invitationsService.sendInvitationUser({
+      id_familia: this.familiesStore.familiaSeleccionada()?.id || 0,
+      emailDestinatario: familiar.emailDestinatario,
+      rol, // Solo pasa roles permitidos
     }).then(() => {
-      console.log('Niño añadido correctamente');
-      console.log(child)
-      this.changeDetector.detectChanges();
-      this.hideChildModal();
-    }).catch(error => {
-      console.error('Error al añadir niño:', error);
+      console.log('Invitación enviada correctamente');
+    }).catch((error: any) => {
+      console.error('Error al enviar invitación:', error);
     });
+  }
 
+  modalEliminarVisible = false;
+  familiarAEliminarEditar: IFamiliaUsuario | null = null;
+
+  showEditFamilyModal(familiar: IFamiliaUsuario) {
+    console.log('Editando familiar:', familiar);
+    this.familiarAEliminarEditar = familiar;
+    this.familyModalVisible = true;
+  }
+
+  hideEditFamilyModal() {
+    this.familyModalVisible = false;
+    this.familiarAEliminarEditar = null;
+  }
+
+  editarFamiliar(editForm: IFamiliaUsuario) {
+    console.log('Editando familiar:', editForm);
+
+    this.familiaUsuariosService
+      .editarUsuarioFamilia(
+        this.familiesStore.familiaSeleccionada()?.id || 0,
+        this.familiarAEliminarEditar?.usuarios_id || 0,
+        editForm.rol || 'cuidador'
+      )
+      .then(() => {
+        console.log('Familiar editado correctamente');
+        // Actualizar el usuario editado en la lista de familiares
+        const index = this.usersFamily.findIndex(
+          (member) =>
+            member.usuarios_id === this.familiarAEliminarEditar?.usuarios_id
+        );
+        if (index !== -1) {
+          this.usersFamily[index] = { ...this.usersFamily[index], ...editForm };
+        }
+
+        this.hideEditFamilyModal();
+
+        this.changeDetector.detectChanges();
+      })
+      .catch((error) => {
+        console.error('Error al editar familiar:', error);
+      });
+  }
+
+  showModalEliminarFamiliar(familiar: IFamiliaUsuario) {
+    this.familiarAEliminarEditar = familiar;
+    this.modalEliminarVisible = true;
+  }
+
+  hideModalEliminarFamiliar() {
+    this.modalEliminarVisible = false;
+    this.familiarAEliminarEditar = null;
+    this.changeDetector.detectChanges();
+  }
+
+  eliminarFamiliar(familiar: IFamiliaUsuario | null) {
+    if (!familiar) {
+      console.error('No se ha seleccionado un familiar para eliminar');
+      return;
+    }
+    console.log('Eliminando familiar con ID:', familiar);
+
+    this.familiaUsuariosService
+      .eliminarUsuarioFamilia(
+        this.familiesStore.familiaSeleccionada()?.id || 0,
+        familiar.usuarios_id
+      )
+      .then(() => {
+        console.log('Familiar eliminado correctamente');
+        this.familiarAEliminarEditar = null;
+        this.hideModalEliminarFamiliar();
+        // Actualizar la lista de familiares
+        this.usersFamily = this.usersFamily.filter(
+          (member) => member.usuarios_id !== familiar.usuarios_id
+        );
+        this.changeDetector.detectChanges();
+      })
+      .catch((error) => {
+        console.error('Error al eliminar familiar:', error);
+      });
+  }
+
+  showUserFormModal = false;
+
+  openUserFormModal() {
+    this.showUserFormModal = true;
+  }
+
+  closeUserFormModal() {
+    this.showUserFormModal = false;
+  }
+
+  editarUsuario(userData: Partial<IUser>) {
+    console.log('Usuario editado:', userData);
+    this.userService.editUser(userData).then((result) => {
+      if (result?.success) {
+        console.log('Usuario editado con éxito', result);
+        this.closeUserFormModal(); // Cerrar el modal después de editar
+        console.log(this.user) // Actualizar la información del usuario
+        if (this.user) {
+          this.user = {
+            ...this.user,
+            nick: userData.nick ?? this.user.nick,
+            nombre: userData.nombre ?? this.user.nombre,
+            apellido: userData.apellido ?? this.user.apellido,
+            
+          };
+        }
+        this.changeDetector.detectChanges();
+      } else {
+        console.error('Error al editar el usuario:', result?.message);
+      }
+    });
   }
 }

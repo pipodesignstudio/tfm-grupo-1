@@ -7,6 +7,11 @@ import {
 } from "class-validator";
 
 export class UpdateUserDto {
+
+  @IsString({ message: "El nick debe ser una cadena de texto." })
+  @MaxLength(100, { message: "El nick no puede exceder los 100 caracteres." })
+  nick!: string | null;
+
   @IsOptional()
   @IsString({ message: "El nombre debe ser una cadena de texto." })
   @MaxLength(100, { message: "El nombre no puede exceder los 50 caracteres." }) 

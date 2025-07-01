@@ -86,12 +86,26 @@ export class UserService {
     dto: UpdateUserDto
   ): Promise<Omit<IUser, "contrasena" | "id">> {
     const updateData: {
+      nick: string;
       nombre?: string | null;
       apellido?: string | null;
       img_perfil?: Uint8Array | null;
-    } = {};
+    } = {
+      nick: dto.nick ?? "", // El nick es obligatorio en el DTO; fallback to empty string if null
+    };
 
     // Como técnicamente en BBDD puede ser null voy a permitir que pase con undefined
+
+    // Si el nick es null, lo dejamos como está (no lo actualizamos)
+    if (dto.nick === "") {
+      // No hacemos nada, ya que queremos mantener el valor actual
+      const err = new BadRequestError(
+        "El nick no puede ser una cadena vacía.",
+        { error: "BAD_REQUEST" }
+      );
+      throw err;
+    }
+
     if (dto.nombre !== undefined) {
       updateData.nombre = dto.nombre;
     }
@@ -257,7 +271,6 @@ export class UserService {
     }
   }
 
-
   public async checkIfEmailNeedsToBeVerified(id: number): Promise<boolean> {
     try {
       const user = await prisma.usuarios.findUnique({
@@ -299,6 +312,4 @@ export class UserService {
       rol: fu.rol,
     }));
   }
-
-
 }

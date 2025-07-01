@@ -18,7 +18,7 @@ export class CreateRoutineComponent implements OnInit {
   createFromScratch(): void {
     console.log('Navegar a: Crear rutina desde cero (RoutineForm)');
     // Redirige al RoutineFormComponent
-    this.router.navigate(['/dashboard/routine-form']);
+    this.router.navigate(['/dashboard/activity-form']);
   }
 
   choosePredefined(): void {

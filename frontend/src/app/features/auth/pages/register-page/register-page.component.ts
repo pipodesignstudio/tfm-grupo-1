@@ -80,23 +80,6 @@ export class RegisterPageComponent implements OnInit {
     return null;
   }
 
-  // OPCIONAL: Añadir foto de perfil
-  // onFileSelected(event: Event): void {
-  //   const input = event.target as HTMLInputElement;
-  //   if (input.files && input.files[0]) {
-  //     const file = input.files[0];
-  //     const reader = new FileReader();
-
-  //     reader.onload = (e) => {
-  //       this.profileImageUrl = reader.result;
-  //     };
-
-  //     reader.readAsDataURL(file);
-  //   } else {
-  //     this.profileImageUrl = null;
-  //   }
-  // }
-
   async onSubmit(): Promise<void> {
     this.isLoading = true;
     this.errorMessage = '';
@@ -116,6 +99,6 @@ export class RegisterPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate(['dashboard/message1']);
+    this.router.navigate([`auth/verificar/${dto.email}`]);
   }
 }
