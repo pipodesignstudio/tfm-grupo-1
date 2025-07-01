@@ -23,6 +23,8 @@ export class AuthController {
    */
 
   public async register(req: Request, res: Response): Promise<void> {
+    console.log("🚀 Registro de usuario:", req.body);
+    logger.logInfo("Registro de usuario: " + JSON.stringify(req.body));
     const dto: RegisterUserDto = req.body;
 
     const createdUser: IUser = await authService.createUser(dto);

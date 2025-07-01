@@ -42,12 +42,12 @@ export const routes: Routes = [
       {
         path: 'login',
         component: LoginPageComponent,
-        //canActivate: [noAuthGuard],
+        canActivate: [noAuthGuard],
       },
       {
         path: 'register',
         component: RegisterPageComponent,
-        //canActivate: [noAuthGuard],
+        canActivate: [noAuthGuard],
       },
       {
         path: 'message1',
@@ -84,7 +84,7 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     component: OnboardingLayoutComponent,
-    //canActivate: [authGuard, onboardingGuard],
+    canActivate: [authGuard, onboardingGuard],
     children: [
       {
         path: 'complete',
@@ -100,8 +100,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    // canActivate: [authGuard],
-    // canActivateChild: [dashboardGuard],
+    canActivate: [authGuard],
+    canActivateChild: [dashboardGuard],
     children: [
       {
         path: '',
