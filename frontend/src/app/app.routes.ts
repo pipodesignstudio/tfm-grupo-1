@@ -49,7 +49,6 @@ export const routes: Routes = [
         component: RegisterPageComponent,
         canActivate: [noAuthGuard],
       },
-
       {
         path: 'create-routine',
         component: CreateRoutineComponent,
