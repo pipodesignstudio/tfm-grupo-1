@@ -10,14 +10,11 @@
         <!-- Avatar -->
         <div class="w-32 h-32 rounded-full overflow-hidden">
           <img
-            src="{{
-              user?.img_perfil == null ? 'usuario-perfil.png' : user?.img_perfil
-            }}"
+            [src]="formatImgPerfil(user?.img_perfil) || 'usuario-perfil.png'"
             alt="User Avatar"
             class="w-full h-full object-cover"
           />
         </div>
-
         <!-- User info -->
         <div class="leading-tight text-left">
           <p class="text-base font-semibold text-gray-900 dark:text-white">
@@ -44,15 +41,19 @@
           [class.bg-gray-200]="child !== selectedChild"
           class="rounded-full w-19 h-19 flex items-center justify-center hover:cursor-pointer transition-colors duration-200"
         >
-           <span class="text-xs font-medium truncate text-center max-w-[954]">{{ child.nombre }}</span>
+          <span
+            class="text-xs font-medium truncate text-center max-w-[954] dark:text-gray-800"
+            >{{ child.nombre }}</span
+          >
         </button>
-        }
+        } @if (rolFamilia == 'admin') {
         <button
           class="bg-gray-200 hover:bg-gray-300 rounded-full w-19 h-19 flex items-center justify-center hover:cursor-pointer"
           (click)="showChildModal()"
         >
           <i class="pi pi-plus text-gray-700 text-lg"></i>
         </button>
+        }
       </div>
     </div>
 
@@ -69,15 +70,23 @@
           <p class="text-sm font-medium text-gray-900 dark:text-white">
             {{ getEdad(selectedChild.fecha_nacimiento) }}
           </p>
-          <button class="hover:cursor-pointer"
-            (click)="goToNino(selectedChild.id)">
+          <button
+            class="hover:cursor-pointer"
+            (click)="goToNino(selectedChild.id)"
+          >
             <i class="pi pi-search text-gray-600 dark:text-white text-sm"></i>
           </button>
         </div>
 
         <div class="relative mt-4">
           <img
-            [src]="selectedChild.img_perfil ? selectedChild.img_perfil : selectedChild.genero == 'masculino' ? 'nino.png' : 'nina.png'"
+            [src]="
+              selectedChild.img_perfil
+                ? selectedChild.img_perfil
+                : selectedChild.genero == 'masculino'
+                ? 'nino.png'
+                : 'nina.png'
+            "
             alt="Foto del niño"
             class="w-full rounded-xl object-cover"
           />
@@ -85,12 +94,15 @@
         <div
           class="mt-3 flex items-center dark:text-white justify-between ml-2 mr-2"
         >
+          @if(selectedChild.altura) {
           <p><strong>Altura:</strong> {{ selectedChild.altura }} cm</p>
+          } @if(selectedChild.peso) {
           <p><strong>Peso:</strong> {{ selectedChild.peso }} kg</p>
+          }
         </div>
       </div>
     </div>
-    }
+    } @if(rolFamilia == 'admin') {
     <div
       class="bg-[#9ed2c5] dark:bg-gray-700 rounded-2xl shadow p-6 space-y-6 text-center"
     >
@@ -118,26 +130,29 @@
         [ngClass]="getBgColor(member)"
       >
         <span class="text-sm font-medium text-gray-800">
-          {{ member.usuarios.nick }} – {{ member.rol == 'admin' ? 'Administrador' : 'Cuidador' }}
+          {{ member.usuarios.nick }} –
+          {{ member.rol == "admin" ? "Administrador" : "Cuidador" }}
         </span>
+        @if(member.usuarios.email !== user?.email) {
         <div>
-            <button
-              class="text-blue-500 hover:text-blue-700"
-              (click)="showEditFamilyModal(member)"
-            >
-              <i class="pi pi-pen-to-square"></i>
-            </button>
-            <button
-              class="text-red-500 hover:text-red-700 ml-2"
-              (click)="showModalEliminarFamiliar(member)"
-              
-            >
-              <i class="pi pi-trash"></i>
-            </button>
-          </div>
+          <button
+            class="text-blue-500 hover:text-blue-700"
+            (click)="showEditFamilyModal(member)"
+          >
+            <i class="pi pi-pen-to-square"></i>
+          </button>
+          <button
+            class="text-red-500 hover:text-red-700 ml-2"
+            (click)="showModalEliminarFamiliar(member)"
+          >
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+        }
       </div>
       }
     </div>
+    }
   </div>
 
   <!-- Main desktop -->
@@ -149,9 +164,7 @@
         class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md"
       >
         <img
-          src="{{
-            user?.img_perfil == null ? 'usuario-perfil.png' : user?.img_perfil
-          }}"
+          [src]="formatImgPerfil(user?.img_perfil) || 'usuario-perfil.png'"
           alt="Avatar"
           class="w-full h-full object-cover"
         />
@@ -187,12 +200,14 @@
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
           👶 Mis Niños
         </h3>
+        @if(rolFamilia == 'admin') {
         <button
           class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           (click)="showChildModal()"
         >
           + Agregar Niño
         </button>
+        }
       </div>
 
       <div class="grid grid-cols-2 gap-4">
@@ -203,13 +218,7 @@
               <div class="flex items-center gap-4">
                 <div class="relative mt-4">
                   <img
-                    src="{{
-                      child.img_perfil
-                        ? child.img_perfil
-                        : child.genero == 'masculino'
-                        ? 'nino.png'
-                        : 'nina.png'
-                    }}"
+                    [src]="formatImgPerfil(child.img_perfil) || (child.genero == 'masculino' ? 'nino.png' : 'nina.png')"
                     alt="Foto del niño"
                     class="w-50 rounded-xl object-cover"
                   />
@@ -226,15 +235,19 @@
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     Nacimiento: {{ formatearFecha(child.fecha_nacimiento) }}
                   </p>
+                  @if(child.peso) {
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     Peso: {{ child.peso }} kg
                   </p>
+                  } @if(child.altura) {
                   <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Peso: {{ child.altura }} cm
+                    Altura: {{ child.altura }} cm
                   </p>
+                  } @if(child.genero) {
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     Género: {{ child.genero }}
                   </p>
+                  }
                 </div>
               </div>
               @if(child.descripcion) {
@@ -253,6 +266,7 @@
     </div>
 
     <!-- Familia -->
+    @if (rolFamilia == 'admin') {
     <div>
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -272,13 +286,9 @@
           class="bg-white dark:bg-gray-800 shadow rounded-xl p-4 flex items-center justify-between"
         >
           <div class="flex items-center gap-4">
-            <div>
+            <div class="w-15 h-15 rounded-full overflow-hidden">
               <img
-                src="{{
-                  user?.img_perfil == null
-                    ? 'usuario-perfil.png'
-                    : user?.img_perfil
-                }}"
+                [src]="formatImgPerfil(member.usuarios.img_perfil) || 'usuario-perfil.png'"
                 alt="User Avatar"
                 class="w-15 h-15 object-cover"
               />
@@ -292,6 +302,7 @@
               </p>
             </div>
           </div>
+          @if(member.usuarios.email !== user?.email) {
           <div>
             <button
               class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
@@ -302,15 +313,16 @@
             <button
               class="text-red-500 hover:text-red-700 ml-2 hover:cursor-pointer"
               (click)="showModalEliminarFamiliar(member)"
-              
             >
               <i class="pi pi-trash"></i>
             </button>
           </div>
+          }
         </div>
         }
       </div>
     </div>
+    }
 
     <!-- Stats resumen -->
     <div
@@ -319,13 +331,16 @@
       <div>
         <strong>{{ children.length }}</strong> Niños registrados
       </div>
+      @if(rolFamilia == 'admin') {
       <div>
         <strong>{{ usersFamily.length }}</strong> Miembros de familia
       </div>
+      }
     </div>
   </div>
   @if (childModalVisible) {
-  <app-child-form (cerrar)="hideChildModal()"  (addChild)="addChild($event)"> </app-child-form>
+  <app-child-form (cerrar)="hideChildModal()" (addChild)="addChild($event)">
+  </app-child-form>
 
   } @if (familyModalVisible) {
   <app-family-form
@@ -335,17 +350,18 @@
     (editar)="editarFamiliar($event)"
   ></app-family-form>
 
-  }
-
-  @if (modalEliminarVisible) {
+  } @if (modalEliminarVisible) {
   <app-message-modal
-    [message]="'¿Estás seguro de que quieres eliminar a ' + familiarAEliminarEditar?.usuarios?.nick + ' de la familia?'"
-    (eliminar)="eliminarFamiliar(familiarAEliminarEditar)"
+    [message]="
+      '¿Estás seguro de que quieres eliminar a ' +
+      familiarAEliminarEditar?.usuarios?.nick +
+      ' de la familia?'
+    "
+    [buttonText]="'Eliminar'"
+    (button)="eliminarFamiliar(familiarAEliminarEditar)"
     (cerrar)="hideModalEliminarFamiliar()"
   ></app-message-modal>
-  }
-
-   @if (showUserFormModal) {
+  } @if (showUserFormModal) {
   <app-user-form
     [tipo]="'edit'"
     [userInfo]="this.user"

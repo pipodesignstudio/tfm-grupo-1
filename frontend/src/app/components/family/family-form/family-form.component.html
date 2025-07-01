@@ -46,7 +46,12 @@
           [disabled]="form.invalid"
           class="px-4 py-2 rounded-md"
         >
+        @if(editMode) {
+          Editar familiar
+        } 
+        @else {
           Enviar invitación
+        }
         </button>
       </div>
     </form>

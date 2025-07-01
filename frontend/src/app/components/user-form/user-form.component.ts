@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output,
+  Input,
+  OnInit,
+  inject,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,6 +21,7 @@ import { PasswordModule } from 'primeng/password';
 
 import { MessageModule } from 'primeng/message';
 import { Router } from '@angular/router';
+import { ThemeService } from '../../shared/services/theme.service';
 
 @Component({
   selector: 'app-user-form',
@@ -46,10 +55,16 @@ export class UserFormComponent implements OnInit {
   form!: FormGroup;
   profileImageUrl: string | null = null;
 
-  constructor(private router: Router, private fb: FormBuilder) {}
+  private themeService = inject(ThemeService);
+  isDarkMode = this.themeService.darkTheme;
+
+  constructor(
+    private router: Router,
+    private changeDetector: ChangeDetectorRef,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit() {
-
     this.createForm();
     if (this.tipo === 'edit' && this.userInfo) {
       this.form.patchValue(this.userInfo);
@@ -76,7 +91,7 @@ export class UserFormComponent implements OnInit {
       nick: ['', [Validators.required, Validators.minLength(3)]],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      imagen: [null],
+      img_perfil: [null],
     };
 
     let groupConfig: any = base;
@@ -89,7 +104,7 @@ export class UserFormComponent implements OnInit {
     }
 
     if (this.tipo === 'edit') {
-      groupConfig = {...editExtras, ...base };
+      groupConfig = { ...editExtras, ...base };
     }
 
     this.form = this.fb.group(groupConfig, {
@@ -117,18 +132,23 @@ export class UserFormComponent implements OnInit {
       delete value.confirmPassword;
       this.register.emit(value);
     } else if (this.tipo === 'edit') {
-      delete value.confirmPassword;
+      console.log('value', value);
       this.edit.emit(this.form.value);
     }
   }
 
   onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         this.profileImageUrl = reader.result as string;
-        this.form.patchValue({ imagen: file });
+
+        const base64Data = (reader.result as string).split(',')[1]; 
+        this.form.patchValue({ img_perfil: base64Data });
+        this.changeDetector.detectChanges();
       };
       reader.readAsDataURL(file);
     }
