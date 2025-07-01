@@ -19,12 +19,16 @@
 </div>
 } @else {
 <div class="flex flex-col gap-3">
-  <h1 class="text-2xl font-bold">El email ya está verificado</h1>
-  <p>Este email ya ha sido verificado, por favor continua con tu sesión</p>
+  <h1 class="text-2xl font-bold">Registro completado ⭐️</h1>
+  <p>¡Ya casi terminamos!</p>
+  <p>
+    Solo falta añadir a tus pequeños para que puedas empezar a disfrutar de
+    todas las funcionalidades de la aplicación
+  </p>
   <p-button
     styleClass="mt-5 w-full"
-    label="Acceder a mi cuenta"
-    (click)="router.navigate(['onboarding/message1'])"
+    label="Siguiente"
+    (click)="router.navigate(['onboarding/create-family'])"
   ></p-button>
 </div>
 } }
