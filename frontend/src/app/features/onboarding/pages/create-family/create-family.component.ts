@@ -1,12 +1,10 @@
-import { Component, Inject, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
-  Validators,
   ReactiveFormsModule,
-  AbstractControl,
-  ValidationErrors,
+  Validators,
 } from '@angular/forms';
 import { CommonModule, formatDate } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
@@ -15,7 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { AutoFocusModule } from 'primeng/autofocus';
-import { Calendar, CalendarModule } from 'primeng/calendar';
+import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { NinosapiService } from '../../../../shared/services/ninosapi.service';
 
@@ -77,7 +75,7 @@ export class CreateFamilyComponent implements OnInit {
     return this.childProfileForm.controls;
   }
 
-  onSubmit(): void {
+  async onSubmit() {
     this.errorMessage = '';
     this.isLoading = true;
 
@@ -99,24 +97,22 @@ export class CreateFamilyComponent implements OnInit {
       genero: formValue.gender || null,
       altura: formValue.heightCm ? Number(formValue.heightCm) : null,
       peso: formValue.weightKg ? Number(formValue.weightKg) : null,
-      img_perfil: null, // Si tienes lógica de imagen, ponla aquí
+      img_perfil: null,
       descripcion: '',
     };
 
-    this.ninosApi.create(payload).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/onboarding/my-family']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al crear el niño';
-      },
-    });
+    try {
+      await this.ninosApi.create(payload);
+      this.isLoading = false;
+      this.router.navigate(['/onboarding/my-family']);
+    } catch (err: any) {
+      this.isLoading = false;
+      this.errorMessage =
+        err?.response?.data?.message || 'Error al crear el niño';
+    }
   }
 
   private formatDate(date: Date): string {
-    // Devuelve YYYY-MM-DD
     return date ? formatDate(date, 'yyyy-MM-dd', 'en-US') : '';
   }
 }
