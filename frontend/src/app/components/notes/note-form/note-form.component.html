@@ -21,6 +21,7 @@
       <div class="flex justify-end gap-2 mt-4 shrink-0">
         <p-button label="Cancelar" (onClick)="cerrarModal()" severity="secondary"/>
           <p-button
+            type="submit"
             [disabled]="form.invalid"
             severity="primary"
             [label]="editMode ? 'Actualizar Nota' : 'Guardar Nota'"
