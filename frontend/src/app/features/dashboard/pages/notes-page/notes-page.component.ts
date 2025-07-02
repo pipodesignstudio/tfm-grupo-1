@@ -1,8 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { INote } from '../../../../shared/interfaces/inote.interface';
 import { NotesService } from '../../../../shared/services/notes.service';
 import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
 import { NoteCardComponent } from '../../../../components/notes/note-card/note-card.component';
 import { NotesFiltersComponent } from '../../../../components/notes/notes-filters/notes-filters.component';
 import { NoteFormComponent } from '../../../../components/notes/note-form/note-form.component';
@@ -20,32 +22,31 @@ import { MessageService, ConfirmationService } from 'primeng/api';
   styleUrls: ['./notes-page.component.css'],
   imports: [
     CommonModule,
+    FormsModule,
     ButtonModule,
+    DropdownModule,
     NoteCardComponent,
     NotesFiltersComponent,
     NoteFormComponent,
     ToastModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
   ],
-  providers: [MessageService, ConfirmationService]
+  providers: [MessageService, ConfirmationService],
 })
 export class NotesPageComponent implements OnInit {
+  childrenOptions: { label: string; value: number }[] = [];
+  selectedChildId: number | null = null;
+
   notes: INote[] = [];
   filteredNotes: INote[] = [];
 
   showForm = false;
-  childrenOptions: { label: string; value: number }[] = [];
   noteToEdit: INote | null = null;
 
-  currentFilters: {
-    search: string;
-    date: Date | null;
-    childId: number | null;
-  } = {
-      search: '',
-      date: null,
-      childId: null,
-    };
+  currentFilters = {
+    search: '',
+    date: null as Date | null,
+  };
 
   constructor(
     private notesService: NotesService,
@@ -57,39 +58,57 @@ export class NotesPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.notesService.notes$.subscribe((notes) => {
-      this.notes = notes;
+    const familia = this.familiesStore.familiaSeleccionada();
+    if (!familia) return;
+
+    this.childService.getChildrenByFamily(String(familia.id)).then(children => {
+      this.childrenOptions = children.map((child: IChild) => ({
+        label: child.nombre,
+        value: Number(child.id),
+      }));
+
+      if (this.childrenOptions.length > 0) {
+        this.selectedChildId = this.childrenOptions[0].value;
+
+        this.cdr.detectChanges();
+
+        this.loadNotes();
+      }
+    });
+
+    this.notesService.notes$.subscribe(notes => {
+      this.notes = notes.filter(Boolean);
       this.applyFilters();
+      this.cdr.detectChanges();
     });
   }
 
-  onFiltersChange(filters: {
-    search: string;
-    date: Date | null;
-    childId: number | null;
-  }): void {
-    const hasChangedChild = filters.childId !== this.currentFilters.childId;
-    this.currentFilters = filters;
+  onChildChange(): void {
+    this.loadNotes();
+  }
 
-    if (hasChangedChild && filters.childId !== null) {
-      this.notesService.getAllNotes(filters.childId);
-    } else {
-      this.applyFilters();
+  private loadNotes(): void {
+    if (this.selectedChildId !== null) {
+      this.notesService.getAllNotes(this.selectedChildId);
     }
+  }
+
+  onFiltersChange(filters: { search: string; date: Date | null }): void {
+    this.currentFilters = filters;
+    this.applyFilters();
   }
 
   private applyFilters(): void {
     const { search, date } = this.currentFilters;
     const searchText = search?.toLowerCase() || '';
-    const selectedDate = date;
 
-    this.filteredNotes = this.notes.filter((note) => {
+    this.filteredNotes = this.notes.filter(note => {
       const matchesText =
         note.titulo.toLowerCase().includes(searchText) ||
         note.texto.toLowerCase().includes(searchText);
 
-      const matchesDate = selectedDate
-        ? new Date(note.fecha_creacion).toDateString() === new Date(selectedDate).toDateString()
+      const matchesDate = date
+        ? new Date(note.fecha_creacion).toDateString() === new Date(date).toDateString()
         : true;
 
       return matchesText && matchesDate;
@@ -103,58 +122,17 @@ export class NotesPageComponent implements OnInit {
   }
 
   async openNewNoteForm(): Promise<void> {
-    const familia = this.familiesStore.familiaSeleccionada();
-    if (!familia) return;
-
-    try {
-      const children = await this.childService.getChildrenByFamily(String(familia.id));
-      this.childrenOptions = children.map((child: IChild) => ({
-        label: child.nombre,
-        value: Number(child.id),
-      }));
-
-      this.mostrarFormulario(null);
-    } catch (error) {
-      console.error('Error al cargar niños:', error);
-    }
+    if (!this.selectedChildId) return;
+    this.mostrarFormulario(null);
   }
 
   async editNote(note: INote): Promise<void> {
-    const familia = this.familiesStore.familiaSeleccionada();
-    if (!familia) return;
-
-    try {
-      const children = await this.childService.getChildrenByFamily(String(familia.id));
-      this.childrenOptions = children.map((child: IChild) => ({
-        label: child.nombre,
-        value: Number(child.id),
-      }));
-
-      this.mostrarFormulario(note);
-    } catch (error) {
-      console.error('Error al cargar niños:', error);
-    }
-  }
-
-  onEditarNota({ idNino, idNota, data }: { idNino: number; idNota: number; data: any }): void {
-    this.notesService.updateNote(idNino, idNota, data).then(() => {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Nota actualizada',
-        detail: 'La nota se actualizó correctamente.',
-      });
-      this.closeForm();
-    }).catch(() => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Hubo un problema al actualizar la nota.',
-      });
-    });
+    this.mostrarFormulario(note);
   }
 
   onGuardarNota({ idNino, data }: { idNino: number; data: any }): void {
     this.notesService.createNote(idNino, data).then(() => {
+      this.loadNotes();
       this.messageService.add({
         severity: 'success',
         summary: 'Nota creada',
@@ -170,9 +148,22 @@ export class NotesPageComponent implements OnInit {
     });
   }
 
-  closeForm(): void {
-    this.showForm = false;
-    this.noteToEdit = null;
+  onEditarNota({ idNino, idNota, data }: { idNino: number; idNota: number; data: any }): void {
+    this.notesService.updateNote(idNino, idNota, data).then(() => {
+      this.loadNotes();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Nota actualizada',
+        detail: 'La nota se actualizó correctamente.',
+      });
+      this.closeForm();
+    }).catch(() => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Hubo un problema al actualizar la nota.',
+      });
+    });
   }
 
   deleteNote(note: INote): void {
@@ -192,8 +183,7 @@ export class NotesPageComponent implements OnInit {
               detail: `La nota "${note.titulo}" ha sido eliminada correctamente`,
             });
           })
-          .catch((error) => {
-            console.error('Error al eliminar la nota:', error);
+          .catch(() => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -202,5 +192,10 @@ export class NotesPageComponent implements OnInit {
           });
       }
     });
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.noteToEdit = null;
   }
 }

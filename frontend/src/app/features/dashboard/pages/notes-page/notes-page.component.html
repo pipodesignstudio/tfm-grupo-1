@@ -4,15 +4,30 @@
 
 <section class="p-4 max-w-xl mx-auto md:max-w-6xl space-y-6">
   <!-- Cabecera -->
-<div class="flex justify-end mb-6">
-  <p-button
-    icon="pi pi-plus"
-    label="Nueva Nota"
-    [raised]="true"
-    (onClick)="openNewNoteForm()"
-    severity="primary"
-  />
-</div>
+   <div class="pt-4">
+     <div class="flex flex-col gap-3">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Niño</h3>
+        <div class="flex justify-between items-center">
+          <p-dropdown
+            [options]="childrenOptions"
+            [(ngModel)]="selectedChildId"
+            placeholder="Selecciona un niño"
+            optionLabel="label"
+            optionValue="value"
+            (onChange)="onChildChange()"
+            class="w-full max-w-md"
+          ></p-dropdown>
+         <p-button
+           icon="pi pi-plus"
+           label="Nueva Nota"
+           [raised]="true"
+           (onClick)="openNewNoteForm()"
+           severity="primary"
+         />
+        </div>
+     </div>
+
+   </div>
 
   <!-- Filtros -->
   <app-notes-filters (filtersChange)="onFiltersChange($event)" class="mb-6"></app-notes-filters>
@@ -20,17 +35,22 @@
   <!-- Lista de notas -->
   <div class="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
     @if (filteredNotes.length === 0) {
-    <p class="col-span-full text-center mt-10 mb-10  text-xl font-bold">No hay notas disponibles.</p>
+      <p class="col-span-full text-center mt-10 mb-10 text-xl font-bold">No hay notas disponibles.</p>
     }
 
     @for (note of filteredNotes; track note.id) {
-    <app-note-card [note]="note" (edit)="editNote(note)" (delete)="deleteNote(note)"></app-note-card>
+      <app-note-card [note]="note" (edit)="editNote(note)" (delete)="deleteNote(note)"></app-note-card>
     }
   </div>
 </section>
 
 <!-- Modal de formulario -->
 @if (showForm) {
-<app-note-form [notaInfo]="noteToEdit" [children]="childrenOptions" (cerrar)="closeForm()"
-  (guardar)="onGuardarNota($event)" (editar)="onEditarNota($event)" />
+  <app-note-form
+    [notaInfo]="noteToEdit"
+    [children]="childrenOptions"
+    (cerrar)="closeForm()"
+    (guardar)="onGuardarNota($event)"
+    (editar)="onEditarNota($event)"
+  />
 }

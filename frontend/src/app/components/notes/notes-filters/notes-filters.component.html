@@ -1,5 +1,6 @@
 <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-4 flex flex-col gap-3">
   <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Filtros</h3>
+
   <form [formGroup]="form" class="flex flex-wrap gap-4 items-end">
     <!-- Filtro por texto -->
     <div class="flex-1 min-w-[200px]">
@@ -27,21 +28,6 @@
         [iconDisplay]="'input'"
         [appendTo]="'body'"
         [showIcon]="true"
-      />
-    </div>
-
-    <!-- Filtro por niño -->
-    <div class="flex-1 min-w-[200px]">
-      <label for="child" class="block text-sm font-medium text-gray-700 mb-1">
-        Filtrar por niño
-      </label>
-      <p-select
-        [options]="filtroOpciones"
-        formControlName="childId"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Selecciona un niño"
-        class="w-full"
       />
     </div>
 
