@@ -16,7 +16,7 @@
       <textarea placeholder="Contenido" pTextarea formControlName="texto" class="p-3 rounded-md w-full h-32"></textarea>
 
       <p-select [options]="children" formControlName="ninos_id" optionLabel="label" [optionValue]="'value'"
-        placeholder="Selecciona Niño"></p-select>
+        placeholder="Selecciona Niño" [appendTo]="'body'" class="w-full"></p-select>
 
       <div class="flex justify-end gap-2 mt-4 shrink-0">
         <p-button label="Cancelar" (onClick)="cerrarModal()" severity="secondary"/>
