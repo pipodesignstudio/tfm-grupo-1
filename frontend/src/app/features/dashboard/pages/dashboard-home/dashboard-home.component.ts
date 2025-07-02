@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 type TaskType = 'meal' | 'school' | 'homework' | 'play' | 'other';
 
@@ -20,9 +21,9 @@ interface Child {
 
 @Component({
   selector: 'app-dashboard-home',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard-home.component.html',
-  styleUrl: './dashboard-home.component.css',
+  styleUrls: ['./dashboard-home.component.css'],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -32,48 +33,22 @@ interface Child {
     ]),
   ],
 })
-export class DashboardHomeComponent implements OnInit {
+export class DashboardHomeComponent {
   userName: string = 'Paula';
   date = new Date();
+
+  links = [
+    { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
+    { url: '/dashboard/objectives', icon: 'pi pi-star', label: 'Objetivos' },
+    { url: '/dashboard/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
+    { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
+  ];
+
   children: Child[] = [
     {
-      name: 'Julia',
-      photoUrl:
-        'https://api.dicebear.com/9.x/dylan/svg?seed=Sawyer&scale=85&facialHairProbability=0&hairColor=000000,fff500,ffffff&mood=neutral,happy&skinColor=ffd6c0',
-      routine: [
-        {
-          time: '07:45',
-          icon: '🍳',
-          label: 'Desayuno',
-          completed: false,
-          type: 'meal',
-        },
-        {
-          time: '09:00',
-          icon: '🎒',
-          label: 'Guardería',
-          completed: false,
-          type: 'school',
-        },
-        {
-          time: '17:30',
-          icon: '🪁',
-          label: 'Jugar',
-          completed: false,
-          type: 'play',
-        },
-        {
-          time: '20:00',
-          icon: '🍽️',
-          label: 'Cena',
-          completed: false,
-          type: 'meal',
-        },
-      ],
-    },
-    {
       name: 'Mateo',
-      photoUrl: 'https://api.dicebear.com/9.x/dylan/svg?seed=Destiny&scale=85',
+      photoUrl:
+        'https://api.dicebear.com/9.x/dylan/svg?seed=Destiny&scale=85&backgroundColor=ffd700',
       routine: [
         {
           time: '07:30',
@@ -105,12 +80,44 @@ export class DashboardHomeComponent implements OnInit {
         },
       ],
     },
+    {
+      name: 'Julia',
+      photoUrl:
+        'https://api.dicebear.com/9.x/dylan/svg?seed=Sawyer&scale=85&facialHairProbability=0&hairColor=000000,fff500,ffffff&mood=neutral,happy&skinColor=d2996c&backgroundColor=ffd700',
+      routine: [
+        {
+          time: '07:45',
+          icon: '🍳',
+          label: 'Desayuno',
+          completed: false,
+          type: 'meal',
+        },
+        {
+          time: '09:00',
+          icon: '🎒',
+          label: 'Guardería',
+          completed: false,
+          type: 'school',
+        },
+        {
+          time: '17:30',
+          icon: '🪁',
+          label: 'Jugar',
+          completed: false,
+          type: 'play',
+        },
+        {
+          time: '20:00',
+          icon: '🍽️',
+          label: 'Cena',
+          completed: false,
+          type: 'meal',
+        },
+      ],
+    },
   ];
 
   activeChild = 0;
-
-  constructor() {}
-  ngOnInit(): void {}
 
   nextChild() {
     this.activeChild = (this.activeChild + 1) % this.children.length;
@@ -121,21 +128,28 @@ export class DashboardHomeComponent implements OnInit {
       (this.activeChild - 1 + this.children.length) % this.children.length;
   }
 
-  getTaskBgClass(type: string): string {
+  getTaskColorClass(type: string): string {
     switch (type) {
       case 'meal':
-        return 'bg-yellow-100';
+        return 'border-yellow-200';
       case 'school':
-        return 'bg-blue-100';
+        return 'border-blue-200';
       case 'homework':
-        return 'bg-green-100';
+        return 'border-green-200';
       case 'play':
-        return 'bg-pink-100';
+        return 'border-pink-200';
       default:
-        return 'bg-gray-100';
+        return 'border-gray-200';
     }
   }
+
   toggleTaskComplete(task: RoutineTask) {
     task.completed = !task.completed;
+  }
+
+  underlineIn = false;
+
+  ngOnInit() {
+    setTimeout(() => (this.underlineIn = true), 100); // pequeño delay para ver la animación
   }
 }

@@ -166,7 +166,7 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
       },
     });
 
-    return response.data.data.familias; // ✅ Esto es IUsersFamilies[]
+    return response.data.data.familias;
   } catch (error) {
     console.error('Error al obtener las familias del usuario:', error);
     return null;
@@ -182,6 +182,10 @@ public async editUser(userData: Partial<IUser>) {
     });
 
     if (!response.data.success) {
+      
+      // Optionally update the local user state even on failure, if needed:
+      this._user.set(null);
+      this.getUser(); // Refresh user data
       return { success: false, message: response.data.message };
     }
 

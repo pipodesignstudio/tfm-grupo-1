@@ -1,9 +1,12 @@
+import { IActivity } from './iactivity.interface';
+
 export interface IRoutine {
   id: number;
-  ninosId: number;
   nombre: string;
-  descripcion?: string | null;
-  fechaCreacion: string;
-  frecuencia?: any | null;
-  fechaFin?: string | null;
+  descripcion?: string;
+  frecuencia?: any;
+  fecha_creacion?: string;
+  fecha_fin?: string;
+  actividades?: IActivity[];
+  ninosId?: number;
 }

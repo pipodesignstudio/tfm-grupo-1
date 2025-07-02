@@ -40,7 +40,7 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
   }
 
   addNewChild(): void {
-    this.router.navigate(['/auth/create-family']);
+    this.router.navigate(['/onboarding/create-family']);
   }
 
   continueToNextStep(): void {
@@ -48,7 +48,7 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
       alert('Por favor, añade al menos un niño para continuar.');
       return;
     }
-    this.router.navigate(['/auth/message2']);
+    this.router.navigate(['/onboarding/complete']);
   }
 
   clearAllChildren(): void {

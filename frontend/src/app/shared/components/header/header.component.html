@@ -1,49 +1,71 @@
 <div
-  class="grid grid-cols-3 items-center bg-[#9ed2c5] dark:bg-gray-800 dark:text-white px-3"
+  class="grid grid-cols-3 items-center bg-white dark:bg-gray-800 dark:text-white px-9 shadow mb-5 px-7"
 >
   <!-- Aparece solo en pantallas grandes -->
-  <button (click)="goToDashboard()" class="w-fit">
-   <app-logo />
+  <button (click)="goToHome()" class="w-fit">
+    <app-logo />
   </button>
-
-  <!-- Aparece solo en pantallas pequeñas y medianas -->
-  <!-- <div class="flex justify-start md:hidden px-4 pt-2">
-    <button (click)="goBack()" class="text-white text-base" aria-label="Volver">
-      <i class="pi pi-arrow-left text-gray-700 dark:text-white text-sm"></i>
-    </button>
-  </div> -->
   <!-- Centro -->
   <h1 class="text-xl font-bold text-center">{{ pageTitle }}</h1>
 
   <!-- Derecha -->
   <div class="text-right">
-    <!-- <button
-      pButton
-      (click)="toggleDarkMode()"
-      class="bg-[#ff7f50] dark:bg-gray-700 text-white px-4 py-2 rounded"
-    >
-      @if (isDarkMode()) { 🌙 Modo oscuro } @else { ☀️ Modo claro }
-    </button>
-    <p-button severity="danger" label="Cerrar sesión" (click)="logout()" /> -->
-
+    
     <!-- Botón que activa el popover -->
     <button
-    pButton
-    type="button"
-    icon="pi pi-cog"
-    (click)="menu.toggle($event)"
-    class="bg-[#ff7f50] dark:bg-gray-700 text-white px-5 py-4 rounded"
-    >
-    </button>
-    <p-overlayPanel #menu>
+      pButton
+      type="button"
+      icon="pi pi-cog"
+      (click)="menu.toggle($event)"
+      class="px-5 py-3 rounded-full"
+    ></button>
+    <p-popover  #menu>
       <div class="flex flex-col gap-2 p-2 min-w-[150px]">
-        <!-- Opción 1: Ir a perfil -->
-        <button *ngIf="!isOnRoute('/dashboard/user-profile')" pButton label="Mi perfil" (click)="goToProfile(); menu.hide()" class="w-full"></button>
-        <!-- Opción 2: Ir a ajustes -->
-        <button *ngIf="!isOnRoute('/dashboard/settings')" pButton label="Configuración" (click)="goToSettings(); menu.hide()" class="w-full"></button>
-        <!-- Opción 3: Cerrar sesión -->
-        <button pButton label="Cerrar sesión" severity="danger" (click)="logout()" class="w-full"></button>
+
+        <!-- Opción 1: Ir a inicio -->
+        <button pButton label="Inicio" 
+                (click)="goToHome(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard')" 
+                class="w-full">
+        </button>
+
+        <!-- Opción 2: Ir a perfil -->
+        <button pButton label="Mi perfil" 
+                (click)="goToProfile(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard/user-profile')" 
+                class="w-full">
+        </button>
+
+        <!-- Opción 3: Darkmode -->
+        <button pButton 
+                (click)="toggleDarkMode(); menu.hide()" 
+                [label]="isDarkMode() ? '☀️ Modo claro' : '🌙 Modo oscuro'" 
+                [hidden]="isOnRoute('/dashboard/settings')" 
+                class="w-full">
+        </button>
+
+        <!-- Opción 4: Ir a ajustes -->
+        <button pButton label="Configuración" 
+                (click)="goToSettings(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard/settings')" 
+                class="w-full">
+        </button>
+
+        <!-- Opción 5: Ir a Sobre Nosotros -->
+        <button pButton label="Sobre Nosotros" 
+                (click)="goToAboutUs(); menu.hide()" 
+                [hidden]="isOnRoute('/dashboard/settings') || isOnRoute('/dashboard/about-us')" 
+                class="w-full">
+        </button>
+
+        <!-- Opción 6: Cerrar sesión -->
+        <button pButton label="Cerrar sesión" 
+                severity="danger" 
+                (click)="logout()" 
+                class="w-full">
+        </button>
+
       </div>
-    </p-overlayPanel>
+    </p-popover >
   </div>
 </div>

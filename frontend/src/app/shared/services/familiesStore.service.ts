@@ -12,16 +12,30 @@ export class FamiliesStore {
   constructor(private usersService: UsersService) {}
 
   public async loadFamilias(): Promise<void> {
-    const data = await this.usersService.getUserFamilias();
-    this._familias.set(data);
-    // Por defecto seleccionás la primera
-    if (data && data.length > 0) {
+  const data = await this.usersService.getUserFamilias();
+  this._familias.set(data);
+
+  if (data && data.length > 0) {
+    const savedId = Number(localStorage.getItem('familiaSeleccionadaId'));
+    const familiaGuardada = data.find(f => f.id === savedId);
+
+    if (familiaGuardada) {
+      this._familiaSeleccionada.set(familiaGuardada);
+    } else {
       this._familiaSeleccionada.set(data[0]);
+      localStorage.setItem('familiaSeleccionadaId', String(data[0].id));
     }
   }
-
+}
   public seleccionarFamilia(id: number): void {
-    const familia = this._familias()?.find(f => f.id === id) ?? null;
-    this._familiaSeleccionada.set(familia);
+  const familia = this._familias()?.find(f => f.id === id) ?? null;
+  this._familiaSeleccionada.set(familia);
+
+  if (familia) {
+    localStorage.setItem('familiaSeleccionadaId', String(familia.id));
+  } else {
+    localStorage.removeItem('familiaSeleccionadaId');
   }
+}
+
 }

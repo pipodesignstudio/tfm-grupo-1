@@ -1,9 +1,9 @@
 export interface IUser {
   id: number;
-  apellido: string;
-  nombre: string;
+  apellido: string | null;
+  nombre: string | null;
   nick: string;
-  imgPerfil?: string | null;
+  img_perfil?: string | Uint8Array | null;
   email: string;
   contrasena: string;
   primeraSesion: boolean;

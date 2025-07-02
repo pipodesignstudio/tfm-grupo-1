@@ -16,10 +16,10 @@
       class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
     >
       <input
-        type="email"
+        type="emailDestinatario"
         placeholder="Correo electrónico"
         pInputText
-        formControlName="email"
+        formControlName="emailDestinatario"
         class="p-3 rounded-md"
       />
 
@@ -46,7 +46,12 @@
           [disabled]="form.invalid"
           class="px-4 py-2 rounded-md"
         >
+        @if(editMode) {
+          Editar familiar
+        } 
+        @else {
           Enviar invitación
+        }
         </button>
       </div>
     </form>

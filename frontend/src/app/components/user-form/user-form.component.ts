@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output,
+  Input,
+  OnInit,
+  inject,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,6 +21,8 @@ import { PasswordModule } from 'primeng/password';
 
 import { MessageModule } from 'primeng/message';
 import { Router } from '@angular/router';
+import { ThemeService } from '../../shared/services/theme.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-form',
@@ -46,15 +56,28 @@ export class UserFormComponent implements OnInit {
   form!: FormGroup;
   profileImageUrl: string | null = null;
 
-  constructor(private router: Router, private fb: FormBuilder) {}
+  private themeService = inject(ThemeService);
+  isDarkMode = this.themeService.darkTheme;
+  imgFromDB: boolean = false;
+  base64String: string = '';
+
+  constructor(
+    private router: Router,
+    private changeDetector: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
-
     this.createForm();
     if (this.tipo === 'edit' && this.userInfo) {
+      console.log(this.userInfo);
       this.form.patchValue(this.userInfo);
       this.form.get('email')?.disable();
-      this.profileImageUrl = this.userInfo.imagen;
+      if(this.userInfo.img_perfil) {
+        this.imgFromDB = true;
+      }
+      this.profileImageUrl = this.userInfo.img_perfil;
     }
   }
 
@@ -76,7 +99,7 @@ export class UserFormComponent implements OnInit {
       nick: ['', [Validators.required, Validators.minLength(3)]],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      imagen: [null],
+      img_perfil: [null],
     };
 
     let groupConfig: any = base;
@@ -89,7 +112,7 @@ export class UserFormComponent implements OnInit {
     }
 
     if (this.tipo === 'edit') {
-      groupConfig = {...editExtras, ...base };
+      groupConfig = { ...editExtras, ...base };
     }
 
     this.form = this.fb.group(groupConfig, {
@@ -111,27 +134,47 @@ export class UserFormComponent implements OnInit {
 
     const value = { ...this.form.value };
 
+    if(this.tipo === 'edit' && this.imgFromDB) {
+      value.img_perfil = this.base64String;
+    }
+
     if (this.tipo === 'login') {
       this.login.emit(value);
     } else if (this.tipo === 'register') {
       delete value.confirmPassword;
       this.register.emit(value);
     } else if (this.tipo === 'edit') {
-      delete value.confirmPassword;
-      this.edit.emit(this.form.value);
+      console.log('value', value);
+      this.edit.emit(value);
     }
   }
 
   onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
+    this.imgFromDB = false;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         this.profileImageUrl = reader.result as string;
-        this.form.patchValue({ imagen: file });
+
+        const base64Data = (reader.result as string).split(',')[1];
+        this.form.patchValue({ img_perfil: base64Data });
+        this.changeDetector.detectChanges();
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  formatImgPerfil(img: string | Uint8Array | null | undefined): SafeUrl | null {
+    if (!img) return null;
+
+    const byteArray = Object.values(img) as number[];
+    const uint8Array = new Uint8Array(byteArray);
+    this.base64String = btoa(String.fromCharCode(...uint8Array));
+    const imgURL = `data:image/jpeg;base64,${this.base64String}`;
+    return this.sanitizer.bypassSecurityTrustUrl(imgURL);
   }
 
   cerrarModal() {

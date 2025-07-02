@@ -26,6 +26,28 @@
     }
   </div>
 
+  <!-- Apellido -->
+  <div class="flex flex-col gap-2">
+    <label for="apellido"
+      >Apellido <span class="required-asterisk">*</span></label
+    >
+    <input
+      type="text"
+      id="apellido"
+      pInputText
+      formControlName="apellido"
+      placeholder="Apellido del niño/a"
+      [ngClass]="{
+        'ng-invalid ng-dirty': f['apellido'].invalid && f['apellido'].touched
+      }"
+    />
+    @if (f['apellido'].invalid && f['apellido'].dirty) {
+    <p-message severity="error">
+      @if (f['apellido'].errors?.['required']) { El apellido es obligatorio. }
+    </p-message>
+    }
+  </div>
+
   <!-- Fecha de nacimiento -->
   <div class="flex flex-col gap-2">
     <label for="dob">
@@ -36,7 +58,6 @@
       formControlName="dob"
       [maxDate]="maxDate"
       [readonlyInput]="true"
-      dateFormat="dd-mm-yy"
       [showIcon]="true"
       fluid
       [iconDisplay]="'input'"

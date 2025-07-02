@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { Location } from '@angular/common';
 import { ThemeService } from '../../services';
 import { LogoComponent } from '../logo/logo.component';
 import { AuthService } from '../../../features/auth/services';
 import { ButtonModule } from 'primeng/button';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { PopoverModule } from 'primeng/popover';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,12 +13,11 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [CommonModule, LogoComponent, ButtonModule, OverlayPanelModule],
+  imports: [CommonModule, LogoComponent, ButtonModule, PopoverModule],
 })
 export class HeaderComponent {
   private router = inject(Router);
   private themeService = inject(ThemeService);
-  private location = inject(Location);
   private authService = inject(AuthService);
 
   isDarkMode = this.themeService.darkTheme;
@@ -30,13 +28,13 @@ export class HeaderComponent {
   private routeTitles: { [key: string]: string } = {
     '/create-family': 'Crear familia',
     '/my-family': 'Mi familia',
-    '/dashboard': 'Home',
+    '/dashboard': 'Inicio',
     '/calendar': 'Calendario',
     '/child-profile': 'Perfil del niño',
     '/dashboard/user-profile': 'Mi perfil',
     '/dashboard/settings': 'Configuración',
     '/dashboard/settings/edit-profile': 'Editar perfil',
-    '/about-us': 'Sobre nosotros',
+    '/dashboard/about-us': 'Sobre nosotros',
   };
 
   currentPath: string = '';
@@ -51,32 +49,33 @@ export class HeaderComponent {
   }
 
   isOnRoute(path: string): boolean {
-  return this.currentPath === path;
-  }
-
-  goBack() {
-    this.location.back();
+    return this.currentPath === path;
   }
 
   logout() {
     this.authService.logOut();
-    this.router.navigate(['/']); // DANI: Redirige después del logout
+    this.router.navigate(['/']);
   }
-  goToProfile() {
-  this.router.navigate(['/dashboard/user-profile']);
- }
 
+  goToProfile() {
+    console.log('Navegando a perfil');
+    this.router.navigate(['/dashboard/user-profile']);
+  }
+
+  goToHome() {
+  this.router.navigate(['/dashboard']);
+ }
+ 
   toggleDarkMode() {
     this.themeService.toggleDarkMode();
   }
 
   goToSettings() {
-  this.router.navigate(['/dashboard/settings']);
+    this.router.navigate(['/dashboard/settings']);
   }
 
-  goToDashboard() {
-  this.router.navigate(['/dashboard']);
+  goToAboutUs() {
+  this.router.navigate(['/dashboard/about-us']);
  }
-
 
 }

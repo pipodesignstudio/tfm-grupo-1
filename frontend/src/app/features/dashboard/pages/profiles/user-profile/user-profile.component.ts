@@ -1,3 +1,4 @@
+import { IInvitation } from './../../../../../shared/interfaces/iinvitation.interface';
 import { UsersService } from '../../../../../shared/services/users.service';
 import { NgClass } from '@angular/common';
 import {
@@ -22,6 +23,8 @@ import { IUserFromBackend } from '../../../../../shared/interfaces/iuser-from-ba
 import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
 import { MessageModalComponent } from '../../../../../components/message-modal/message-modal.component';
 import { UserFormComponent } from '../../../../../components/user-form/user-form.component';
+import { InvitationsService } from '../../../../../shared/services/invitations.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-profile',
@@ -41,7 +44,8 @@ export class UserProfileComponent {
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   familiesStore = inject(FamiliesStore);
@@ -50,8 +54,12 @@ export class UserProfileComponent {
 
   familiaUsuariosService = inject(FamiliaUsuariosService);
 
+  invitationsService = inject(InvitationsService);
+
   userService = inject(UsersService);
   user = this.userService.user();
+  userImage: SafeUrl | null = null;
+
   rolFamilia: 'admin' | 'cuidador' | null = null;
 
   childService = inject(ChildService);
@@ -71,9 +79,10 @@ export class UserProfileComponent {
 
   private familiaEffect = effect(async () => {
     const familia = this.familiesStore.familiaSeleccionada();
-    if (familia == null) return;
+    if (familia == null || this.user == null) return;
 
     try {
+      console.log('familia seleccionada:', this.user);
       // Cargar los niños de la familia seleccionada
       this.children = await this.childService.getChildrenByFamily(
         String(familia.id)
@@ -85,10 +94,19 @@ export class UserProfileComponent {
         String(familia.id)
       );
 
-      this.rolFamilia =
+      const usuarioLogeado =
         this.usersFamily.find(
           (miembro) => miembro.usuarios.email === this.user?.email
-        )?.rol || null;
+        );
+
+      this.rolFamilia = usuarioLogeado?.rol || null;
+
+      if (usuarioLogeado) {
+        this.usersFamily = this.usersFamily.filter(
+          (miembro) => miembro.usuarios.email !== this.user?.email
+        );
+        this.usersFamily.push(usuarioLogeado);
+      }
 
       this.filtroOpciones = this.children.map((child) => ({
         label: child.nombre,
@@ -101,6 +119,16 @@ export class UserProfileComponent {
       console.error('Error al cargar los eventos:', error);
     }
   });
+
+  formatImgPerfil(img: string | Uint8Array | null | undefined): SafeUrl | null {
+    if (!img) return null;
+
+    const byteArray = Object.values(img) as number[];
+    const uint8Array = new Uint8Array(byteArray);
+    const base64String = btoa(String.fromCharCode(...uint8Array));
+    const imageUrl = `data:image/jpeg;base64,${base64String}`;
+    return this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+  }
 
   formatearFecha(fecha: string): string {
     const opciones: Intl.DateTimeFormatOptions = {
@@ -130,12 +158,8 @@ export class UserProfileComponent {
     return `${anios} años y ${meses} meses`;
   }
 
-  goToEditarPerfil() {
-    this.router.navigate(['/dashboard/perfil/editar']);
-  }
-
   goToNino(childId: number) {
-    this.router.navigate(['/dashboard/children', childId]);
+    this.router.navigate(['dashboard', 'children', childId]);
   }
 
   showChildModal() {
@@ -144,6 +168,7 @@ export class UserProfileComponent {
 
   hideChildModal() {
     this.childModalVisible = false;
+    this.changeDetector.detectChanges();
   }
 
   familyModalVisible = false;
@@ -187,16 +212,48 @@ export class UserProfileComponent {
       .then(() => {
         console.log('Niño añadido correctamente');
         console.log(child);
-        this.changeDetector.detectChanges();
+        // Actualizar la lista de niños
+        this.children.push({
+          ...child,
+          id: this.children.length + 1, // Asignar un ID temporal
+          fecha_nacimiento: child.fecha_nacimiento || new Date().toISOString(),
+        } as IChild);
         this.hideChildModal();
+        this.changeDetector.detectChanges();
       })
       .catch((error) => {
         console.error('Error al añadir niño:', error);
       });
   }
 
-  enviarInvitacion(familiar: IFamiliaUsuario) {
+  enviarInvitacion(familiar: Partial<IInvitation>) {
     console.log('Enviando invitación a familiar:', familiar);
+    // Solo permitir roles válidos: 'admin' o 'cuidador'
+    const allowedRoles: Array<'admin' | 'cuidador'> = ['admin', 'cuidador'];
+    const rol: 'admin' | 'cuidador' = allowedRoles.includes(familiar.rol as any)
+      ? (familiar.rol as 'admin' | 'cuidador')
+      : 'cuidador';
+
+    // Verificar que el emailDestinatario esté definido
+    if (!familiar.emailDestinatario) {
+      console.error(
+        'El emailDestinatario es obligatorio para enviar la invitación'
+      );
+      return;
+    }
+
+    this.invitationsService
+      .sendInvitationUser({
+        id_familia: this.familiesStore.familiaSeleccionada()?.id || 0,
+        emailDestinatario: familiar.emailDestinatario,
+        rol, // Solo pasa roles permitidos
+      })
+      .then(() => {
+        console.log('Invitación enviada correctamente');
+      })
+      .catch((error: any) => {
+        console.error('Error al enviar invitación:', error);
+      });
   }
 
   modalEliminarVisible = false;
@@ -268,7 +325,7 @@ export class UserProfileComponent {
       .then(() => {
         console.log('Familiar eliminado correctamente');
         this.familiarAEliminarEditar = null;
-        this.hideModalEliminarFamiliar();
+        this.modalEliminarVisible = false;
         // Actualizar la lista de familiares
         this.usersFamily = this.usersFamily.filter(
           (member) => member.usuarios_id !== familiar.usuarios_id
@@ -295,9 +352,68 @@ export class UserProfileComponent {
     this.userService.editUser(userData).then((result) => {
       if (result?.success) {
         console.log('Usuario editado con éxito', result);
+        console.log(this.user); // Actualizar la información del usuario
+        const img_usuario_editado = userData.img_perfil;
+        if (this.user) {
+          this.user = {
+            ...this.user,
+            nick: userData.nick ?? this.user.nick,
+            nombre: userData.nombre ?? this.user.nombre,
+            apellido: userData.apellido ?? this.user.apellido,
+            img_perfil: typeof img_usuario_editado === 'string'
+              ? this.base64ToUint8Array(img_usuario_editado)
+              : (img_usuario_editado ?? this.user.img_perfil),
+          };
+        }
+        //Actualizar el usuario editado en la lista de familiares
+        const copyUserFamily = this.usersFamily.find(
+          (member) => member.usuarios.email === this.user?.email
+        );
+
+        this.usersFamily = this.usersFamily.filter(
+          (member) => member.usuarios.email !== this.user?.email
+        );
+
+
+        
+        this.usersFamily = [...this.usersFamily, {
+          familia_id: copyUserFamily?.familia_id || 0,
+          usuarios_id: copyUserFamily?.usuarios_id || 0,
+          rol: copyUserFamily?.rol || 'cuidador',
+          usuarios: { 
+            id: copyUserFamily?.usuarios.id || 0,
+            apellido: copyUserFamily?.usuarios?.apellido || null,
+            nombre: copyUserFamily?.usuarios?.nombre || null,
+            nick: copyUserFamily?.usuarios?.nick || '',
+            img_perfil: typeof img_usuario_editado === 'string'
+              ? this.base64ToUint8Array(img_usuario_editado)
+              : (img_usuario_editado ?? (this.user?.img_perfil )),
+            email: copyUserFamily?.usuarios?.email || '',
+            contrasena: copyUserFamily?.usuarios?.contrasena || '',
+            primeraSesion: copyUserFamily?.usuarios?.primeraSesion || false,
+            fechaCreacion: copyUserFamily?.usuarios?.fechaCreacion || new Date().toISOString(),
+            borrado: copyUserFamily?.usuarios?.borrado || false,
+            emailVerificado: copyUserFamily?.usuarios?.emailVerificado || false,
+            ...this.user // Asegurarse de que se actualicen los datos del usuario
+          }
+        }];
+
+
+
+        this.closeUserFormModal(); // Cerrar el modal después de editar
+        this.changeDetector.detectChanges();
       } else {
         console.error('Error al editar el usuario:', result?.message);
       }
     });
+  }
+
+  private base64ToUint8Array(data: string): Uint8Array {
+    if (!data) return new Uint8Array();
+    // Si viene como "data:image/jpeg;base64,....", quita el prefijo
+    const base64 = data.includes(',') ? data.split(',')[1] : data;
+
+    const binary = atob(base64); // decodifica Base‑64
+    return Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
   }
 }

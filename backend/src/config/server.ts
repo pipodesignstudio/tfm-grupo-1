@@ -1,10 +1,9 @@
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 import prisma from "./prisma.config";
 import app from "..";
-import { connectMongoDB } from './mongo.config';
+import { connectMongoDB } from "./mongo.config";
 
 dotenv.config();
 
@@ -19,7 +18,7 @@ export const startServer = async (): Promise<void> => {
   try {
     // --- Conexión a MySQL (Prisma) ---
     await prisma.$connect();
-    console.log('✅ Conectado a la base de datos MySQL (Prisma)');
+    console.log("✅ Conectado a la base de datos MySQL (Prisma)");
 
     // --- Conexión a MongoDB (Mongoose) ---
     await connectMongoDB(); 
@@ -35,22 +34,22 @@ export const startServer = async (): Promise<void> => {
     const gracefulShutdown = async (signal: NodeJS.Signals) => {
       await prisma.$disconnect();
       console.log(`🔌 Prisma desconectado (${signal})`);
-      // try {
-      //   await mongoose.disconnect(); 
-      //   console.log(`🔌 Mongoose desconectado (${signal})`);
-      // } catch (mongoDisconnectError) {
-      //   console.error('❌ Error al desconectar Mongoose:', mongoDisconnectError);
-      // }
+      try {
+        await mongoose.disconnect();
+        console.log(`🔌 Mongoose desconectado (${signal})`);
+      } catch (mongoDisconnectError) {
+        console.error('❌ Error al desconectar Mongoose:', mongoDisconnectError);
+      }
       process.exit(0);
     };
 
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
   } catch (error) {
-    console.error('❌ Error al iniciar la app:', error);
+    console.error("❌ Error al iniciar la app:", error);
     await prisma.$disconnect();
     // try {
-    //   await mongoose.disconnect(); 
+    //   await mongoose.disconnect();
     // } catch (mongoError) {
     //   console.error('❌ Error al desconectar Mongoose en el inicio fallido:', mongoError);
     // }

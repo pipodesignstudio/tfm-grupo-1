@@ -41,26 +41,30 @@ export class FamilyFormComponent {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      emailDestinatario: ['', [Validators.required, Validators.email]],
       rol: [null, Validators.required],
     });
   }
 
   ngOnInit() {
+
+    console.log(this.familiar, 'familiar en el formulario');
   if (this.familiar) {
+
+    console.log("first")
     this.editMode = true;
 
     // Patch values al formulario
     this.form.patchValue({
-      email: this.familiar.usuarios.email,
+      emailDestinatario: this.familiar.usuarios.email,
       rol: this.familiar.rol,
     });
 
     // Deshabilita el campo email
-    this.form.get('email')?.disable();
+    this.form.get('emailDestinatario')?.disable();
   } else {
     // Asegúrate de que el campo esté habilitado si no estás en modo edición
-    this.form.get('email')?.enable();
+    this.form.get('emailDestinatario')?.enable();
   }
 }
 

@@ -127,6 +127,7 @@ export class ActivityFormComponent {
       this.editar.emit({
         ...this.form.value,
         id: this.actividadInfo ? this.actividadInfo.id : undefined,
+        ninos_id: this.actividadInfo ? this.actividadInfo.ninos_id : undefined,
         tipo:
           this.tipo == 'evento'
             ? 'Evento'
