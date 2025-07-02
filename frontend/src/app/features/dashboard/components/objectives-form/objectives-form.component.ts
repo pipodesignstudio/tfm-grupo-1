@@ -2,19 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { IChild } from '../../../../shared/interfaces/ichild.interface';
+import { IObjective } from '../../../../shared/interfaces/iobjective.interface';
+import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
+import { ChildService } from '../../../../shared/services/child.service';
+import { ObjectivesService } from '../../../../shared/services/objectives.service';
 
-// Importaciones de PrimeNG
+// PrimeNG modules (solo para imports en el decorador standalone)
+import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
-import { ChildProfile, ChildService } from '../../../../shared/services/child.service';
-import { Activity, ObjectivesService, Objective } from '../../../../shared/services/objectives.service';
-
-
 
 @Component({
   selector: 'app-objectives-form',
@@ -36,21 +37,23 @@ import { Activity, ObjectivesService, Objective } from '../../../../shared/servi
 export class ObjectivesFormComponent implements OnInit {
   objectiveForm!: FormGroup;
   activityForm!: FormGroup;
-  children: ChildProfile[] = [];
-  activities: Partial<Activity>[] = [];
+
+  children: IChild[] = [];
+  activities: Partial<IActivity>[] = [];
+
   showAddActivityDialog = false;
   isEditMode = false;
   currentObjectiveId: number | null = null;
   selectedColor = '#FFD700';
 
   categories = [
-    'Salud',
-    'Educación', 
-    'Alimentación',
-    'Social',
-    'Actividades',
-    'Cuidado Diario',
-    'Otros'
+    { label: 'Salud', value: 'Salud' },
+    { label: 'Educación', value: 'Educación' },
+    { label: 'Alimentación', value: 'Alimentación' },
+    { label: 'Social', value: 'Social' },
+    { label: 'Actividades', value: 'Actividades' },
+    { label: 'Cuidado Diario', value: 'Cuidado Diario' },
+    { label: 'Otros', value: 'Otros' }
   ];
 
   colors = [
@@ -71,20 +74,19 @@ export class ObjectivesFormComponent implements OnInit {
     private location: Location,
     private childService: ChildService,
     private objectivesService: ObjectivesService
-  ) {
-    this.initializeForms();
-  }
+  ) {}
 
   ngOnInit(): void {
+    this.initForms();
     this.loadChildren();
     this.checkRouteParams();
   }
 
-  initializeForms(): void {
+  private initForms(): void {
     this.objectiveForm = this.fb.group({
-      ninos_id: ['', Validators.required],
+      ninos_id: [null, Validators.required],
       nombre: ['', Validators.required],
-      fecha_fin: ['', Validators.required],
+      fecha_fin: [null, Validators.required],
       tipo: ['', Validators.required],
       color: [this.selectedColor]
     });
@@ -92,22 +94,24 @@ export class ObjectivesFormComponent implements OnInit {
     this.activityForm = this.fb.group({
       titulo: ['', Validators.required],
       descripcion: [''],
-      hora_inicio: ['']
+      hora_inicio: [null]
     });
   }
 
-  loadChildren(): void {
-    this.childService.children$.subscribe(children => {
+  private loadChildren(): void {
+    // Suponiendo que tienes un método que devuelve Promise<IChild[]>
+    this.childService.getChildren().then(children => {
       this.children = children;
+    }).catch(err => {
+      console.error('Error cargando niños', err);
     });
   }
 
-  checkRouteParams(): void {
+  private checkRouteParams(): void {
     this.route.queryParams.subscribe(params => {
       if (params['childId']) {
         this.objectiveForm.patchValue({ ninos_id: Number(params['childId']) });
       }
-      
       if (params['mode'] === 'edit' && params['objectiveId']) {
         this.isEditMode = true;
         this.currentObjectiveId = Number(params['objectiveId']);
@@ -116,28 +120,27 @@ export class ObjectivesFormComponent implements OnInit {
     });
   }
 
-  loadObjectiveForEdit(): void {
-    if (this.currentObjectiveId) {
-      const objectives = this.objectivesService.getObjectivesByChild(
-        this.objectiveForm.value.ninos_id
-      );
+  private async loadObjectiveForEdit(): Promise<void> {
+    if (!this.currentObjectiveId || !this.objectiveForm.value.ninos_id) return;
+    try {
+      const objectives = await this.objectivesService.getObjectivesByChild(String(this.objectiveForm.value.ninos_id));
       const objective = objectives.find(obj => obj.id === this.currentObjectiveId);
-      
-      if (objective) {
-        this.objectiveForm.patchValue({
-          ninos_id: objective.ninos_id,
-          nombre: objective.nombre,
-          fecha_fin: objective.fecha_fin,
-          tipo: objective.tipo,
-          color: objective.color
-        });
-        this.selectedColor = objective.color;
-        this.activities = objective.activities.map(activity => ({
-          titulo: activity.titulo,
-          descripcion: activity.descripcion,
-          hora_inicio: activity.hora_inicio
-        }));
-      }
+      if (!objective) return;
+
+      this.objectiveForm.patchValue({
+        ninos_id: objective.ninos_id,
+        nombre: objective.nombre,
+        fecha_fin: objective.fecha_fin ? new Date(objective.fecha_fin) : null,
+        tipo: objective.tipo,
+        color: objective.color ?? this.selectedColor
+      });
+      this.selectedColor = objective.color ?? this.selectedColor;
+      // Si tienes activities completas en el objetivo
+      this.activities = (objective.activities ?? []).map(activity => ({
+        ...activity
+      }));
+    } catch (error) {
+      console.error('Error cargando objetivo para editar', error);
     }
   }
 
@@ -148,13 +151,12 @@ export class ObjectivesFormComponent implements OnInit {
 
   addActivity(): void {
     if (this.activityForm.valid) {
-      const newActivity: Partial<Activity> = {
+      const newActivity: Partial<IActivity> = {
         titulo: this.activityForm.value.titulo,
         descripcion: this.activityForm.value.descripcion,
         hora_inicio: this.activityForm.value.hora_inicio,
         completado: false
       };
-      
       this.activities.push(newActivity);
       this.activityForm.reset();
       this.showAddActivityDialog = false;
@@ -170,40 +172,44 @@ export class ObjectivesFormComponent implements OnInit {
     this.showAddActivityDialog = false;
   }
 
-  onSubmit(): void {
-    if (this.objectiveForm.valid) {
-      const objectiveData: Omit<Objective, 'id'> = {
-        ninos_id: this.objectiveForm.value.ninos_id,
-        nombre: this.objectiveForm.value.nombre,
-        color: this.selectedColor,
-        tipo: this.objectiveForm.value.tipo,
-        fecha_inicio: new Date(),
-        fecha_fin: this.objectiveForm.value.fecha_fin,
-        activities: this.activities.map((activity, index) => ({
-          id: index + 1,
-          titulo: activity.titulo || '',
-          descripcion: activity.descripcion,
-          hora_inicio: activity.hora_inicio,
-          completado: activity.completado || false
-        })) as Activity[],
-        completado: false
-      };
+  async onSubmit(): Promise<void> {
+    if (this.objectiveForm.invalid) return;
 
+    // Prepara el objetivo para enviar al backend
+    const { ninos_id, nombre, fecha_fin, tipo, color } = this.objectiveForm.value;
+    const activitiesToSend = this.activities.map(activity => ({
+      titulo: activity.titulo || '',
+      descripcion: activity.descripcion || '',
+      hora_inicio: activity.hora_inicio || null,
+      completado: activity.completado ?? false
+    }));
+
+    // El backend espera activities, no activities_ids
+    const objectiveData: Omit<IObjective, 'id'> = {
+      ninos_id,
+      nombre,
+      fecha_fin,
+      tipo,
+      color,
+      activities: activitiesToSend
+    };
+
+    try {
       if (this.isEditMode && this.currentObjectiveId) {
-        const updatedObjective: Objective = {
+        await this.objectivesService.updateObjective({
           ...objectiveData,
           id: this.currentObjectiveId
-        };
-        this.objectivesService.updateObjective(updatedObjective);
+        } as IObjective);
       } else {
-        this.objectivesService.addObjective(objectiveData);
+        await this.objectivesService.createObjective(objectiveData);
       }
-
-      this.goBack();
+      this.router.navigate(['/dashboard/objectives']);
+    } catch (error) {
+      console.error('Error guardando objetivo', error);
     }
   }
 
   goBack(): void {
-    this.location.back();
+    this.router.navigate(['/dashboard/objectives']);
   }
 }

@@ -74,5 +74,16 @@ export class ActivityService {
     })
   ).then(response => response.data);
   }
+
+  getActivityById(id: number): Promise<IActivity> {
+    return lastValueFrom(
+      this.httpClient.get<{ data: IActivity }>(`${this.apiUrl}/actividades/${id}`, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      })
+    ).then(response => response.data);
+  }
+  
   
 }

@@ -36,13 +36,14 @@
            class="rounded-lg p-4 hover:shadow-md transition-shadow"
            [ngStyle]="getObjectiveStyles(objective)">
         <!-- Cabecera -->
-        <div class="flex justify-between items-center mb-3">
+        <div *ngFor="let objective of inactiveObjectives"
+        class="flex justify-between items-center mb-3">
           <div>
             <h3 class="font-semibold text-surface-800 mb-1">
               {{ objective.nombre }}
             </h3>
             <p-tag
-              [value]="objective.tipo"
+              [value]="objective.tipo ?? undefined"
               [style]="{ 'background-color': objective.color, color: 'white' }"
               class="text-xs"
             ></p-tag>
@@ -60,7 +61,6 @@
         </div>
         <!-- Fechas -->
         <div class="text-sm text-surface-600 mb-3 flex justify-between">
-          <span>Inicio: {{ objective.fecha_inicio | date:'dd/MM/yyyy' }}</span>
           <span>Fin: {{ objective.fecha_fin | date:'dd/MM/yyyy' }}</span>
         </div>
         <!-- Progreso -->
@@ -88,7 +88,7 @@
               <p-checkbox
                 [binary]="true"
                 [ngModel]="activity.completado"
-                (ngModelChange)="onActivityToggle($event, objective.id, activity.id)">
+                (ngModelChange)="onActivityToggle($event, objective.id, activity.id, objective.ninos_id)">
               </p-checkbox>
               <span
                 class="text-sm transition-all duration-200"
@@ -120,11 +120,12 @@
       <div *ngFor="let obj of inactiveObjectives"
            class="rounded-lg p-4 transition-shadow"
            [ngStyle]="getObjectiveStyles(obj)">
-        <div class="flex justify-between items-center mb-3">
+        <div *ngFor="let objective of inactiveObjectives"
+        class="flex justify-between items-center mb-3">
           <div>
             <h3 class="font-semibold text-surface-800 mb-1">{{ obj.nombre }}</h3>
             <p-tag
-              [value]="obj.tipo"
+              [value]="objective.tipo ?? undefined"
               [style]="{ 'background-color': obj.color, color: 'white' }"
               class="text-xs"
             ></p-tag>
@@ -135,7 +136,6 @@
           </p-button>
         </div>
         <div class="text-sm text-surface-600 mb-3 flex justify-between">
-          <span>Inicio: {{ obj.fecha_inicio | date:'dd/MM/yyyy' }}</span>
           <span>Fin: {{ obj.fecha_fin | date:'dd/MM/yyyy' }}</span>
         </div>
         <div class="mb-4">
@@ -150,7 +150,7 @@
           ></p-progressbar>
         </div>
         <div class="text-sm text-surface-600">
-          {{ obj.activities.length }} actividades completadas
+          {{ obj.activities?.length || 0 }} actividades completadas
         </div>
       </div>
     </div>

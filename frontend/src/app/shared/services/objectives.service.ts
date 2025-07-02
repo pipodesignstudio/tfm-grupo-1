@@ -1,137 +1,116 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
+import { TokenService } from '../../features/auth/services';
 
-export interface Activity {
+export interface IObjectiveActivity {
   id: number;
   titulo: string;
   descripcion?: string;
-  dia_semana?: number;
-  hora_inicio?: string;
-  hora_fin?: string;
-  color?: string;
-  tipo?: string;
-  ubicacion?: string;
-  usuario_responsable?: number;
   completado: boolean;
-  fechas_realizacion?: string[];
+  // ...otros campos si los necesitas
 }
 
-export interface Objective {
+export interface IObjective {
   id: number;
   ninos_id: number;
   nombre: string;
   color: string;
-  tipo: 'Salud' | 'Educación' | 'Alimentación' | 'Social' | 'Actividades' | 'Cuidado Diario' | 'Otros';
-  fecha_inicio: Date;
-  fecha_fin: Date;
-  activities: Activity[];
+  tipo: string;
+  fecha_inicio: string; // Usa string para fechas si tu backend lo hace así
+  fecha_fin: string;
+  activities: IObjectiveActivity[];
   completado: boolean;
 }
 
+interface CreateObjectiveResponse {
+  success: boolean;
+  message: string;
+  data: IObjective;
+}
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ObjectivesService {
-  private objectivesSubject = new BehaviorSubject<Objective[]>([]);
-  public objectives$: Observable<Objective[]> = this.objectivesSubject.asObservable();
 
-  private nextObjectiveId = 1;
-  private nextActivityId = 1;
+  private httpClient = inject(HttpClient);
+  private apiUrl: string  = 'http://localhost:3000/api';
+  private readonly tokenService = inject(TokenService);
 
-  constructor() {
-    const storedObjectives = localStorage.getItem('objectives');
-    if (storedObjectives) {
-      const objectives = JSON.parse(storedObjectives);
-      this.objectivesSubject.next(objectives);
-      if (objectives.length > 0) {
-        this.nextObjectiveId = Math.max(...objectives.map((o: Objective) => o.id)) + 1;
-        const maxActivityId = Math.max(...objectives.flatMap((o: Objective) => 
-          o.activities.map((a: Activity) => a.id)
-        ));
-        this.nextActivityId = maxActivityId + 1;
-      }
-    }
+  // Obtener todos los objetivos de un niño
+  getObjectivesByChild(ninos_id: string): Promise<IObjective[]> {
+    return lastValueFrom(
+      this.httpClient.get<{ data: IObjective[] }>(
+        `${this.apiUrl}/objetivos/ninos/${ninos_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    ).then(response => response.data);
   }
 
-  getObjectivesByChild(childId: number): Objective[] {
-    return this.objectivesSubject.getValue().filter(obj => obj.ninos_id === childId);
+  // Crear un objetivo para un niño
+  createObjective(objective: Omit<IObjective, 'id'>): Promise<IObjective> {
+    const { ninos_id, ...objectiveBody } = objective;
+    return lastValueFrom(
+      this.httpClient.post<CreateObjectiveResponse>(
+        `${this.apiUrl}/objetivos/ninos/${ninos_id}`,
+        objectiveBody,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    ).then(response => response.data);
   }
 
-  getActiveObjectives(childId: number): Objective[] {
-    return this.getObjectivesByChild(childId).filter(obj => !obj.completado);
+  // Editar un objetivo
+  updateObjective(objective: IObjective): Promise<IObjective> {
+    const { id, ninos_id, ...objectiveBody } = objective;
+    return lastValueFrom(
+      this.httpClient.put<IObjective>(
+        `${this.apiUrl}/objetivos/ninos/${ninos_id}/${id}`,
+        objectiveBody,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    );
   }
 
-  getInactiveObjectives(childId: number): Objective[] {
-    return this.getObjectivesByChild(childId).filter(obj => obj.completado);
+  // Eliminar un objetivo
+  deleteObjective(id: number, ninos_id: number): Promise<IObjective> {
+    return lastValueFrom(
+      this.httpClient.delete<IObjective>(
+        `${this.apiUrl}/objetivos/ninos/${ninos_id}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    );
   }
 
-  addObjective(objective: Omit<Objective, 'id'>): void {
-    const newObjective: Objective = {
-      ...objective,
-      id: this.nextObjectiveId++,
-    };
-    const currentObjectives = this.objectivesSubject.getValue();
-    const updatedObjectives = [...currentObjectives, newObjective];
-    this.objectivesSubject.next(updatedObjectives);
-    this.saveObjectivesToLocalStorage(updatedObjectives);
-  }
-
-  updateObjective(objective: Objective): void {
-    const currentObjectives = this.objectivesSubject.getValue();
-    const index = currentObjectives.findIndex(obj => obj.id === objective.id);
-    if (index !== -1) {
-      currentObjectives[index] = objective;
-      this.objectivesSubject.next(currentObjectives);
-      this.saveObjectivesToLocalStorage(currentObjectives);
-    }
-  }
-
-  deleteObjective(objectiveId: number): void {
-    const currentObjectives = this.objectivesSubject.getValue();
-    const updatedObjectives = currentObjectives.filter(obj => obj.id !== objectiveId);
-    this.objectivesSubject.next(updatedObjectives);
-    this.saveObjectivesToLocalStorage(updatedObjectives);
-  }
-
-  addActivityToObjective(objectiveId: number, activity: Omit<Activity, 'id'>): void {
-    const currentObjectives = this.objectivesSubject.getValue();
-    const objective = currentObjectives.find(obj => obj.id === objectiveId);
-    if (objective) {
-      const newActivity: Activity = {
-        ...activity,
-        id: this.nextActivityId++,
-      };
-      objective.activities.push(newActivity);
-      this.updateObjective(objective);
-    }
-  }
-
-  toggleActivityCompletion(objectiveId: number, activityId: number): void {
-    const currentObjectives = this.objectivesSubject.getValue();
-    const objective = currentObjectives.find(obj => obj.id === objectiveId);
-    if (objective) {
-      const activity = objective.activities.find(act => act.id === activityId);
-      if (activity) {
-        activity.completado = !activity.completado;
-        this.updateObjectiveProgress(objective);
-        this.updateObjective(objective);
-      }
-    }
-  }
-
-  private updateObjectiveProgress(objective: Objective): void {
-    const completedActivities = objective.activities.filter(act => act.completado).length;
-    const totalActivities = objective.activities.length;
-    objective.completado = totalActivities > 0 && completedActivities === totalActivities;
-  }
-
-  getObjectiveProgress(objective: Objective): number {
-    if (objective.activities.length === 0) return 0;
-    const completedActivities = objective.activities.filter(act => act.completado).length;
-    return Math.round((completedActivities / objective.activities.length) * 100);
-  }
-
-  private saveObjectivesToLocalStorage(objectives: Objective[]): void {
-    localStorage.setItem('objectives', JSON.stringify(objectives));
+  // Marcar/desmarcar actividad como completada
+  toggleActivityCompletion(objectiveId: number, activityId: number, ninos_id: number): Promise<IObjective> {
+    // Suponiendo que tienes un endpoint para esto. Si no, usa updateObjective.
+    return lastValueFrom(
+      this.httpClient.patch<IObjective>(
+        `${this.apiUrl}/objetivos/ninos/${ninos_id}/${objectiveId}/activities/${activityId}/toggle`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    );
   }
 }

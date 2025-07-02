@@ -3,8 +3,9 @@ import { ChildService } from '../../../../shared/services/child.service'
 import { FamiliesStore } from '../../../../shared/services/familiesStore.service'
 import { IChild } from '../../../../shared/interfaces/ichild.interface'
 import { Router } from '@angular/router';
+import { ActivityService } from '../../../../shared/services/activity.service';
+import { IObjective } from '../../../../shared/interfaces/iobjective.interface';
 
-import { Objective } from '../../../../shared/services';
 import { ObjectivesService } from '../../../../shared/services/objectives.service';
 
 import { ButtonModule } from 'primeng/button';
@@ -31,6 +32,8 @@ import { DialogModule } from 'primeng/dialog';
   templateUrl: './objectives-page.component.html',
   styleUrls: ['./objectives-page.component.css'],
 })
+
+
 export class ObjectivesPageComponent {
 
   constructor(private router: Router) {}
@@ -39,16 +42,17 @@ export class ObjectivesPageComponent {
   familiesStore = inject(FamiliesStore);
   private cdr = inject(ChangeDetectorRef);
   objectivesService = inject(ObjectivesService);
+  activityService = inject(ActivityService);
 
   // Variables para el desplegable
   children: IChild[] = [];
   filtroOpciones: { label: string; value: number | null }[] = [];
   selectedChild: number | null = null;
 
-  activeObjectives: Objective[] = [];
-  inactiveObjectives: Objective[] = [];
+  activeObjectives: IObjective[] = [];
+  inactiveObjectives: IObjective[] = [];
 
-  objectiveToDelete: Objective | null = null;
+  objectiveToDelete: IObjective | null = null;
   showDeleteDialog = false;
 
   // Efecto reactivo para cargar los niños cuando cambia la familia seleccionada
@@ -80,19 +84,42 @@ export class ObjectivesPageComponent {
     this.loadObjectives();
   }
 
-  loadObjectives(): void {
+  async populateObjectiveActivities(objective: IObjective): Promise<IObjective> {
+    if (objective.actividades_ids && objective.actividades_ids.length > 0) {
+      const activities = await Promise.all(
+        objective.actividades_ids.map(id => this.activityService.getActivityById(id))
+      );
+      return { ...objective, activities };
+    }
+    return { ...objective, activities: [] };
+  }
+
+  async loadObjectives() {
     if (!this.selectedChild) return;
-    this.activeObjectives = this.objectivesService.getActiveObjectives(this.selectedChild);
-    this.inactiveObjectives = this.objectivesService.getInactiveObjectives(this.selectedChild);
+    const objectives = await this.objectivesService.getObjectivesByChild(String(this.selectedChild));
+  
+    // Para cada objetivo, carga las actividades completas
+    const objectivesWithActivities = await Promise.all(
+      objectives.map(obj => this.populateObjectiveActivities(obj))
+    );
+  
+    // Ahora puedes separar activos e inactivos según el estado de las actividades
+    this.activeObjectives = objectivesWithActivities.filter(obj =>
+      obj.activities && obj.activities.some(act => !act.completado)
+    );
+    this.inactiveObjectives = objectivesWithActivities.filter(obj =>
+      obj.activities && obj.activities.length > 0 && obj.activities.every(act => act.completado)
+    );
   }
 
   createObjective(): void {
     this.router.navigate(['/dashboard/objectives-form'], {
       queryParams: { childId: this.selectedChild, mode: 'create' }
+
     });
   }
 
-  getObjectiveStyles(obj: Objective): { [key: string]: string } {
+  getObjectiveStyles(obj: IObjective): { [key: string]: string } {
     const base = obj.color;
     // Lógica para aclarar el color si lo necesitas
     return {
@@ -101,7 +128,7 @@ export class ObjectivesPageComponent {
     };
   }
   
-  editObjective(obj: Objective): void {
+  editObjective(obj: IObjective): void {
     this.router.navigate(['/dashboard/objectives-form'], {
       queryParams: {
         childId: this.selectedChild,
@@ -110,27 +137,23 @@ export class ObjectivesPageComponent {
       }
     });
   }
-
-  getObjectiveProgress(obj: Objective): number {
+  
+  getObjectiveProgress(obj: IObjective): number {
     if (!obj.activities || obj.activities.length === 0) return 0;
     const completed = obj.activities.filter(a => a.completado).length;
     return Math.round((completed / obj.activities.length) * 100);
   }
 
-  confirmDeleteObjective(obj: Objective): void {
+  confirmDeleteObjective(obj: IObjective): void {
     // Aquí puedes abrir un diálogo de confirmación o marcar el objetivo para borrar
     // Ejemplo simple:
     this.objectiveToDelete = obj;
     this.showDeleteDialog = true;
   }
   
-  onActivityToggle(completed: boolean, objectiveId: number, activityId: number): void {
-    // Llama a tu servicio para actualizar el estado de la actividad
-    this.objectivesService.toggleActivityCompletion(objectiveId, activityId);
-    // Recarga los objetivos para reflejar los cambios
-    this.loadObjectives();
+  onActivityToggle(completed: boolean, objectiveId: number, activityId: number, ninos_id: number): void {
+    this.objectivesService.toggleActivityCompletion(objectiveId, activityId, ninos_id)
+      .then(() => this.loadObjectives());
   }
-  
-  
-  
+   
 }
