@@ -193,4 +193,31 @@ router.post(
   controller.exportarActividades
 );
 
+
+/**
+ * @openapi
+ * /api/actividades/all:
+ *   get:
+ *     summary: Obtiene todas las actividades de un niño
+ *     tags:
+ *       - Actividades
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id_nino
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Listado de todas las actividades del niño
+ */
+
+router.get(
+  "/all",
+  asyncMiddlewareWrapper(authMiddleware),
+  asyncMiddlewareWrapper(controller.getAllActivitiesFromArray.bind(controller))
+);
+
 export default router;

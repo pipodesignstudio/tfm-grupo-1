@@ -178,4 +178,13 @@ export class ActividadService {
     return cnt === childIds.length;
   }
 
+  async getAllActivitiesFromArray(
+    activityIds: number[]): Promise<IActividad[]> {
+    const actividades = await prisma.actividades.findMany({
+      where: { id: { in: activityIds } },
+    });
+
+    return actividades;
+
+  }
 }
