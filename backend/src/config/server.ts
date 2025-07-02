@@ -48,11 +48,11 @@ export const startServer = async (): Promise<void> => {
   } catch (error) {
     console.error("❌ Error al iniciar la app:", error);
     await prisma.$disconnect();
-    // try {
-    //   await mongoose.disconnect();
-    // } catch (mongoError) {
-    //   console.error('❌ Error al desconectar Mongoose en el inicio fallido:', mongoError);
-    // }
+    try {
+      await mongoose.disconnect();
+    } catch (mongoError) {
+      console.error('❌ Error al desconectar Mongoose en el inicio fallido:', mongoError);
+    }
     process.exit(1);
   }
 };
