@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { INote } from '../../../../shared/interfaces/inote.interface';
@@ -33,7 +33,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
   ],
   providers: [MessageService, ConfirmationService],
 })
-export class NotesPageComponent implements OnInit {
+export class NotesPageComponent {
   childrenOptions: { label: string; value: number }[] = [];
   selectedChildId: number | null = null;
 
@@ -57,7 +57,7 @@ export class NotesPageComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  private familiaEffect = effect(() => {
     const familia = this.familiesStore.familiaSeleccionada();
     if (!familia) return;
 
@@ -81,13 +81,15 @@ export class NotesPageComponent implements OnInit {
       this.applyFilters();
       this.cdr.detectChanges();
     });
-  }
+  });
+
+
 
   onChildChange(): void {
     this.loadNotes();
   }
 
-  private loadNotes(): void {
+  loadNotes(): void {
     if (this.selectedChildId !== null) {
       this.notesService.getAllNotes(this.selectedChildId);
     }

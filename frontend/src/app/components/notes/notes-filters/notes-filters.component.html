@@ -18,13 +18,14 @@
     </div>
 
     <!-- Filtro por fecha -->
-    <div class="flex-1 min-w-[200px]">
+    <div class="flex-1 min-w-[200px] fluid">
       <label for="date" class="block text-sm font-medium text-gray-700 mb-1">
         Fecha
       </label>
       <p-datepicker
         formControlName="date"
-        class="w-full border-0 rounded-md"
+        class="w-full border-0 rounded-md "
+        styleClass="w-full"
         [iconDisplay]="'input'"
         [appendTo]="'body'"
         [showIcon]="true"
