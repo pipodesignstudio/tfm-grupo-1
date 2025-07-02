@@ -14,6 +14,7 @@ import {
 import { MessageModalComponent } from '../../../../../components/message-modal/message-modal.component';
 
 import { FamilyFormComponent } from '../../../../../components/family/family-form/family-form.component';
+import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
 
 @Component({
   selector: 'app-settings-family',
@@ -31,6 +32,7 @@ export class SettingsFamilyComponent {
   private router = inject(Router);
   private familiesStore = inject(FamiliesStore);
   private invitationsService = inject(InvitationsService);
+  private familiaUsuariosService = inject(FamiliaUsuariosService);
 
   showInvitacionModal = false;
 
@@ -43,6 +45,7 @@ export class SettingsFamilyComponent {
   private familiaEffect = effect(() => {
     this.familiaActual = this.familiesStore.familiaSeleccionada();
     this.familiasUsuario = this.familiesStore.familias();
+    console.log('familiasUsuario', this.familiasUsuario);
 
     this.loadInvitacionesAsync();
 
@@ -99,13 +102,43 @@ export class SettingsFamilyComponent {
   }
 
   salirDeFamilia(familiaId: number) {
-    console.log('Salir de familia', familiaId);
-    // Lógica real: eliminar la relación familia_usuarios para el usuario logueado
-    /*     this.familiasUsuario = this.familiasUsuario.filter(f => f.id !== familiaId);
-     */ if (this.familiaActual?.id === familiaId) {
-      this.familiaActual = null;
-      this.familiesStore.seleccionarFamilia(1); // Cambiar a una familia por defecto, si es necesario
-    }
+    console.log('Salir de familia', familiaId, this.familiaActual);
+
+    this.familiaUsuariosService.salirDeFamilia(familiaId).then(() => {
+      // Lógica adicional después de eliminar la familia
+      this.familiesStore.eliminarFamilia(familiaId);
+
+      if (this.familiaActual?.id === familiaId) {
+        console.log('Familia actual eliminada, seleccionando null');
+        this.familiesStore.seleccionarFamilia(null); // Selecciona null para no tener familia seleccionada
+        this.familiaActual = this.familiesStore.familiaSeleccionada();
+      }
+      this.familiasUsuario = this.familiesStore.familias();
+
+
+      console.log(this.familiaActual, this.familiasUsuario);
+
+      this.messageModalVisible = false;
+      this.familiaASalir = null; // Resetea la familia a salir
+      this.familiaASalirDescripcion = null; // Resetea la descripción de la familia a salir
+
+      this.changeDetector.detectChanges();
+    });
+  }
+
+  messageModalVisible = false;
+  familiaASalir: number | null = null;
+  familiaASalirDescripcion: string | null = null;
+
+  showMessageModal(familia: IUsersFamilies | null) {
+    this.familiaASalir = familia?.id || null;
+    this.familiaASalirDescripcion = familia?.descripcion || null;
+    this.messageModalVisible = true;
+  }
+
+  closeMessageModal() {
+    this.messageModalVisible = false;
+    this.familiaASalir = null;
     this.changeDetector.detectChanges();
   }
 
@@ -141,11 +174,5 @@ export class SettingsFamilyComponent {
       .catch((error: any) => {
         console.error('Error al enviar invitación:', error);
       });
-  }
-
-  messageModalVisible = false;
-  showMessageModal(message: string, buttonText: string) {
-    // Lógica para mostrar el modal con el mensaje y el texto del botón
-    this.messageModalVisible = true;
   }
 }

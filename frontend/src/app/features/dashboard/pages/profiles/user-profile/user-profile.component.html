@@ -26,7 +26,10 @@
           </p>
           }
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ rolFamilia }}
+            Familia: {{ descripcionFamilia }}
+          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Rol: {{ rolFamilia }}
           </p>
         </div>
       </div>
@@ -178,6 +181,9 @@
         <p class="text-gray-600 dark:text-gray-300">{{ user?.nick }}</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ user?.email }}
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Familia: {{ descripcionFamilia }}
         </p>
         <p class="text-sm text-gray-500 dark:text-gray-400">
           Rol: {{ rolFamilia == "admin" ? "Administrador" : "Cuidador" }}

@@ -33,7 +33,7 @@
         </button>
         }
         <button
-          (click)="salirDeFamilia(familia.id)"
+          (click)="showMessageModal(familia)"
           class="text-red-500 text-xs"
         >
           Salir
@@ -84,13 +84,14 @@
   </div>
 
   <div class="p-6 border-t border-gray-300">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-4 align-middle">
       <h2
-        class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+        class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide"
       >
         Invitaciones que has enviado
       </h2>
-      <div class="flex justify-center mb-4">
+      @if (familiaActual?.rol === 'admin') {
+      <div class="flex justify-center align-middle">
         <p-button
           (click)="openInvitacionModal()"
           class="flex items-center gap-2 dark:border-1"
@@ -99,6 +100,7 @@
           +
         </p-button>
       </div>
+      }
     </div>
 
     @if (invitacionesEnviadas?.length === 0) {
@@ -116,9 +118,10 @@
   </div>
   @if(messageModalVisible) {
   <app-message-modal
-    [message]="'¿Estás seguro de que deseas enviar esta invitación?'"
-    [buttonText]="'Enviar'"
-    (cerrar)="closeInvitacionModal()"
+    [message]="'¿Estás seguro de que deseas salir de la familia ' + (familiaASalirDescripcion || '') + '?'"
+    [buttonText]="'Salir'"
+    (cerrar)="closeMessageModal()"
+    (button)="salirDeFamilia(familiaASalir || 0)"
   ></app-message-modal>
   }
 
