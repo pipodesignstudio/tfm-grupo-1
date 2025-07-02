@@ -35,6 +35,7 @@ export class HeaderComponent {
     '/dashboard/settings': 'Configuración',
     '/dashboard/settings/edit-profile': 'Editar perfil',
     '/dashboard/about-us': 'Sobre nosotros',
+    '/dashboard/notes': 'Notas',
   };
 
   currentPath: string = '';

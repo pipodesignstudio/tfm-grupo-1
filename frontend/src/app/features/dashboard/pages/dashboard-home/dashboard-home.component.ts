@@ -41,7 +41,7 @@ export class DashboardHomeComponent {
     { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
     { url: '/dashboard/objectives', icon: 'pi pi-star', label: 'Objetivos' },
     { url: '/dashboard/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
-    { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
+    { url: '/dashboard/notes', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
   children: Child[] = [

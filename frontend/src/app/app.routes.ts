@@ -25,6 +25,7 @@ import { noAuthGuard } from './shared/guards/not-auth.guard';
 import { authGuard, onboardingGuard, redirectGuard } from './shared/guards';
 import { dashboardGuard } from './shared/guards/dashboard.guard';
 import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-home/dashboard-home.component';
+import { NotesPageComponent } from './features/dashboard/pages/notes-page/notes-page.component';
 import { ActivityFormComponent } from './components/activity/activity-form.component';
 import { SettingsFamilyComponent } from './features/dashboard/pages/profiles/settings-family/settings-family.component';
 
@@ -142,6 +143,10 @@ export const routes: Routes = [
       {
         path: 'routine-list',
         component: RoutineListPageComponent,
+      },
+      {
+        path: 'notes',
+        component: NotesPageComponent,
       },
       {
         path: '**',
