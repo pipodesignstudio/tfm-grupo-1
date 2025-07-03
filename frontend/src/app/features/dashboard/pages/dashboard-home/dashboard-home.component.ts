@@ -9,7 +9,6 @@ interface RoutineTask {
   time: string;
   icon: string;
   label: string;
-  completed: boolean;
   type: TaskType;
 }
 
@@ -54,28 +53,28 @@ export class DashboardHomeComponent {
           time: '07:30',
           icon: '🍳',
           label: 'Desayuno',
-          completed: false,
+
           type: 'meal',
         },
         {
           time: '08:15',
           icon: '🎒',
           label: 'Colegio',
-          completed: false,
+
           type: 'school',
         },
         {
           time: '17:00',
           icon: '📚',
           label: 'Deberes',
-          completed: false,
+
           type: 'homework',
         },
         {
           time: '20:00',
           icon: '🍽️',
           label: 'Cena',
-          completed: false,
+
           type: 'meal',
         },
       ],
@@ -89,28 +88,28 @@ export class DashboardHomeComponent {
           time: '07:45',
           icon: '🍳',
           label: 'Desayuno',
-          completed: false,
+
           type: 'meal',
         },
         {
           time: '09:00',
           icon: '🎒',
           label: 'Guardería',
-          completed: false,
+
           type: 'school',
         },
         {
           time: '17:30',
           icon: '🪁',
           label: 'Jugar',
-          completed: false,
+
           type: 'play',
         },
         {
           time: '20:00',
           icon: '🍽️',
           label: 'Cena',
-          completed: false,
+
           type: 'meal',
         },
       ],
@@ -143,13 +142,9 @@ export class DashboardHomeComponent {
     }
   }
 
-  toggleTaskComplete(task: RoutineTask) {
-    task.completed = !task.completed;
-  }
-
   underlineIn = false;
 
   ngOnInit() {
-    setTimeout(() => (this.underlineIn = true), 100); // pequeño delay para ver la animación
+    setTimeout(() => (this.underlineIn = true), 100); // delay para ver la animación
   }
 }
