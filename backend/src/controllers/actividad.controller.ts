@@ -100,5 +100,15 @@ export class ActividadController {
   }
 
 
+  public async getAllActivitiesFromArray(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const activityIds: number[] = req.body.activityIds;
+      const actividades = await actividadService.getAllActivitiesFromArray(activityIds);
+      ApiCorrectResponse.genericSuccess(res, actividades, true, 'Actividades obtenidas', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
 
 }

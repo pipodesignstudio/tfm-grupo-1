@@ -27,7 +27,13 @@ export class FamiliesStore {
     }
   }
 }
-  public seleccionarFamilia(id: number): void {
+  public seleccionarFamilia(id: number | null): void {
+    if(id === null){
+      // Si el ID es null selecionamos la primera familia
+      const primeraFamilia = this._familias()?.[0] ?? null;
+      this._familiaSeleccionada.set(primeraFamilia);
+      return;
+    }
   const familia = this._familias()?.find(f => f.id === id) ?? null;
   this._familiaSeleccionada.set(familia);
 
@@ -38,4 +44,16 @@ export class FamiliesStore {
   }
 }
 
+public eliminarFamilia(id: number): void {
+  const familiasActuales = this._familias();
+  if (familiasActuales) {
+    this._familias.set(familiasActuales.filter(f => f.id !== id));
+  }
+
+  if (this._familiaSeleccionada()?.id === id) {
+    this._familiaSeleccionada.set(null);
+    localStorage.removeItem('familiaSeleccionadaId');
+  }
+
+}
 }

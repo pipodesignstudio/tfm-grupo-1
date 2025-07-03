@@ -61,6 +61,7 @@ export class UserProfileComponent {
   userImage: SafeUrl | null = null;
 
   rolFamilia: 'admin' | 'cuidador' | null = null;
+  descripcionFamilia: string | null = null;
 
   childService = inject(ChildService);
   children: IChild[] = [];
@@ -100,6 +101,7 @@ export class UserProfileComponent {
         );
 
       this.rolFamilia = usuarioLogeado?.rol || null;
+      this.descripcionFamilia = familia.descripcion || null;
 
       if (usuarioLogeado) {
         this.usersFamily = this.usersFamily.filter(

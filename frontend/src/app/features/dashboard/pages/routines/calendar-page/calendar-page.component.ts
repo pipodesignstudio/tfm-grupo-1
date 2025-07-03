@@ -34,6 +34,7 @@ import { Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { IChild, IUser } from '../../../../../shared/interfaces';
 import { IFamiliaUsuario } from '../../../../../shared/interfaces/ifamily-users.interface';
+import { IUsersFamilies } from '../../../../../shared/interfaces/iusers-families.interface';
 
 
 @Component({
@@ -68,6 +69,7 @@ export class CalendarPageComponent {
 
   familyService = inject(FamilyService);
   usersFamily: IFamiliaUsuario[] = [];
+  userFamilia: IUsersFamilies | null = null;
 
   allEvents: IActivity[] = [];
   currentEvents: EventInput[] = [];
@@ -81,17 +83,18 @@ export class CalendarPageComponent {
   clickedDate: string  = new Date().toISOString().slice(0, 10);
 
   private familiaEffect = effect(async () => {
-    const familia = this.familiesStore.familiaSeleccionada();
-    if (familia == null || !this.calendarComponent) return;
+    this.userFamilia = this.familiesStore.familiaSeleccionada();
+    if (this.userFamilia == null || !this.calendarComponent) return;
+    console.log(this.userFamilia)
 
     try {
       // Cargar los niños de la familia seleccionada
       this.children = await this.childService.getChildrenByFamily(
-        String(familia.id)
+        String(this.userFamilia.id)
       );
 
       this.usersFamily = await this.familyService.getAllUsersFamily(
-        String(familia.id)
+        String(this.userFamilia.id)
       );
 
       console.log('usuarios de la familia:', this.usersFamily);
@@ -104,7 +107,7 @@ export class CalendarPageComponent {
 
       // Cargar los eventos de la familia seleccionada
        const activities = await this.activityService.getActivitiesFamily(
-        String(familia.id)
+        String(this.userFamilia.id)
       );
       this.initEventosCalendario(activities);
       
