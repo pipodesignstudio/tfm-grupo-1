@@ -113,7 +113,7 @@ model objetivos {
 model perfiles_aprendizaje {
   id          Int     @id @default(autoincrement())
   nombre      String  @db.VarChar(100)
-  descripcion String? @db.Text
+  descripcion String? @db.VarChar(100)
   ninos       ninos[]
 }
 

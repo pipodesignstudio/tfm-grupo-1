@@ -1,7 +1,7 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import axios from 'axios';
-import { IChild } from '../interfaces';
+import { CreateNinoDto, IChild } from '../interfaces';
 import { TokenService } from '../../features/auth/services';
 
 @Injectable({
@@ -12,6 +12,7 @@ export class ChildService {
   private childrenSubject = new BehaviorSubject<IChild[]>([]);
   public children$: Observable<IChild[]> = this.childrenSubject.asObservable();
   private readonly tokenService = inject(TokenService);
+  private token = computed(() => this.tokenService.token());
 
   // Carga los niños de la familia desde el backend y actualiza el observable
   async getChildrenByFamily(id_familia: string): Promise<IChild[]> {
@@ -65,4 +66,49 @@ export class ChildService {
   clearChildren(): void {
     this.childrenSubject.next([]);
   }
+
+  private async createPerfilAprendizaje(nombre:string, apellido:string):Promise<number | null> {
+    try {
+      const response = await axios.post<{ data: number }>(
+        `${this.apiUrl}/perfil-aprendizaje`,
+        { nombre: `Perfil de ${nombre} ${apellido}`,
+        descripcion: `Perfil de aprendizaje de ${nombre} ${apellido}`,
+      },
+        {
+          headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error('Error al crear perfil de aprendizaje:', error);
+      return null;
+    }
+  }
+
+  async createChild(childData: Omit<CreateNinoDto, 'perfiles_aprendizaje_id'>): Promise<IChild | null> {
+    try {
+      const perfiles_aprendizaje_id = await this.createPerfilAprendizaje(childData.nombre, childData.apellido);
+      const ninoDto = {
+        ...childData,
+        perfiles_aprendizaje_id: perfiles_aprendizaje_id,
+      };
+      const response = await axios.post<{ data: IChild }>(
+        `${this.apiUrl}/ninos`,
+        ninoDto,
+        {
+          headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+        }
+      );
+      const familia_id = childData.familia_id?.toString();
+      if (familia_id) {
+        await this.getChildrenByFamily(familia_id);
+      }
+      return response.data.data;
+    } catch (error) {
+      console.error('Error al crear perfil de aprendizaje:', error);
+      return null;
+    }
+
+  }
+
 }

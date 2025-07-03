@@ -6,8 +6,12 @@ import { UsersService } from './users.service';
 export class FamiliesStore {
   private readonly _familias = signal<IUsersFamilies[] | null>(null);
   private readonly _familiaSeleccionada = signal<IUsersFamilies | null>(null);
+  private readonly _currentKid = signal<number | null>(null);
   public readonly familias = computed(() => this._familias());
   public readonly familiaSeleccionada = computed(() => this._familiaSeleccionada());
+  public readonly currentKid = computed(() => this._currentKid());
+  private _currentFamilyId = signal<number | null>(null);
+  public readonly currentFamilyId = computed(() => this._currentFamilyId());
 
   constructor(private usersService: UsersService) {}
 
@@ -44,6 +48,15 @@ export class FamiliesStore {
   }
 }
 
+public setFamilyFirstTime(id:number): void {
+  localStorage.setItem('familiaSeleccionadaId', String(id));
+  this._currentFamilyId.set(id);
+}
+
+public getFamilyFirstTime(): number | null {
+  return Number(localStorage.getItem('familiaSeleccionadaId'));
+}
+
 public eliminarFamilia(id: number): void {
   const familiasActuales = this._familias();
   if (familiasActuales) {
@@ -56,4 +69,13 @@ public eliminarFamilia(id: number): void {
   }
 
 }
+
+public seleccionarNiño(id: number | null): void {
+  this._currentKid.set(id);
+}
+
+public eliminarNiño(id: number): void {
+  this._currentKid.set(null);
+}
+
 }

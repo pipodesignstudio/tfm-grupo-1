@@ -42,7 +42,6 @@ export class RegisterPageComponent implements OnInit {
   profileImageUrl: string | ArrayBuffer | null = null;
   errorMessage: string = '';
   private authService = inject(AuthService);
-  private familyService = inject(FamilyService);
   private messageService = inject(MessageService);
 
   public isLoading: boolean = false;
@@ -96,24 +95,10 @@ export class RegisterPageComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: response?.message ?? 'Error al registrar',
+        detail: response?.message ?? 'No hemos podido registrar al usuario',
       });
       return;
     }
-
-    try {
-      const familiaResponse = await this.familyService.createFamily();
-      const familiaId = familiaResponse.data.id;
-
-      localStorage.setItem('familia_id', familiaId.toString());
-
-      this.router.navigate([`auth/verificar/${dto.email}`]);
-    } catch (error: any) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: error?.message ?? 'Error al crear la familia',
-      });
-    }
+    this.router.navigate(['onboarding']);
   }
 }

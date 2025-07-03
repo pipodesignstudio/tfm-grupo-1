@@ -28,6 +28,8 @@ import { DashboardHomeComponent } from './features/dashboard/pages/dashboard-hom
 import { NotesPageComponent } from './features/dashboard/pages/notes-page/notes-page.component';
 import { ActivityFormComponent } from './components/activity/activity-form.component';
 import { SettingsFamilyComponent } from './features/dashboard/pages/profiles/settings-family/settings-family.component';
+import { InitOnboardingPageComponent } from './features/onboarding/pages/init-onboarding-page/init-onboarding-page.component';
+import { CreateNinoPageComponent } from './features/onboarding/pages/create-nino-page/create-nino-page.component';
 
 export const routes: Routes = [
   {
@@ -72,12 +74,16 @@ export const routes: Routes = [
     canActivate: [authGuard, onboardingGuard],
     children: [
       {
+        path: '',
+        component: InitOnboardingPageComponent,
+      },
+      {
         path: 'create-family',
         component: CreateFamilyComponent,
       },
       {
-        path: 'my-family',
-        component: MyFamilyComponent,
+        path: 'create-nino',
+        component: CreateNinoPageComponent,
       },
       {
         path: 'complete',
@@ -85,7 +91,7 @@ export const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'complete',
+        redirectTo: '',
         pathMatch: 'full',
       },
     ],
