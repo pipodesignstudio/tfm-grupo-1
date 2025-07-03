@@ -94,10 +94,9 @@ export class UserProfileComponent {
         String(familia.id)
       );
 
-      const usuarioLogeado =
-        this.usersFamily.find(
-          (miembro) => miembro.usuarios.email === this.user?.email
-        );
+      const usuarioLogeado = this.usersFamily.find(
+        (miembro) => miembro.usuarios.email === this.user?.email
+      );
 
       this.rolFamilia = usuarioLogeado?.rol || null;
 
@@ -360,9 +359,10 @@ export class UserProfileComponent {
             nick: userData.nick ?? this.user.nick,
             nombre: userData.nombre ?? this.user.nombre,
             apellido: userData.apellido ?? this.user.apellido,
-            img_perfil: typeof img_usuario_editado === 'string'
-              ? this.base64ToUint8Array(img_usuario_editado)
-              : (img_usuario_editado ?? this.user.img_perfil),
+            img_perfil:
+              typeof img_usuario_editado === 'string'
+                ? this.base64ToUint8Array(img_usuario_editado)
+                : img_usuario_editado ?? this.user.img_perfil,
           };
         }
         //Actualizar el usuario editado en la lista de familiares
@@ -374,31 +374,34 @@ export class UserProfileComponent {
           (member) => member.usuarios.email !== this.user?.email
         );
 
-
-        
-        this.usersFamily = [...this.usersFamily, {
-          familia_id: copyUserFamily?.familia_id || 0,
-          usuarios_id: copyUserFamily?.usuarios_id || 0,
-          rol: copyUserFamily?.rol || 'cuidador',
-          usuarios: { 
-            id: copyUserFamily?.usuarios.id || 0,
-            apellido: copyUserFamily?.usuarios?.apellido || null,
-            nombre: copyUserFamily?.usuarios?.nombre || null,
-            nick: copyUserFamily?.usuarios?.nick || '',
-            img_perfil: typeof img_usuario_editado === 'string'
-              ? this.base64ToUint8Array(img_usuario_editado)
-              : (img_usuario_editado ?? (this.user?.img_perfil )),
-            email: copyUserFamily?.usuarios?.email || '',
-            contrasena: copyUserFamily?.usuarios?.contrasena || '',
-            primeraSesion: copyUserFamily?.usuarios?.primeraSesion || false,
-            fechaCreacion: copyUserFamily?.usuarios?.fechaCreacion || new Date().toISOString(),
-            borrado: copyUserFamily?.usuarios?.borrado || false,
-            emailVerificado: copyUserFamily?.usuarios?.emailVerificado || false,
-            ...this.user // Asegurarse de que se actualicen los datos del usuario
-          }
-        }];
-
-
+        this.usersFamily = [
+          ...this.usersFamily,
+          {
+            familia_id: copyUserFamily?.familia_id || 0,
+            usuarios_id: copyUserFamily?.usuarios_id || 0,
+            rol: copyUserFamily?.rol || 'cuidador',
+            usuarios: {
+              id: copyUserFamily?.usuarios.id || 0,
+              apellido: copyUserFamily?.usuarios?.apellido || null,
+              nombre: copyUserFamily?.usuarios?.nombre || null,
+              nick: copyUserFamily?.usuarios?.nick || '',
+              img_perfil:
+                typeof img_usuario_editado === 'string'
+                  ? this.base64ToUint8Array(img_usuario_editado)
+                  : img_usuario_editado ?? this.user?.img_perfil,
+              email: copyUserFamily?.usuarios?.email || '',
+              contrasena: copyUserFamily?.usuarios?.contrasena || '',
+              primeraSesion: copyUserFamily?.usuarios?.primeraSesion || false,
+              fechaCreacion:
+                copyUserFamily?.usuarios?.fechaCreacion ||
+                new Date().toISOString(),
+              borrado: copyUserFamily?.usuarios?.borrado || false,
+              emailVerificado:
+                copyUserFamily?.usuarios?.emailVerificado || false,
+              ...this.user, // Asegurarse de que se actualicen los datos del usuario
+            },
+          },
+        ];
 
         this.closeUserFormModal(); // Cerrar el modal después de editar
         this.changeDetector.detectChanges();

@@ -9,8 +9,18 @@ import { TokenService } from '../../features/auth/services';
 export class FamilyService {
   private apiUrl: string = 'http://localhost:3000/api';
 
-    private readonly tokenService = inject(TokenService);
+  private readonly tokenService = inject(TokenService);
 
+  async createFamily(): Promise<{ data: { id: number } }> {
+    const response = await axios.post(
+      `${this.apiUrl}/familia`,
+      { descripcion: 'Familia creada automáticamente' },
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
+    );
+    return response.data;
+  }
 
   async getAllUsersFamily(id_familia: string): Promise<IFamiliaUsuario[]> {
     const response = await axios.get<{ data: IFamiliaUsuario[] }>(
@@ -21,6 +31,4 @@ export class FamilyService {
     );
     return response.data.data;
   }
-
-
 }

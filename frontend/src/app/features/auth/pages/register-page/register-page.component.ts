@@ -18,6 +18,7 @@ import { MessageService } from 'primeng/api';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { AutoFocusModule } from 'primeng/autofocus';
+import { FamilyService } from '../../../../shared/services/family.service';
 
 @Component({
   selector: 'app-register-page',
@@ -41,6 +42,7 @@ export class RegisterPageComponent implements OnInit {
   profileImageUrl: string | ArrayBuffer | null = null;
   errorMessage: string = '';
   private authService = inject(AuthService);
+  private familyService = inject(FamilyService);
   private messageService = inject(MessageService);
 
   public isLoading: boolean = false;
@@ -87,6 +89,7 @@ export class RegisterPageComponent implements OnInit {
     const { username, email, password } = this.registerForm.value;
     const dto: RegisterDto = { nick: username, email, contrasena: password };
 
+    // 1. Registrar usuario
     const response = await this.authService.register(dto);
     this.isLoading = false;
 
@@ -99,6 +102,22 @@ export class RegisterPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate([`auth/verificar/${dto.email}`]);
+    try {
+      // 2. Crear familia automáticamente
+      const familiaResponse = await this.familyService.createFamily();
+      const familiaId = familiaResponse.data.id;
+
+      // 3. Guardar familia_id para el siguiente paso
+      localStorage.setItem('familia_id', familiaId.toString());
+
+      // 4. Redirigir al siguiente paso (crear niño)
+      this.router.navigate([`auth/verificar/${dto.email}`]);
+    } catch (error: any) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error?.message ?? 'Error al crear la familia',
+      });
+    }
   }
 }

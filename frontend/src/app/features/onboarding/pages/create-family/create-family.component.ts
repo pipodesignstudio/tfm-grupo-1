@@ -15,7 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { AutoFocusModule } from 'primeng/autofocus';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
-import { NinosapiService } from '../../../../shared/services/ninosapi.service';
+import { ChildService } from '../../../../shared/services/child.service'; // Asegúrate de que la ruta es correcta
 
 @Component({
   selector: 'app-create-family',
@@ -52,12 +52,17 @@ export class CreateFamilyComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private ninosApi: NinosapiService,
+    private childService: ChildService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    const user = JSON.parse(localStorage.getItem('currentUser')!);
+    // Obtén el familia_id desde localStorage
+    this.familia_id = Number(localStorage.getItem('familia_id'));
+
+    // Si necesitas perfiles_aprendizaje_id, obténlo de donde corresponda (usuario, etc.)
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.perfiles_aprendizaje_id = user.perfiles_aprendizaje_id || null;
 
     this.childProfileForm = this.fb.group({
       name: ['', Validators.required],
@@ -67,8 +72,6 @@ export class CreateFamilyComponent implements OnInit {
       heightCm: [null, [Validators.min(1), Validators.max(300)]],
       weightKg: [null, [Validators.min(0.1), Validators.max(200)]],
     });
-    this.perfiles_aprendizaje_id = user.perfiles_aprendizaje_id;
-    this.familia_id = user.familia_id;
   }
 
   get f() {
@@ -102,7 +105,7 @@ export class CreateFamilyComponent implements OnInit {
     };
 
     try {
-      await this.ninosApi.create(payload);
+      await this.childService.addChild(payload);
       this.isLoading = false;
       this.router.navigate(['/onboarding/my-family']);
     } catch (err: any) {
