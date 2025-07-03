@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ChildService } from '../../../../shared/services/child.service';
 import { ButtonModule } from 'primeng/button';
 import { IChild } from '../../../../shared/interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-my-family',
@@ -14,23 +15,29 @@ import { IChild } from '../../../../shared/interfaces';
 })
 export class MyFamilyComponent implements OnInit, OnDestroy {
   children: IChild[] = [];
+  private childrenSubscription!: Subscription;
 
   constructor(private router: Router, private childService: ChildService) {}
 
   ngOnInit(): void {
     const familia_id = localStorage.getItem('familia_id');
     if (familia_id) {
-      this.childService.getChildrenByFamily(familia_id).then((children) => {
-        this.children = children;
-        console.log('Niños cargados en MyFamily:', this.children);
-      });
-    } else {
-      this.children = [];
+      // Carga inicial desde el backend
+      this.childService.getChildrenByFamily(familia_id);
     }
+    // Suscríbete al observable para reactividad en tiempo real
+    this.childrenSubscription = this.childService.children$.subscribe(
+      (children) => {
+        this.children = children;
+        // console.log('Niños cargados en MyFamily:', this.children);
+      }
+    );
   }
 
   ngOnDestroy(): void {
-    // No necesitas unsubscribe aquí porque no usas un observable en este ejemplo
+    if (this.childrenSubscription) {
+      this.childrenSubscription.unsubscribe();
+    }
   }
 
   addNewChild(): void {
@@ -50,7 +57,7 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
     if (familia_id) {
       try {
         await this.childService.deleteAllChildrenByFamily(familia_id);
-        this.children = [];
+        // El observable se limpia automáticamente
         alert('Todos los niños han sido borrados (Solo desarrollo).');
       } catch (error) {
         alert('Error al borrar los niños.');
