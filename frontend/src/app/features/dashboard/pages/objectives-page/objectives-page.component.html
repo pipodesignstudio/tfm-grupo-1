@@ -1,168 +1,43 @@
-<div class="p-6 min-h-screen">
-  <div class="flex items-start justify-between mb-6">
-    <!-- Desplegable niños -->
-    <div>
-      <label class="block text-sm font-medium text-surface-700 mb-2">
-        Seleccionar Niño
-      </label>
-      <p-dropdown
-        [options]="filtroOpciones"
-        [(ngModel)]="selectedChild"
-        placeholder="Selecciona un niño"
-        [style]="{ width: '300px' }"
-        (onChange)="onChildChange($event)"
-      ></p-dropdown>
-    </div>
-    <!-- Botón Objetivo -->
-    <div>
-      <p-button
-        label="Crear Objetivo"
-        icon="pi pi-plus"
-        (click)="createObjective()"
-      ></p-button>
+<!-- Toast y confirmación -->
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<section class="p-4 max-w-6xl mx-auto space-y-6">
+  <!-- Cabecera -->
+  <div class="pt-4">
+    <div class="flex flex-col gap-3">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Niño</h3>
+      <div class="flex justify-between items-center gap-4 flex-wrap">
+        <p-dropdown
+          [options]="childrenOptions"
+          [(ngModel)]="selectedChildId"
+          placeholder="Selecciona un niño"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="onChildChange()"
+          class="w-full max-w-md"
+        ></p-dropdown>
+
+        <!-- Botón para nuevo objetivo -->
+        <p-button
+          icon="pi pi-plus"
+          label="Nuevo Objetivo"
+          [raised]="true"
+          (onClick)="openNewObjectiveForm()"
+          severity="primary"
+        />
+      </div>
     </div>
   </div>
-  <!-- Visualización de objetivos -->
-<div *ngIf="selectedChild; else noChild">
-  <!-- Objetivos Activos -->
-  <section class="bg-white rounded-lg shadow-sm p-6 mb-6">
-    <h2 class="text-xl font-semibold text-surface-800 mb-4 flex items-center gap-2">
-      <i class="pi pi-check-circle text-green-500"></i>
-      Objetivos Activos
-    </h2>
-    <div *ngIf="activeObjectives.length > 0; else noActiveObjectives"
-         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div *ngFor="let objective of activeObjectives"
-           class="rounded-lg p-4 hover:shadow-md transition-shadow"
-           [ngStyle]="getObjectiveStyles(objective)">
-        <!-- Cabecera -->
-        <div *ngFor="let objective of inactiveObjectives"
-        class="flex justify-between items-center mb-3">
-          <div>
-            <h3 class="font-semibold text-surface-800 mb-1">
-              {{ objective.nombre }}
-            </h3>
-            <p-tag
-              [value]="objective.tipo ?? undefined"
-              [style]="{ 'background-color': objective.color, color: 'white' }"
-              class="text-xs"
-            ></p-tag>
-          </div>
-          <div class="flex gap-2">
-            <p-button icon="pi pi-pencil" [rounded]="true" text size="small"
-                      severity="secondary"
-                      (click)="editObjective(objective)">
-            </p-button>
-            <p-button icon="pi pi-trash" [rounded]="true" text size="small"
-                      severity="danger"
-                      (click)="confirmDeleteObjective(objective)">
-            </p-button>
-          </div>
-        </div>
-        <!-- Fechas -->
-        <div class="text-sm text-surface-600 mb-3 flex justify-between">
-          <span>Fin: {{ objective.fecha_fin | date:'dd/MM/yyyy' }}</span>
-        </div>
-        <!-- Progreso -->
-        <div class="mb-4">
-          <div class="flex justify-between text-sm text-surface-600 mb-1">
-            <span>Progreso</span>
-            <span>{{ getObjectiveProgress(objective) }}%</span>
-          </div>
-          <p-progressbar
-            [value]="getObjectiveProgress(objective)"
-            [showValue]="false"
-            [style]="{ height: '8px' }"
-          ></p-progressbar>
 
-
-        </div>
-        <!-- Actividades -->
-        <div>
-          <h4 class="text-sm font-medium text-surface-700 mb-2">
-            Actividades
-          </h4>
-          <div class="space-y-2">
-            <div *ngFor="let activity of objective.activities"
-                 class="flex items-center gap-2 p-2 rounded">
-              <p-checkbox
-                [binary]="true"
-                [ngModel]="activity.completado"
-                (ngModelChange)="onActivityToggle($event, objective.id, activity.id, objective.ninos_id)">
-              </p-checkbox>
-              <span
-                class="text-sm transition-all duration-200"
-                [class.line-through]="activity.completado"
-                [class.text-surface-400]="activity.completado"
-              >
-                {{ activity.titulo }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <ng-template #noActiveObjectives>
-      <p class="text-surface-500 text-center py-8">
-        No hay objetivos activos
+  <!-- Lista de objetivos -->
+  <div class="mt-6">
+    @if (objectives.length === 0) {
+      <p class="text-center text-gray-500 mt-10 text-xl font-semibold">
+        No hay objetivos disponibles.
       </p>
-    </ng-template>
-  </section>
-
-  <!-- Objetivos Completados -->
-  <section class="bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-xl font-semibold text-surface-800 mb-4 flex items-center gap-2">
-      <i class="pi pi-check text-green-500"></i>
-      Objetivos Completados
-    </h2>
-    <div *ngIf="inactiveObjectives.length > 0; else noCompleted"
-         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div *ngFor="let obj of inactiveObjectives"
-           class="rounded-lg p-4 transition-shadow"
-           [ngStyle]="getObjectiveStyles(obj)">
-        <div *ngFor="let objective of inactiveObjectives"
-        class="flex justify-between items-center mb-3">
-          <div>
-            <h3 class="font-semibold text-surface-800 mb-1">{{ obj.nombre }}</h3>
-            <p-tag
-              [value]="objective.tipo ?? undefined"
-              [style]="{ 'background-color': obj.color, color: 'white' }"
-              class="text-xs"
-            ></p-tag>
-          </div>
-          <p-button icon="pi pi-trash" [rounded]="true" text size="small"
-                    severity="danger"
-                    (click)="confirmDeleteObjective(obj)">
-          </p-button>
-        </div>
-        <div class="text-sm text-surface-600 mb-3 flex justify-between">
-          <span>Fin: {{ obj.fecha_fin | date:'dd/MM/yyyy' }}</span>
-        </div>
-        <div class="mb-4">
-          <div class="flex justify-between text-sm text-surface-600 mb-1">
-            <span>Progreso</span>
-            <span>100%</span>
-          </div>
-          <p-progressbar
-            [value]="100"
-            [showValue]="false"
-            [style]="{ height: '8px', 'background-color': getObjectiveStyles(obj)['background-color'] }"
-          ></p-progressbar>
-        </div>
-        <div class="text-sm text-surface-600">
-          {{ obj.activities?.length || 0 }} actividades completadas
-        </div>
-      </div>
-    </div>
-    <ng-template #noCompleted>
-      <p class="text-surface-500 text-center py-8">No hay objetivos completados</p>
-    </ng-template>
-  </section>
-</div>
-
-<ng-template #noChild>
-  <p class="text-surface-500 text-center py-12">
-    Selecciona un niño para ver sus objetivos
-  </p>
-</ng-template>
-</div>
+    } @else {
+      <app-objectives-list [objectives]="objectives" />
+    }
+  </div>
+</section>

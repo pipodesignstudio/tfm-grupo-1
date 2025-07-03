@@ -8,7 +8,7 @@ import { ChildProfileComponent } from './features/dashboard/pages/profiles/child
 import { MyFamilyComponent } from './features/onboarding/pages/my-family/my-family.component';
 import { AboutUsPageComponent } from './features/dashboard/pages/about-us-page/about-us-page.component';
 import { ObjectivesPageComponent } from './features/dashboard/pages/objectives-page/objectives-page.component';
-import { ObjectivesFormComponent } from './features/dashboard/components/objectives-form/objectives-form.component';
+// import { ObjectivesFormComponent } from './features/dashboard/components/objectives-form/objectives-form.component';
 import { LandingPageComponent } from './features/landing-page/pages/landing-page/landing-page.component';
 import { CreateRoutineComponent } from './features/auth/pages/create-routine/create-routine.component';
 import { Mensaje2Component } from './features/onboarding/pages/mensaje2/mensaje2.component';
@@ -132,10 +132,10 @@ export const routes: Routes = [
         path: 'objectives',
         component: ObjectivesPageComponent,
       },
-      {
-        path: 'objectives-form',
-        component: ObjectivesFormComponent,
-      },
+      // {
+      //   path: 'objectives-form',
+      //   component: ObjectivesFormComponent,
+      // },
       {
         path: 'activity-form',
         component: ActivityFormComponent,

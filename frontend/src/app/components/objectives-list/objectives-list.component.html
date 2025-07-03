@@ -1,0 +1,39 @@
+<section class="space-y-8">
+  <!-- OBJETIVOS ACTIVOS -->
+  <div>
+    <h2 class="text-xl font-bold mb-4">Objetivos activos</h2>
+
+    @if (activeObjectives().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        @for (objective of activeObjectives(); track objective.id) {
+          <div class="bg-white rounded-2xl shadow p-4 border-l-4" [ngStyle]="{ 'border-color': objective.color || '#ccc' }">
+            <h3 class="text-lg font-semibold">{{ objective.nombre }}</h3>
+            <p class="text-sm text-gray-600">{{ objective.tipo || 'Sin tipo' }}</p>
+            <p class="text-xs text-gray-500 mt-1">Hasta: {{ objective.fecha_fin | date: 'shortDate' }}</p>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="text-sm text-gray-500">No hay objetivos activos.</p>
+    }
+  </div>
+
+  <!-- OBJETIVOS COMPLETADOS -->
+  <div>
+    <h2 class="text-xl font-bold mb-4">Objetivos completados</h2>
+
+    @if (completedObjectives().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        @for (objective of completedObjectives(); track objective.id) {
+          <div class="bg-gray-100 rounded-2xl shadow-inner p-4 border-l-4" [ngStyle]="{ 'border-color': objective.color || '#ccc' }">
+            <h3 class="text-lg font-semibold text-gray-500 line-through">{{ objective.nombre }}</h3>
+            <p class="text-sm text-gray-400">{{ objective.tipo || 'Sin tipo' }}</p>
+            <p class="text-xs text-gray-400 mt-1">Finalizó: {{ objective.fecha_fin | date: 'shortDate' }}</p>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="text-sm text-gray-500">No hay objetivos completados.</p>
+    }
+  </div>
+</section>

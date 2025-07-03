@@ -1,116 +1,121 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
-import { TokenService } from '../../features/auth/services';
+import { Injectable } from '@angular/core';
+import axios from 'axios';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { IObjective, IObjectiveCreateOrUpdate,} from '../interfaces/iobjective.interface';
+import { TokenService } from '../../features/auth/services/token.service';
 
-export interface IObjectiveActivity {
-  id: number;
-  titulo: string;
-  descripcion?: string;
-  completado: boolean;
-  // ...otros campos si los necesitas
-}
-
-export interface IObjective {
-  id: number;
-  ninos_id: number;
-  nombre: string;
-  color: string;
-  tipo: string;
-  fecha_inicio: string; // Usa string para fechas si tu backend lo hace así
-  fecha_fin: string;
-  activities: IObjectiveActivity[];
-  completado: boolean;
-}
-
-interface CreateObjectiveResponse {
-  success: boolean;
-  message: string;
-  data: IObjective;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ObjectivesService {
+  // URL base para acceder a los objetivos de un niño
+  private readonly baseUrl = `${environment.backendUrl}/api/ninos`;
 
-  private httpClient = inject(HttpClient);
-  private apiUrl: string  = 'http://localhost:3000/api';
-  private readonly tokenService = inject(TokenService);
+  // Almacena la lista de objetivos en memoria y expone un observable
+  private objectivesSubject = new BehaviorSubject<IObjective[]>([]);
+  public objectives$: Observable<IObjective[]> = this.objectivesSubject.asObservable();
 
-  // Obtener todos los objetivos de un niño
-  getObjectivesByChild(ninos_id: string): Promise<IObjective[]> {
-    return lastValueFrom(
-      this.httpClient.get<{ data: IObjective[] }>(
-        `${this.apiUrl}/objetivos/ninos/${ninos_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.tokenService.token()}`,
-          },
-        }
-      )
-    ).then(response => response.data);
+  constructor(private tokenService: TokenService) {}
+
+  /**
+   * Devuelve las cabeceras con el token de autorización
+   */
+  private getAuthHeaders() {
+    const token = this.tokenService.token();
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
   }
 
-  // Crear un objetivo para un niño
-  createObjective(objective: Omit<IObjective, 'id'>): Promise<IObjective> {
-    const { ninos_id, ...objectiveBody } = objective;
-    return lastValueFrom(
-      this.httpClient.post<CreateObjectiveResponse>(
-        `${this.apiUrl}/objetivos/ninos/${ninos_id}`,
-        objectiveBody,
-        {
-          headers: {
-            Authorization: `Bearer ${this.tokenService.token()}`,
-          },
-        }
-      )
-    ).then(response => response.data);
-  }
-
-  // Editar un objetivo
-  updateObjective(objective: IObjective): Promise<IObjective> {
-    const { id, ninos_id, ...objectiveBody } = objective;
-    return lastValueFrom(
-      this.httpClient.put<IObjective>(
-        `${this.apiUrl}/objetivos/ninos/${ninos_id}/${id}`,
-        objectiveBody,
-        {
-          headers: {
-            Authorization: `Bearer ${this.tokenService.token()}`,
-          },
-        }
-      )
+  /**
+   * Obtiene todos los objetivos asociados a un niño por su ID
+   * Actualiza el BehaviorSubject con la respuesta o con un array vacío si falla
+   */
+  public async getObjectivesByChildId(idNino: number): Promise<void> {
+  try {
+    const response = await axios.get<{ success: boolean; message: string; data: IObjective[] }>(
+      `${this.baseUrl}/${idNino}/objetivos`,
+      this.getAuthHeaders()
     );
+
+    // ✅ Solo guardamos el array
+    this.objectivesSubject.next(response.data.data);
+  } catch (error) {
+    console.error('Error al obtener los objetivos:', error);
+    this.objectivesSubject.next([]);
+  }
+}
+
+  /**
+   * Crea un nuevo objetivo para el niño especificado
+   * Añade el nuevo objetivo al array actual del BehaviorSubject
+   */
+  public async createObjective(idNino: number, body: IObjectiveCreateOrUpdate): Promise<void> {
+    try {
+      const response = await axios.post<{ data: IObjective }>(
+        `${this.baseUrl}/${idNino}/objetivos`,
+        body,
+        this.getAuthHeaders()
+      );
+      const current = this.objectivesSubject.getValue();
+      this.objectivesSubject.next([...current, response.data.data]);
+    } catch (error) {
+      console.error('Error al crear el objetivo:', error);
+    }
   }
 
-  // Eliminar un objetivo
-  deleteObjective(id: number, ninos_id: number): Promise<IObjective> {
-    return lastValueFrom(
-      this.httpClient.delete<IObjective>(
-        `${this.apiUrl}/objetivos/ninos/${ninos_id}/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.tokenService.token()}`,
-          },
-        }
-      )
-    );
+  /**
+   * Actualiza un objetivo existente
+   * Reemplaza el objetivo correspondiente en el BehaviorSubject
+   */
+  public async updateObjective(
+    idNino: number,
+    idObjetivo: number,
+    body: IObjectiveCreateOrUpdate
+  ): Promise<void> {
+    try {
+      const response = await axios.put<{ data: IObjective }>(
+        `${this.baseUrl}/${idNino}/objetivos/${idObjetivo}`,
+        body,
+        this.getAuthHeaders()
+      );
+      const updated = response.data.data;
+      const newList = this.objectivesSubject.getValue().map(obj =>
+        obj.id === idObjetivo ? updated : obj
+      );
+      this.objectivesSubject.next(newList);
+    } catch (error) {
+      console.error('Error al actualizar el objetivo:', error);
+    }
   }
 
-  // Marcar/desmarcar actividad como completada
-  toggleActivityCompletion(objectiveId: number, activityId: number, ninos_id: number): Promise<IObjective> {
-    // Suponiendo que tienes un endpoint para esto. Si no, usa updateObjective.
-    return lastValueFrom(
-      this.httpClient.patch<IObjective>(
-        `${this.apiUrl}/objetivos/ninos/${ninos_id}/${objectiveId}/activities/${activityId}/toggle`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${this.tokenService.token()}`,
-          },
-        }
-      )
-    );
+  /**
+   * Elimina un objetivo por su ID
+   * Quita el objetivo del array del BehaviorSubject
+   */
+  public async deleteObjective(idNino: number, idObjetivo: number): Promise<void> {
+    try {
+      await axios.delete(`${this.baseUrl}/${idNino}/objetivos/${idObjetivo}`, this.getAuthHeaders());
+      const newList = this.objectivesSubject.getValue().filter(obj => obj.id !== idObjetivo);
+      this.objectivesSubject.next(newList);
+    } catch (error) {
+      console.error('Error al eliminar el objetivo:', error);
+    }
+  }
+
+  /**
+   * Devuelve la lista de objetivos actual almacenada en memoria
+   */
+  public getObjectives(): IObjective[] {
+    const value = this.objectivesSubject.getValue();
+    return value;
+  }
+
+  /**
+   * Limpia los objetivos de la memoria (por ejemplo, al cambiar de niño)
+   */
+  public clearObjectives(): void {
+    this.objectivesSubject.next([]);
   }
 }
