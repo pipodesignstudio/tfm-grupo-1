@@ -1,130 +1,105 @@
-import { Component, OnInit } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
-
-type TaskType = 'meal' | 'school' | 'homework' | 'play' | 'other';
-
-interface RoutineTask {
-  time: string;
-  icon: string;
-  label: string;
-  type: TaskType;
-}
-
-interface Child {
-  name: string;
-  photoUrl: string;
-  routine: RoutineTask[];
-}
+import { UsersService } from '../../../../shared/services/users.service';
+import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
+import { ChildService } from '../../../../shared/services/child.service';
+import { RoutineService } from '../../../../shared/services/routine.service';
+import { IChild, IRoutine } from '../../../../shared/interfaces';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-home',
-  imports: [CommonModule, RouterModule],
+  standalone: true, // Standalone component!
+  imports: [
+    RouterModule, // Importa RouterModule aquí para routerLink
+  ],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
-  animations: [
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('300ms', style({ opacity: 1, transform: 'none' })),
-      ]),
-    ]),
-  ],
 })
 export class DashboardHomeComponent {
-  userName: string = 'Paula';
+  // INYECCIONES
+  private familiesStore = inject(FamiliesStore);
+  private usersService = inject(UsersService);
+  private childService = inject(ChildService);
+  private routineService = inject(RoutineService);
+  private changeDetector = inject(ChangeDetectorRef);
+
+  // PROPIEDADES
+  user = this.usersService.user; // signal reactiva
+  userName = '';
   date = new Date();
+
+  children: IChild[] = [];
+  activeChild = 0;
+  routines: IRoutine[] = [];
+  loading = signal(true);
 
   links = [
     { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
     { url: '/dashboard/objectives', icon: 'pi pi-star', label: 'Objetivos' },
     { url: '/dashboard/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
-    { url: '/dashboard/notes', icon: 'pi pi-pencil', label: 'Notas' },
+    { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
-  children: Child[] = [
-    {
-      name: 'Mateo',
-      photoUrl:
-        'https://api.dicebear.com/9.x/dylan/svg?seed=Destiny&scale=85&backgroundColor=ffd700',
-      routine: [
-        {
-          time: '07:30',
-          icon: '🍳',
-          label: 'Desayuno',
+  underlineIn = false;
 
-          type: 'meal',
-        },
-        {
-          time: '08:15',
-          icon: '🎒',
-          label: 'Colegio',
+  constructor() {
+    // Efecto reactivo: cada vez que cambia la familia seleccionada, recarga los niños y rutinas
+    effect(async () => {
+      const familia = this.familiesStore.familiaSeleccionada();
+      if (!familia) return;
 
-          type: 'school',
-        },
-        {
-          time: '17:00',
-          icon: '📚',
-          label: 'Deberes',
+      this.loading.set(true);
 
-          type: 'homework',
-        },
-        {
-          time: '20:00',
-          icon: '🍽️',
-          label: 'Cena',
+      // 1. Cargar usuario
+      this.userName = this.user()?.nombre || this.user()?.nick || 'usuario';
 
-          type: 'meal',
-        },
-      ],
-    },
-    {
-      name: 'Julia',
-      photoUrl:
-        'https://api.dicebear.com/9.x/dylan/svg?seed=Sawyer&scale=85&facialHairProbability=0&hairColor=000000,fff500,ffffff&mood=neutral,happy&skinColor=d2996c&backgroundColor=ffd700',
-      routine: [
-        {
-          time: '07:45',
-          icon: '🍳',
-          label: 'Desayuno',
+      // 2. Cargar niños
+      this.children = await this.childService.getChildrenByFamily(
+        String(familia.id)
+      );
+      this.activeChild = 0;
 
-          type: 'meal',
-        },
-        {
-          time: '09:00',
-          icon: '🎒',
-          label: 'Guardería',
+      // 3. Cargar rutinas del primer niño
+      await this.loadRoutineForActiveChild();
 
-          type: 'school',
-        },
-        {
-          time: '17:30',
-          icon: '🪁',
-          label: 'Jugar',
-
-          type: 'play',
-        },
-        {
-          time: '20:00',
-          icon: '🍽️',
-          label: 'Cena',
-
-          type: 'meal',
-        },
-      ],
-    },
-  ];
-
-  activeChild = 0;
-
-  nextChild() {
-    this.activeChild = (this.activeChild + 1) % this.children.length;
+      this.loading.set(false);
+      this.changeDetector.detectChanges();
+    });
   }
 
-  previousChild() {
-    this.activeChild =
-      (this.activeChild - 1 + this.children.length) % this.children.length;
+  async loadRoutineForActiveChild() {
+    if (this.children.length > 0) {
+      const childId = this.children[this.activeChild].id;
+      this.routines = await firstValueFrom(
+        this.routineService.getAllRoutines(childId)
+      );
+    } else {
+      this.routines = [];
+    }
+  }
+
+  async nextChild() {
+    if (this.children.length > 1) {
+      this.activeChild = (this.activeChild + 1) % this.children.length;
+      await this.loadRoutineForActiveChild();
+      this.changeDetector.detectChanges();
+    }
+  }
+
+  async previousChild() {
+    if (this.children.length > 1) {
+      this.activeChild =
+        (this.activeChild - 1 + this.children.length) % this.children.length;
+      await this.loadRoutineForActiveChild();
+      this.changeDetector.detectChanges();
+    }
   }
 
   getTaskColorClass(type: string): string {
@@ -142,9 +117,7 @@ export class DashboardHomeComponent {
     }
   }
 
-  underlineIn = false;
-
   ngOnInit() {
-    setTimeout(() => (this.underlineIn = true), 100); // delay para ver la animación
+    setTimeout(() => (this.underlineIn = true), 100);
   }
 }
