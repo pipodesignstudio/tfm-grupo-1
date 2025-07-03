@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { RoutineService } from '../../../../../shared/services/routine.service';
 
 @Component({
   selector: 'app-routine-form-page',
   standalone: true,
   templateUrl: './routine-form-page.component.html',
-  imports: [FormsModule, HttpClientModule],
+  imports: [FormsModule],
 })
 export class RoutineFormPageComponent implements OnInit {
+  private routineService = inject(RoutineService);
+
   rutina: any = {
     nombre: '',
     descripcion: '',
@@ -33,10 +35,7 @@ export class RoutineFormPageComponent implements OnInit {
   rutinaId: number | null = null;
   editando = false;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     const paramIdNino = this.route.snapshot.queryParamMap.get('id_nino');
@@ -47,39 +46,42 @@ export class RoutineFormPageComponent implements OnInit {
       this.router.navigate(['/dashboard/routine-list']);
       return;
     }
+
     this.idNino = Number(paramIdNino);
     this.rutinaId = paramRutinaId ? Number(paramRutinaId) : null;
     this.editando = !!this.rutinaId;
-
-    // Si necesitas cargar datos de rutina existente, aquí iría la lógica.
   }
 
   agregarActividad(): void {
     this.actividades.push({
       id: this.actividadIdAuto++,
       nombre: '',
-      hora: '08:00'
+      hora: '08:00',
     });
   }
 
   eliminarActividad(id: number): void {
-    this.actividades = this.actividades.filter(act => act.id !== id);
+    this.actividades = this.actividades.filter((act) => act.id !== id);
   }
 
-  guardarRutina(): void {
-    // Aquí puedes transformar 'actividades' y 'rutina' para enviarlos a tu API según tu modelo.
+  async guardarRutina(): Promise<void> {
     const payload = {
       ...this.rutina,
-      actividades: this.actividades.map(a => ({
-        nombre: a.nombre,
-        hora: a.hora
-      }))
+      actividades: this.actividades.map((a) => ({
+        titulo: a.nombre,
+        hora_inicio: a.hora,
+      })),
     };
-    console.log('Rutina a guardar:', payload);
-    // Lógica para guardar la rutina (API)
-    this.router.navigate(['/dashboard/routine-list'], {
-      queryParams: { id_nino: this.idNino },
-    });
+
+    try {
+      await this.routineService.crearRutina(this.idNino, payload);
+      this.router.navigate(['/dashboard/routine-list'], {
+        queryParams: { id_nino: this.idNino },
+      });
+    } catch (error) {
+      console.error('Error al guardar la rutina:', error);
+      alert('Hubo un error al guardar la rutina');
+    }
   }
 
   cancelar(): void {

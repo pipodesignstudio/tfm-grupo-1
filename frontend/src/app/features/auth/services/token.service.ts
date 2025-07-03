@@ -1,4 +1,3 @@
-// token.service.ts
 import { Injectable, signal, computed } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -11,6 +10,10 @@ export class TokenService {
   }
 
   public readonly token = computed(() => this._token());
+
+  public getToken(): string | null {
+    return this._token();
+  }
 
   public setToken(token: string): void {
     localStorage.setItem(this.STORAGE_KEY, token);

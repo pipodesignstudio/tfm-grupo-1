@@ -1,72 +1,49 @@
-@if (rutinas.length > 0) {
+<div class="mb-6">
+  <p-dropdown
+    [options]="children"
+    [(ngModel)]="selectedChildId"
+    optionLabel="nombre"
+    optionValue="id"
+    placeholder="Selecciona un niño"
+    [style]="{ width: '300px' }"
+    (onChange)="onChildChange($event)"
+  ></p-dropdown>
+</div>
+
+<div class="mb-8">
+  <button
+    class="bg-[#FF7F50] text-white px-4 py-2 rounded-lg font-semibold shadow hover:opacity-90"
+    (click)="nuevaRutina()"
+    [disabled]="!selectedChildId"
+  >
+    + Nueva Rutina
+  </button>
+</div>
+
+@for (rutina of rutinas; track rutina.id) {
   <div class="bg-white/90 rounded-3xl p-6 mb-8 shadow-xl border border-[#9ED2C5]/40">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h2 class="text-2xl font-bold text-[#3A3A3A]">{{ rutinas[0].nombre }}</h2>
-        <p class="text-sm text-[#3A3A3A] mt-1">{{ rutinas[0].descripcion }}</p>
-        <p class="text-sm text-[#9ED2C5] mt-2 font-medium">{{ formatearFrecuencia(rutinas[0].frecuencia) }}</p>
+        <h2 class="text-2xl font-bold text-[#3A3A3A]">{{ rutina.nombre }}</h2>
+        <p class="text-sm text-[#3A3A3A] mt-1">{{ rutina.descripcion }}</p>
+        <p class="text-sm text-[#9ED2C5] mt-2 font-medium">{{ formatearFrecuencia(rutina.frecuencia) }}</p>
       </div>
       <div class="flex gap-2">
-        <button class="text-[#9ED2C5] hover:underline" (click)="editarRutina(rutinas[0].id)">Editar</button>
-        <button class="text-red-500 hover:underline" (click)="eliminarRutina(rutinas[0].id)">Eliminar</button>
+        <button class="text-[#9ED2C5] hover:underline" (click)="editarRutina(rutina.id)">Editar</button>
+        <button class="text-red-500 hover:underline" (click)="eliminarRutina(rutina.id)">Eliminar</button>
       </div>
     </div>
 
     <ul class="space-y-3 mt-3">
-      @if (rutinas[0].actividades.length > 0) {
-        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
-          <span class="text-[#3A3A3A]">{{ rutinas[0].actividades[0].titulo }}</span>
-          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[0].actividades[0].hora_inicio) }}</span>
-        </li>
-      }
-      @if (rutinas[0].actividades.length > 1) {
-        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
-          <span class="text-[#3A3A3A]">{{ rutinas[0].actividades[1].titulo }}</span>
-          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[0].actividades[1].hora_inicio) }}</span>
-        </li>
-      }
-      @if (rutinas[0].actividades.length > 2) {
-        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
-          <span class="text-[#3A3A3A]">{{ rutinas[0].actividades[2].titulo }}</span>
-          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[0].actividades[2].hora_inicio) }}</span>
-        </li>
-      }
-    </ul>
-  </div>
-}
-
-@if (rutinas.length > 1) {
-  <div class="bg-white/90 rounded-3xl p-6 mb-8 shadow-xl border border-[#9ED2C5]/40">
-    <div class="flex justify-between items-start mb-3">
-      <div>
-        <h2 class="text-2xl font-bold text-[#3A3A3A]">{{ rutinas[1].nombre }}</h2>
-        <p class="text-sm text-[#3A3A3A] mt-1">{{ rutinas[1].descripcion }}</p>
-        <p class="text-sm text-[#9ED2C5] mt-2 font-medium">{{ formatearFrecuencia(rutinas[1].frecuencia) }}</p>
-      </div>
-      <div class="flex gap-2">
-        <button class="text-[#9ED2C5] hover:underline" (click)="editarRutina(rutinas[1].id)">Editar</button>
-        <button class="text-red-500 hover:underline" (click)="eliminarRutina(rutinas[1].id)">Eliminar</button>
-      </div>
-    </div>
-
-    <ul class="space-y-3 mt-3">
-      @if (rutinas[1].actividades.length > 0) {
-        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
-          <span class="text-[#3A3A3A]">{{ rutinas[1].actividades[0].titulo }}</span>
-          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[1].actividades[0].hora_inicio) }}</span>
-        </li>
-      }
-      @if (rutinas[1].actividades.length > 1) {
-        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
-          <span class="text-[#3A3A3A]">{{ rutinas[1].actividades[1].titulo }}</span>
-          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[1].actividades[1].hora_inicio) }}</span>
-        </li>
-      }
-      @if (rutinas[1].actividades.length > 2) {
-        <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
-          <span class="text-[#3A3A3A]">{{ rutinas[1].actividades[2].titulo }}</span>
-          <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(rutinas[1].actividades[2].hora_inicio) }}</span>
-        </li>
+      @if (rutina.actividades.length > 0) {
+        @for (actividad of rutina.actividades; track actividad.id) {
+          <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
+            <span class="text-[#3A3A3A]">{{ actividad.titulo }}</span>
+            <span class="text-[#9ED2C5] font-semibold text-sm">{{ getHora(actividad.hora_inicio) }}</span>
+          </li>
+        }
+      } @else {
+        <li class="text-gray-400 text-center py-2">No hay actividades.</li>
       }
     </ul>
   </div>

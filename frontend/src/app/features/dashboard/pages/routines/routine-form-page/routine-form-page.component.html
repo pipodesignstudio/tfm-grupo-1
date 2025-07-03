@@ -38,29 +38,30 @@
     <!-- Actividades dinámicas -->
     <label class="block font-semibold text-[#3A3A3A] mb-2">Actividades</label>
     <div class="space-y-3 mb-4">
-      @for (actividad of actividades; track actividad.id) {
-        <div class="flex items-center bg-white p-3 rounded-xl border border-[#9ED2C5] gap-2">
-          <input
-            type="text"
-            class="p-2 border border-[#9ED2C5] rounded-md flex-1"
-            placeholder="Nombre de la actividad"
-            [(ngModel)]="actividad.nombre"
-            name="nombre_{{actividad.id}}"
-            required
-          />
-          <input
-            type="time"
-            class="p-2 border border-[#9ED2C5] rounded-md"
-            [(ngModel)]="actividad.hora"
-            name="hora_{{actividad.id}}"
-            required
-          />
-          <button type="button" class="ml-2 text-red-500 text-sm hover:underline" (click)="eliminarActividad(actividad.id)">
-            Eliminar
-          </button>
-        </div>
-      }
-      @empty {
+      @if (actividades.length > 0) {
+        @for (actividad of actividades; track actividad.id) {
+          <div class="flex items-center bg-white p-3 rounded-xl border border-[#9ED2C5] gap-2">
+            <input
+              type="text"
+              class="p-2 border border-[#9ED2C5] rounded-md flex-1"
+              placeholder="Nombre de la actividad"
+              [(ngModel)]="actividad.nombre"
+              name="nombre_{{actividad.id}}"
+              required
+            />
+            <input
+              type="time"
+              class="p-2 border border-[#9ED2C5] rounded-md"
+              [(ngModel)]="actividad.hora"
+              name="hora_{{actividad.id}}"
+              required
+            />
+            <button type="button" class="ml-2 text-red-500 text-sm hover:underline" (click)="eliminarActividad(actividad.id)">
+              Eliminar
+            </button>
+          </div>
+        }
+      } @else {
         <div class="text-gray-400 text-center">No hay actividades añadidas.</div>
       }
     </div>
