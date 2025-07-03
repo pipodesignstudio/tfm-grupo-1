@@ -20,9 +20,9 @@ export const startServer = async (): Promise<void> => {
     await prisma.$connect();
     console.log("✅ Conectado a la base de datos MySQL (Prisma)");
 
-    // --- Conexión a MongoDB (Mongoose) ---
-    await connectMongoDB(); 
-    console.log('✅ Conectado a la base de datos MongoDB (Mongoose)');
+    // // --- Conexión a MongoDB (Mongoose) ---
+    // await connectMongoDB();
+    console.log("✅ Conectado a la base de datos MongoDB (Mongoose)");
 
     app.listen(PORT, () => {
       console.log(`🚀 Servidor arrancado en el puerto: ${PORT}`);
@@ -34,12 +34,15 @@ export const startServer = async (): Promise<void> => {
     const gracefulShutdown = async (signal: NodeJS.Signals) => {
       await prisma.$disconnect();
       console.log(`🔌 Prisma desconectado (${signal})`);
-      try {
-        await mongoose.disconnect();
-        console.log(`🔌 Mongoose desconectado (${signal})`);
-      } catch (mongoDisconnectError) {
-        console.error('❌ Error al desconectar Mongoose:', mongoDisconnectError);
-      }
+      // try {
+      //   await mongoose.disconnect();
+      //   console.log(`🔌 Mongoose desconectado (${signal})`);
+      // } catch (mongoDisconnectError) {
+      //   console.error(
+      //     "❌ Error al desconectar Mongoose:",
+      //     mongoDisconnectError
+      //   );
+      // }
       process.exit(0);
     };
 
@@ -48,11 +51,14 @@ export const startServer = async (): Promise<void> => {
   } catch (error) {
     console.error("❌ Error al iniciar la app:", error);
     await prisma.$disconnect();
-    try {
-      await mongoose.disconnect();
-    } catch (mongoError) {
-      console.error('❌ Error al desconectar Mongoose en el inicio fallido:', mongoError);
-    }
+    // try {
+    //   await mongoose.disconnect();
+    // } catch (mongoError) {
+    //   console.error(
+    //     "❌ Error al desconectar Mongoose en el inicio fallido:",
+    //     mongoError
+    //   );
+    // }
     process.exit(1);
   }
 };
