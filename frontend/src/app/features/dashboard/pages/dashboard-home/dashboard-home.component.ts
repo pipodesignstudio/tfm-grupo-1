@@ -74,24 +74,8 @@ export class DashboardHomeComponent {
     });
   }
 
+  // NO BORRAR DE MOMENTO
   // Carga las actividades del niño activo filtrando por tipo "Evento" y ordenando por hora_inicio
-  //
-  async loadActivitiesForActiveChild() {
-    if (this.children.length > 0) {
-      const childId = this.children[this.activeChild].id;
-      const allActivities = await this.activityService.getActivitiesNino(
-        childId.toString()
-      );
-      // Filtra solo las de tipo "Evento"
-      this.activities = allActivities.filter(
-        (a) => a.tipo && a.tipo.toLowerCase() === 'evento'
-      );
-    } else {
-      this.activities = [];
-    }
-  }
-
-  //  Filtra las actividades del día actual y ordena por hora_inicio
   //
   // async loadActivitiesForActiveChild() {
   //   if (this.children.length > 0) {
@@ -99,26 +83,43 @@ export class DashboardHomeComponent {
   //     const allActivities = await this.activityService.getActivitiesNino(
   //       childId.toString()
   //     );
-  //     const today = new Date();
-  //     // Filtra solo "Evento" del día actual y ordena por hora_inicio
-  //     this.activities = allActivities
-  //       .filter(
-  //         (a) =>
-  //           a.tipo &&
-  //           a.tipo.toLowerCase() === 'evento' &&
-  //           a.fecha_realizacion &&
-  //           new Date(a.fecha_realizacion).toDateString() ===
-  //             today.toDateString()
-  //       )
-  //       .sort(
-  //         (a, b) =>
-  //           new Date(a.hora_inicio).getTime() -
-  //           new Date(b.hora_inicio).getTime()
-  //       );
+  //     // Filtra solo las de tipo "Evento"
+  //     this.activities = allActivities.filter(
+  //       (a) => a.tipo && a.tipo.toLowerCase() === 'evento'
+  //     );
   //   } else {
   //     this.activities = [];
   //   }
   // }
+
+  //  Filtra las actividades del día actual y ordena por hora_inicio
+
+  async loadActivitiesForActiveChild() {
+    if (this.children.length > 0) {
+      const childId = this.children[this.activeChild].id;
+      const allActivities = await this.activityService.getActivitiesNino(
+        childId.toString()
+      );
+      const today = new Date();
+      // Filtra solo "Evento" del día actual y ordena por hora_inicio
+      this.activities = allActivities
+        .filter(
+          (a) =>
+            a.tipo &&
+            a.tipo.toLowerCase() === 'evento' &&
+            a.fecha_realizacion &&
+            new Date(a.fecha_realizacion).toDateString() ===
+              today.toDateString()
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.hora_inicio).getTime() -
+            new Date(b.hora_inicio).getTime()
+        );
+    } else {
+      this.activities = [];
+    }
+  }
 
   async nextChild() {
     if (this.children.length > 1) {
