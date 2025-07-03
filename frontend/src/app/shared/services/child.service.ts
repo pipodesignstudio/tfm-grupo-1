@@ -4,26 +4,16 @@ import axios from 'axios';
 import { IChild } from '../interfaces';
 import { TokenService } from '../../features/auth/services';
 
-export interface ChildProfile {
-  id: number;
-  name: string;
-  dob: string;
-  profileImageUrl: string | null;
-  gender?: string | null;
-  heightCm?: number | null;
-  weightKg?: number | null;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class ChildService {
   private apiUrl: string = 'http://localhost:3000/api';
+  private childrenSubject = new BehaviorSubject<IChild[]>([]);
+  public children$: Observable<IChild[]> = this.childrenSubject.asObservable();
+  private readonly tokenService = inject(TokenService);
 
-
-    private readonly tokenService = inject(TokenService);
-
-
+  // Carga los niños de la familia desde el backend y actualiza el observable
   async getChildrenByFamily(id_familia: string): Promise<IChild[]> {
     const response = await axios.get<{ data: IChild[] }>(
       `${this.apiUrl}/ninos/familia/${id_familia}`,
@@ -31,9 +21,12 @@ export class ChildService {
         headers: { Authorization: `Bearer ${this.tokenService.token()}` },
       }
     );
-    return response.data.data;
+    const children = response.data.data;
+    this.childrenSubject.next(children); // Actualiza el observable
+    return children;
   }
 
+  // Añade un niño y actualiza el observable
   async addChild(childData: Partial<IChild>): Promise<IChild> {
     const response = await axios.post<{ data: IChild }>(
       `${this.apiUrl}/ninos`,
@@ -42,67 +35,34 @@ export class ChildService {
         headers: { Authorization: `Bearer ${this.tokenService.token()}` },
       }
     );
+    // Refresca la lista desde el backend
+    const familia_id = childData.familia_id?.toString();
+    if (familia_id) {
+      await this.getChildrenByFamily(familia_id);
+    }
     return response.data.data;
   }
 
+  // Borra un niño individualmente (no actualiza el observable automáticamente)
   async deleteChild(id: number): Promise<void> {
-    await axios.delete(`${this.apiUrl}/ninos/${id}`,
-      {
-        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
-      });
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-  private childrenSubject = new BehaviorSubject<ChildProfile[]>([]);
-  public children$: Observable<ChildProfile[]> =
-    this.childrenSubject.asObservable();
-
-  private nextId = 1;
-
-  constructor() {
-    const storedChildren = localStorage.getItem('children');
-    if (storedChildren) {
-      const children = JSON.parse(storedChildren);
-      this.childrenSubject.next(children);
-      if (children.length > 0) {
-        this.nextId = Math.max(...children.map((c: ChildProfile) => c.id)) + 1;
-      }
-    }
-  }
-
-  addChildLocalStorage(childData: Omit<ChildProfile, 'id'>): void {
-    const newChild: ChildProfile = {
-      ...childData,
-      id: this.nextId++,
-    };
-    const currentChildren = this.childrenSubject.getValue();
-    const updatedChildren = [...currentChildren, newChild];
+    await axios.delete(`${this.apiUrl}/ninos/${id}`, {
+      headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+    });
+    const updatedChildren = this.childrenSubject
+      .getValue()
+      .filter((child) => child.id !== id);
     this.childrenSubject.next(updatedChildren);
-    this.saveChildrenToLocalStorage(updatedChildren);
   }
 
-  getChildren(): ChildProfile[] {
-    return this.childrenSubject.getValue();
-  }
-
-  private saveChildrenToLocalStorage(children: ChildProfile[]): void {
-    localStorage.setItem('children', JSON.stringify(children));
+  // Borra todos los niños de la familia y limpia el observable
+  async deleteAllChildrenByFamily(familia_id: string): Promise<void> {
+    await axios.delete(`${this.apiUrl}/ninos/familia/${familia_id}`, {
+      headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+    });
+    this.childrenSubject.next([]);
   }
 
   clearChildren(): void {
     this.childrenSubject.next([]);
-    localStorage.removeItem('children');
-    this.nextId = 1;
   }
 }

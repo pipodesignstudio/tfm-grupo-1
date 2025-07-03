@@ -20,8 +20,8 @@ export const startServer = async (): Promise<void> => {
     await prisma.$connect();
     console.log("✅ Conectado a la base de datos MySQL (Prisma)");
 
-    // --- Conexión a MongoDB (Mongoose) ---
-    //await connectMongoDB();
+    // // --- Conexión a MongoDB (Mongoose) ---
+    // await connectMongoDB();
     console.log("✅ Conectado a la base de datos MongoDB (Mongoose)");
 
     app.listen(PORT, () => {
@@ -38,7 +38,10 @@ export const startServer = async (): Promise<void> => {
       //   await mongoose.disconnect();
       //   console.log(`🔌 Mongoose desconectado (${signal})`);
       // } catch (mongoDisconnectError) {
-      //   console.error('❌ Error al desconectar Mongoose:', mongoDisconnectError);
+      //   console.error(
+      //     "❌ Error al desconectar Mongoose:",
+      //     mongoDisconnectError
+      //   );
       // }
       process.exit(0);
     };
@@ -51,7 +54,10 @@ export const startServer = async (): Promise<void> => {
     // try {
     //   await mongoose.disconnect();
     // } catch (mongoError) {
-    //   console.error('❌ Error al desconectar Mongoose en el inicio fallido:', mongoError);
+    //   console.error(
+    //     "❌ Error al desconectar Mongoose en el inicio fallido:",
+    //     mongoError
+    //   );
     // }
     process.exit(1);
   }

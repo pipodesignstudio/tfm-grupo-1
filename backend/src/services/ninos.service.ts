@@ -1,7 +1,7 @@
-import prisma from '../config/prisma.config';
-import { CreateNinoDto } from '../dtos/ninos/create-nino.dto';
-import { UpdateNinoDto } from '../dtos/ninos/update-nino.dto';
-import { NotFoundError, InternalServerError } from '../utils';
+import prisma from "../config/prisma.config";
+import { CreateNinoDto } from "../dtos/ninos/create-nino.dto";
+import { UpdateNinoDto } from "../dtos/ninos/update-nino.dto";
+import { NotFoundError, InternalServerError } from "../utils";
 
 export class NinosService {
   /**
@@ -15,19 +15,26 @@ export class NinosService {
         fecha_nacimiento: new Date(dto.fecha_nacimiento), // Prisma exige Date
       };
       if (dto.img_perfil) {
-        data.img_perfil = Buffer.from(dto.img_perfil, 'base64');
+        data.img_perfil = Buffer.from(dto.img_perfil, "base64");
       }
       return await prisma.ninos.create({ data });
     } catch (error) {
-      console.error('Error real al crear niño:', error);
-      throw new InternalServerError('Error al crear niño', { error: 'INTERNAL_SERVER_ERROR' });
+      console.error("Error real al crear niño:", error);
+      throw new InternalServerError("Error al crear niño", {
+        error: "INTERNAL_SERVER_ERROR",
+      });
     }
   }
 
   /** Obtiene un niño por ID. */
   async getById(id: number) {
     const nino = await prisma.ninos.findUnique({ where: { id } });
-    if (!nino) throw new NotFoundError('Niño no encontrado', { error: 'NINO_NOT_FOUND' }, false);
+    if (!nino)
+      throw new NotFoundError(
+        "Niño no encontrado",
+        { error: "NINO_NOT_FOUND" },
+        false
+      );
     return nino;
   }
 
@@ -42,7 +49,11 @@ export class NinosService {
 
       // Copiar campos simples
       Object.entries(dto).forEach(([key, val]) => {
-        if (val !== undefined && key !== 'img_perfil' && key !== 'fecha_nacimiento') {
+        if (
+          val !== undefined &&
+          key !== "img_perfil" &&
+          key !== "fecha_nacimiento"
+        ) {
           data[key] = val;
         }
       });
@@ -53,17 +64,25 @@ export class NinosService {
       }
 
       // Manejar imagen
-      if ('img_perfil' in dto) {
-        data.img_perfil = dto.img_perfil ? Buffer.from(dto.img_perfil, 'base64') : null;
+      if ("img_perfil" in dto) {
+        data.img_perfil = dto.img_perfil
+          ? Buffer.from(dto.img_perfil, "base64")
+          : null;
       }
 
       const result = await prisma.ninos.updateMany({ where: { id }, data });
       if (result.count === 0) {
-        throw new NotFoundError('Niño no encontrado', { error: 'NINO_NOT_FOUND' }, false);
+        throw new NotFoundError(
+          "Niño no encontrado",
+          { error: "NINO_NOT_FOUND" },
+          false
+        );
       }
     } catch (error) {
-      console.error('Error real al actualizar niño:', error);
-      throw new InternalServerError('Error al actualizar niño', { error: 'INTERNAL_SERVER_ERROR' });
+      console.error("Error real al actualizar niño:", error);
+      throw new InternalServerError("Error al actualizar niño", {
+        error: "INTERNAL_SERVER_ERROR",
+      });
     }
   }
 
@@ -72,13 +91,23 @@ export class NinosService {
     try {
       const result = await prisma.ninos.deleteMany({ where: { id } });
       if (result.count === 0) {
-        throw new NotFoundError('Niño no encontrado', { error: 'NINO_NOT_FOUND' }, false);
+        throw new NotFoundError(
+          "Niño no encontrado",
+          { error: "NINO_NOT_FOUND" },
+          false
+        );
       }
-      return { message: 'Niño eliminado' };
+      return { message: "Niño eliminado" };
     } catch (error) {
-      console.error('Error real al eliminar niño:', error);
-      throw new InternalServerError('Error al eliminar niño', { error: 'INTERNAL_SERVER_ERROR' });
+      console.error("Error real al eliminar niño:", error);
+      throw new InternalServerError("Error al eliminar niño", {
+        error: "INTERNAL_SERVER_ERROR",
+      });
     }
+  }
+
+  async deleteByFamilia(familiaId: number): Promise<void> {
+    await prisma.ninos.deleteMany({ where: { familia_id: familiaId } });
   }
 
   /** Lista los niños pertenecientes a una familia. */
@@ -86,8 +115,10 @@ export class NinosService {
     try {
       return await prisma.ninos.findMany({ where: { familia_id: familiaId } });
     } catch (error) {
-      console.error('Error real al listar niños:', error);
-      throw new InternalServerError('Error al listar niños', { error: 'INTERNAL_SERVER_ERROR' });
+      console.error("Error real al listar niños:", error);
+      throw new InternalServerError("Error al listar niños", {
+        error: "INTERNAL_SERVER_ERROR",
+      });
     }
   }
 }

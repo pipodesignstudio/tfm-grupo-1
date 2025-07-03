@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { CommonModule } from '@angular/common';
@@ -11,10 +17,13 @@ import { CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
-import { ChildProfile, ChildService } from '../../../../shared/services/child.service';
-import { Activity, ObjectivesService, Objective } from '../../../../shared/services/objectives.service';
-
-
+import { ChildService } from '../../../../shared/services/child.service';
+import {
+  Activity,
+  ObjectivesService,
+  Objective,
+} from '../../../../shared/services/objectives.service';
+import { IChild } from '../../../../shared/interfaces';
 
 @Component({
   selector: 'app-objectives-form',
@@ -30,13 +39,13 @@ import { Activity, ObjectivesService, Objective } from '../../../../shared/servi
     CalendarModule,
     InputTextModule,
     TextareaModule,
-    DialogModule
-  ]
+    DialogModule,
+  ],
 })
 export class ObjectivesFormComponent implements OnInit {
   objectiveForm!: FormGroup;
   activityForm!: FormGroup;
-  children: ChildProfile[] = [];
+  children: IChild[] = [];
   activities: Partial<Activity>[] = [];
   showAddActivityDialog = false;
   isEditMode = false;
@@ -45,12 +54,12 @@ export class ObjectivesFormComponent implements OnInit {
 
   categories = [
     'Salud',
-    'Educación', 
+    'Educación',
     'Alimentación',
     'Social',
     'Actividades',
     'Cuidado Diario',
-    'Otros'
+    'Otros',
   ];
 
   colors = [
@@ -61,7 +70,7 @@ export class ObjectivesFormComponent implements OnInit {
     { name: 'Morado', value: '#8B5CF6' },
     { name: 'Rosa', value: '#EC4899' },
     { name: 'Naranja', value: '#F97316' },
-    { name: 'Turquesa', value: '#14B8A6' }
+    { name: 'Turquesa', value: '#14B8A6' },
   ];
 
   constructor(
@@ -86,28 +95,28 @@ export class ObjectivesFormComponent implements OnInit {
       nombre: ['', Validators.required],
       fecha_fin: ['', Validators.required],
       tipo: ['', Validators.required],
-      color: [this.selectedColor]
+      color: [this.selectedColor],
     });
 
     this.activityForm = this.fb.group({
       titulo: ['', Validators.required],
       descripcion: [''],
-      hora_inicio: ['']
+      hora_inicio: [''],
     });
   }
 
   loadChildren(): void {
-    this.childService.children$.subscribe(children => {
+    this.childService.children$.subscribe((children) => {
       this.children = children;
     });
   }
 
   checkRouteParams(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['childId']) {
         this.objectiveForm.patchValue({ ninos_id: Number(params['childId']) });
       }
-      
+
       if (params['mode'] === 'edit' && params['objectiveId']) {
         this.isEditMode = true;
         this.currentObjectiveId = Number(params['objectiveId']);
@@ -121,21 +130,23 @@ export class ObjectivesFormComponent implements OnInit {
       const objectives = this.objectivesService.getObjectivesByChild(
         this.objectiveForm.value.ninos_id
       );
-      const objective = objectives.find(obj => obj.id === this.currentObjectiveId);
-      
+      const objective = objectives.find(
+        (obj) => obj.id === this.currentObjectiveId
+      );
+
       if (objective) {
         this.objectiveForm.patchValue({
           ninos_id: objective.ninos_id,
           nombre: objective.nombre,
           fecha_fin: objective.fecha_fin,
           tipo: objective.tipo,
-          color: objective.color
+          color: objective.color,
         });
         this.selectedColor = objective.color;
-        this.activities = objective.activities.map(activity => ({
+        this.activities = objective.activities.map((activity) => ({
           titulo: activity.titulo,
           descripcion: activity.descripcion,
-          hora_inicio: activity.hora_inicio
+          hora_inicio: activity.hora_inicio,
         }));
       }
     }
@@ -152,9 +163,9 @@ export class ObjectivesFormComponent implements OnInit {
         titulo: this.activityForm.value.titulo,
         descripcion: this.activityForm.value.descripcion,
         hora_inicio: this.activityForm.value.hora_inicio,
-        completado: false
+        completado: false,
       };
-      
+
       this.activities.push(newActivity);
       this.activityForm.reset();
       this.showAddActivityDialog = false;
@@ -184,15 +195,15 @@ export class ObjectivesFormComponent implements OnInit {
           titulo: activity.titulo || '',
           descripcion: activity.descripcion,
           hora_inicio: activity.hora_inicio,
-          completado: activity.completado || false
+          completado: activity.completado || false,
         })) as Activity[],
-        completado: false
+        completado: false,
       };
 
       if (this.isEditMode && this.currentObjectiveId) {
         const updatedObjective: Objective = {
           ...objectiveData,
-          id: this.currentObjectiveId
+          id: this.currentObjectiveId,
         };
         this.objectivesService.updateObjective(updatedObjective);
       } else {

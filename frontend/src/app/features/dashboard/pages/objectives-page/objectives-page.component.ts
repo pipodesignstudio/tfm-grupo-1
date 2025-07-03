@@ -11,10 +11,12 @@ import { TagModule } from 'primeng/tag';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
-import { ChildProfile, ChildService } from '../../../../shared/services/child.service';
-import { Objective, ObjectivesService } from '../../../../shared/services/objectives.service';
-
-
+import { ChildService } from '../../../../shared/services/child.service';
+import {
+  Objective,
+  ObjectivesService,
+} from '../../../../shared/services/objectives.service';
+import { IChild } from '../../../../shared/interfaces';
 
 @Component({
   selector: 'app-objectives-page',
@@ -27,13 +29,13 @@ import { Objective, ObjectivesService } from '../../../../shared/services/object
     TagModule,
     ProgressBarModule,
     CheckboxModule,
-    DialogModule
+    DialogModule,
   ],
   templateUrl: './objectives-page.component.html',
-  styleUrls: ['./objectives-page.component.css']
+  styleUrls: ['./objectives-page.component.css'],
 })
 export class ObjectivesPageComponent implements OnInit {
-  children: ChildProfile[] = [];
+  children: IChild[] = [];
   selectedChild: number | null = null;
   activeObjectives: Objective[] = [];
   inactiveObjectives: Objective[] = [];
@@ -48,7 +50,7 @@ export class ObjectivesPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.childService.children$.subscribe(children => {
+    this.childService.children$.subscribe((children) => {
       this.children = children;
       if (children.length && !this.selectedChild) {
         this.selectedChild = children[0].id;
@@ -64,8 +66,12 @@ export class ObjectivesPageComponent implements OnInit {
 
   private loadObjectives(): void {
     if (!this.selectedChild) return;
-    this.activeObjectives = this.objectivesService.getActiveObjectives(this.selectedChild);
-    this.inactiveObjectives = this.objectivesService.getInactiveObjectives(this.selectedChild);
+    this.activeObjectives = this.objectivesService.getActiveObjectives(
+      this.selectedChild
+    );
+    this.inactiveObjectives = this.objectivesService.getInactiveObjectives(
+      this.selectedChild
+    );
   }
 
   goBack(): void {
@@ -74,7 +80,7 @@ export class ObjectivesPageComponent implements OnInit {
 
   createObjective(): void {
     this.router.navigate(['/objectives-form'], {
-      queryParams: { childId: this.selectedChild, mode: 'create' }
+      queryParams: { childId: this.selectedChild, mode: 'create' },
     });
   }
 
@@ -83,8 +89,8 @@ export class ObjectivesPageComponent implements OnInit {
       queryParams: {
         childId: this.selectedChild,
         objectiveId: obj.id,
-        mode: 'edit'
-      }
+        mode: 'edit',
+      },
     });
   }
 
@@ -107,18 +113,21 @@ export class ObjectivesPageComponent implements OnInit {
   }
 
   isObjectiveExpired(obj: Objective): boolean {
-    const today = new Date(), end = new Date(obj.fecha_fin);
+    const today = new Date(),
+      end = new Date(obj.fecha_fin);
     return end < today && !obj.completado;
   }
 
   isObjectiveExpiringSoon(obj: Objective): boolean {
-    const today = new Date(), end = new Date(obj.fecha_fin);
+    const today = new Date(),
+      end = new Date(obj.fecha_fin);
     const days = Math.ceil((end.getTime() - today.getTime()) / 86400000);
     return days > 0 && days <= 7 && !obj.completado;
   }
 
   getDaysRemaining(obj: Objective): number {
-    const today = new Date(), end = new Date(obj.fecha_fin);
+    const today = new Date(),
+      end = new Date(obj.fecha_fin);
     return Math.ceil((end.getTime() - today.getTime()) / 86400000);
   }
 
@@ -126,12 +135,11 @@ export class ObjectivesPageComponent implements OnInit {
     return this.objectivesService.getObjectiveProgress(obj);
   }
 
-  // Estilos dinámicos por color de objetivo
   getObjectiveStyles(obj: Objective): { [key: string]: string } {
     const base = obj.color;
     const lightBg = this.lightenColor(base, 0.8);
     return {
-      'border': `2px solid ${base}`,
+      border: `2px solid ${base}`,
       'background-color': lightBg,
       '--progressbar-value': base,
       '--checkbox-color': base,
@@ -144,9 +152,8 @@ export class ObjectivesPageComponent implements OnInit {
 
   private lightenColor(hex: string, luminosity = 0.5): string {
     hex = hex.replace('#', '');
-    const rgb = hex.match(/.{2}/g)?.map(h => parseInt(h, 16)) || [0,0,0];
-    const newRgb = rgb.map(c => Math.min(255, c + (255 - c) * luminosity));
+    const rgb = hex.match(/.{2}/g)?.map((h) => parseInt(h, 16)) || [0, 0, 0];
+    const newRgb = rgb.map((c) => Math.min(255, c + (255 - c) * luminosity));
     return `rgb(${newRgb.join(',')})`;
   }
 }
-

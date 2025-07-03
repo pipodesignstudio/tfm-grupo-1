@@ -150,12 +150,12 @@ export const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'create-family',
+        redirectTo: '',
         pathMatch: 'full',
       },
     ],
   },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  { path: '**', redirectTo: 'landing', pathMatch: 'full' },
 ];
 
 @NgModule({

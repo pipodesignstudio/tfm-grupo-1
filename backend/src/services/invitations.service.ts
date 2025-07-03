@@ -32,6 +32,13 @@ export class InvitationsService {
   ): Promise<IInvitation | null> {
     const { destinationEmail, familyId, role } = dto;
 
+    const [sender, userExists, family] = await Promise.all([
+      this.userService.getUserById(requesterId),
+      prisma.usuarios.findUnique({ where: { email: destinationEmail } }),
+      prisma.familia.findUnique({ where: { id: familyId } }),
+    ]);
+    if (!sender || !family) return null;
+
     const invitation: Omit<IInvitation, "id" | "sentDate"> = {
       destinationEmail,
       familyId,
@@ -46,14 +53,6 @@ export class InvitationsService {
     if (!saved) return null;
 
     try {
-      const sender = await this.userService.getUserById(requesterId);
-      if (!sender) throw new Error("Emisor no encontrado");
-
-      const userExists = await this.userService.getUserByEmail(
-        destinationEmail
-      );
-
-      // TODO: Obtener el nombre real de la familia
       const url = userExists
         ? `${this.baseUrl}/dashboard/invitations/${saved.id}`
         : `${this.baseUrl}/auth/register?invitationId=${saved.id}`;
@@ -62,7 +61,7 @@ export class InvitationsService {
         destinationEmail,
         sender.nick,
         url,
-        "FAMILIA PROVISIONAL",
+        family.descripcion ?? "Familia sin nombre",
         !!userExists
       );
 

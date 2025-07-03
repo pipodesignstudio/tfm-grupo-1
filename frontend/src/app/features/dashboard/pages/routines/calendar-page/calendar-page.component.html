@@ -6,6 +6,7 @@
       [(ngModel)]="filtroSeleccionado"
       optionLabel="label"
       optionValue="value"
+      [appendTo]="'body'"
       placeholder="Filtrar por niño"
       class="w-full"
       (onChange)="filtrarEventos()"
@@ -48,7 +49,7 @@
     <!-- Eventos listados -->
     <div class="mt-6 space-y-4 px-4 w-full">
       <p class="text-sm font-semibold text-gray-700 dark:text-white">
-        {{ selectedDate }}
+        {{ selectedDate   }}
       </p>
       @for( selectedDateEvent of selectedDateEvents; track selectedDateEvent.id)
       {
