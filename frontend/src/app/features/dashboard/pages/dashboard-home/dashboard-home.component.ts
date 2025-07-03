@@ -9,16 +9,15 @@ import { RouterModule } from '@angular/router';
 import { UsersService } from '../../../../shared/services/users.service';
 import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
 import { ChildService } from '../../../../shared/services/child.service';
-import { RoutineService } from '../../../../shared/services/routine.service';
-import { IChild, IRoutine } from '../../../../shared/interfaces';
-import { firstValueFrom } from 'rxjs';
+import { ActivityService } from '../../../../shared/services/activity.service';
+import { IChild } from '../../../../shared/interfaces';
+import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-home',
-  standalone: true, // Standalone component!
-  imports: [
-    RouterModule, // Importa RouterModule aquí para routerLink
-  ],
+  standalone: true,
+  imports: [RouterModule, DatePipe],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
 })
@@ -27,7 +26,7 @@ export class DashboardHomeComponent {
   private familiesStore = inject(FamiliesStore);
   private usersService = inject(UsersService);
   private childService = inject(ChildService);
-  private routineService = inject(RoutineService);
+  private activityService = inject(ActivityService);
   private changeDetector = inject(ChangeDetectorRef);
 
   // PROPIEDADES
@@ -37,7 +36,7 @@ export class DashboardHomeComponent {
 
   children: IChild[] = [];
   activeChild = 0;
-  routines: IRoutine[] = [];
+  activities: IActivity[] = [];
   loading = signal(true);
 
   links = [
@@ -50,45 +49,50 @@ export class DashboardHomeComponent {
   underlineIn = false;
 
   constructor() {
-    // Efecto reactivo: cada vez que cambia la familia seleccionada, recarga los niños y rutinas
     effect(async () => {
-      const familia = this.familiesStore.familiaSeleccionada();
-      if (!familia) return;
+      try {
+        const familia = this.familiesStore.familiaSeleccionada();
+        if (!familia) return;
 
-      this.loading.set(true);
+        this.loading.set(true);
 
-      // 1. Cargar usuario
-      this.userName = this.user()?.nombre || this.user()?.nick || 'usuario';
+        this.userName = this.user()?.nombre || this.user()?.nick || 'usuario';
 
-      // 2. Cargar niños
-      this.children = await this.childService.getChildrenByFamily(
-        String(familia.id)
-      );
-      this.activeChild = 0;
+        this.children = await this.childService.getChildrenByFamily(
+          String(familia.id)
+        );
 
-      // 3. Cargar rutinas del primer niño
-      await this.loadRoutineForActiveChild();
+        this.activeChild = 0;
+        await this.loadActivitiesForActiveChild();
 
-      this.loading.set(false);
-      this.changeDetector.detectChanges();
+        this.loading.set(false);
+        this.changeDetector.detectChanges();
+      } catch (e) {
+        console.error('Error en efecto dashboard:', e);
+        this.loading.set(false);
+      }
     });
   }
 
-  async loadRoutineForActiveChild() {
+  async loadActivitiesForActiveChild() {
     if (this.children.length > 0) {
       const childId = this.children[this.activeChild].id;
-      this.routines = await firstValueFrom(
-        this.routineService.getAllRoutines(childId)
+      const allActivities = await this.activityService.getActivitiesNino(
+        childId.toString()
+      );
+      // Filtra solo las de tipo "Evento"
+      this.activities = allActivities.filter(
+        (a) => a.tipo && a.tipo.toLowerCase() === 'evento'
       );
     } else {
-      this.routines = [];
+      this.activities = [];
     }
   }
 
   async nextChild() {
     if (this.children.length > 1) {
       this.activeChild = (this.activeChild + 1) % this.children.length;
-      await this.loadRoutineForActiveChild();
+      await this.loadActivitiesForActiveChild();
       this.changeDetector.detectChanges();
     }
   }
@@ -97,21 +101,18 @@ export class DashboardHomeComponent {
     if (this.children.length > 1) {
       this.activeChild =
         (this.activeChild - 1 + this.children.length) % this.children.length;
-      await this.loadRoutineForActiveChild();
+      await this.loadActivitiesForActiveChild();
       this.changeDetector.detectChanges();
     }
   }
 
-  getTaskColorClass(type: string): string {
-    switch (type) {
-      case 'meal':
+  getTaskColorClass(tipo: string): string {
+    // Puedes personalizar colores según el tipo de evento
+    switch ((tipo || '').toLowerCase()) {
+      case 'evento':
+        return 'border-blue-400';
+      case 'rutina':
         return 'border-yellow-200';
-      case 'school':
-        return 'border-blue-200';
-      case 'homework':
-        return 'border-green-200';
-      case 'play':
-        return 'border-pink-200';
       default:
         return 'border-gray-200';
     }

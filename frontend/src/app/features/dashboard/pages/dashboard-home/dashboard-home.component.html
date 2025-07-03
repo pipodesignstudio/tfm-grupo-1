@@ -20,11 +20,10 @@
       </span>
       !
     </h1>
-    <!-- <span class="text-gray-500">{{ date | date : "fullDate" }}</span>  -->
   </div>
   }
 
-  <!-- Rutina -->
+  <!-- Actividades tipo Evento -->
   @if (!loading()) {
   <div class="relative flex items-center md:justify-center">
     <!-- Flecha izquierda -->
@@ -43,39 +42,44 @@
         <img
           [src]="
             children[activeChild].img_perfil ||
-            'https://api.dicebear.com/9.x/dylan/svg?seed=Default'
+            'https://api.dicebear.com/9.x/dylan/svg?seed=Aidan&backgroundColor=ffd700&mood=happy&skinColor=c26450&scale=90'
           "
           [alt]="children[activeChild].nombre + ' photo'"
           class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto"
         />
         <h2 class="text-xl font-semibold mb-6 text-center">
-          Rutina de {{ children[activeChild].nombre }}
+          Eventos de {{ children[activeChild].nombre }}
         </h2>
         <ul class="w-full space-y-2">
-          @for (task of routines; track task.id) {
+          @for (activity of activities; track activity.id) {
           <li
             class="flex items-center px-3 py-2 rounded-lg shadow-sm transition-all duration-300 group bg-white dark:bg-gray-700"
           >
-            <!-- Emoji o icono -->
+            <!-- Puedes mostrar un icono si quieres, aquí solo color -->
             <!-- <span
               class="w-12 h-12 mr-3 rounded-full flex items-center justify-center bg-white border-4 dark:bg-gray-400"
-              [ngClass]="getTaskColorClass(task.tipo)"
+              [ngClass]="getTaskColorClass(activity.color)"
             >
-              <span class="text-2xl">{{ task.id }}</span>
+              <span class="text-2xl">📅</span>
             </span> -->
 
-            <!-- Nombre de la tarea -->
+            <!-- Nombre de la actividad -->
             <span class="flex-1 text-gray-900 dark:text-white">
-              {{ task.nombre }}
+              {{ activity.titulo }}
             </span>
 
-            <!-- Hora -->
-            <span class="font-mono text-sm text-gray-700 w-14 text-right ml-3">
-              {{ task.fecha_creacion }}
+            <!-- Hora de inicio -->
+            <span class="font-mono text-sm text-gray-700 w-24 text-right ml-3">
+              {{ activity.hora_inicio | date : "HH:mm" }}
             </span>
           </li>
           }
         </ul>
+        @if (activities.length === 0) {
+        <div class="text-center text-gray-500 mt-4">
+          No hay eventos próximos para este niño.
+        </div>
+        }
       </div>
       }
     </div>
