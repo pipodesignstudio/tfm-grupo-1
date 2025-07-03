@@ -12,6 +12,13 @@ export class FamilyService {
     private readonly tokenService = inject(TokenService);
 
 
+  /**
+   * Retrieves all users associated with a specific family by its ID.
+   *
+   * @param id_familia - The unique identifier of the family.
+   * @returns A promise that resolves to an array of `IFamiliaUsuario` objects representing the users in the family.
+   * @throws Will throw an error if the HTTP request fails.
+   */
   async getAllUsersFamily(id_familia: string): Promise<IFamiliaUsuario[]> {
     const response = await axios.get<{ data: IFamiliaUsuario[] }>(
       `${this.apiUrl}/familia/${id_familia}/usuarios`,
