@@ -3,14 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RoutineService } from '../../../../../shared/services/routine.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { IActivity, IRoutine } from '../../../../../shared/interfaces';
 
 @Component({
   selector: 'app-routine-form-page',
   standalone: true,
   templateUrl: './routine-form-page.component.html',
-  imports: [FormsModule, HttpClientModule],
+  imports: [FormsModule],
 })
 export class RoutineFormPageComponent implements OnInit {
   rutina: Partial<IRoutine> = {
@@ -45,7 +44,7 @@ export class RoutineFormPageComponent implements OnInit {
     private activityService: ActivityService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const paramIdNino = this.route.snapshot.queryParamMap.get('id_nino');
     const paramRutinaId = this.route.snapshot.queryParamMap.get('id');
 
@@ -53,45 +52,45 @@ export class RoutineFormPageComponent implements OnInit {
       console.error('ID del niño faltante');
       return;
     }
+
     this.idNino = Number(paramIdNino);
-    ;
     this.rutinaId = paramRutinaId ? Number(paramRutinaId) : null;
     this.editando = !!this.rutinaId;
 
-    this.cargarActividades().then(() => {
-      if (this.editando) {
-        this.routineService.getRoutine(this.idNino, this.rutinaId!).subscribe({
-          next: (res) => {
-            const rutinaData = res.data as IRoutine;
-            this.rutina = {
-              ...rutinaData,
-              frecuencia: rutinaData.frecuencia ?? {},
-              actividades: rutinaData.actividades ?? [],
-            };
+    try {
+      await this.cargarActividades();
 
-            this.actividadesSeleccionadas = [];
-            this.horasActividades = {};
+      if (this.editando && this.rutinaId !== null) {
+        const rutinaData = await this.routineService.getRoutine(this.idNino, this.rutinaId);
 
-            rutinaData.actividades?.forEach((act) => {
-              this.actividadesSeleccionadas.push(act.id);
+        this.rutina = {
+          ...rutinaData,
+          frecuencia: rutinaData.frecuencia ?? {},
+          actividades: rutinaData.actividades ?? [],
+        };
 
-              let hora = '08:00';
-              try {
-                const fecha = new Date(act.hora_inicio);
-                if (!isNaN(fecha.getTime())) {
-                  hora = fecha.toISOString().slice(11, 16);
-                }
-              } catch {
-                console.warn(`Hora inválida para actividad ID ${act.id}`);
-              }
+        this.actividadesSeleccionadas = [];
+        this.horasActividades = {};
 
-              this.horasActividades[act.id] = hora;
-            });
-          },
-          error: (err) => console.error('Error cargando rutina', err),
+        rutinaData.actividades?.forEach((act) => {
+          this.actividadesSeleccionadas.push(act.id);
+
+          let hora = '08:00';
+          try {
+            const fecha = new Date(act.hora_inicio);
+            if (!isNaN(fecha.getTime())) {
+              hora = fecha.toISOString().slice(11, 16);
+            }
+          } catch {
+            console.warn(`Hora inválida para actividad ID ${act.id}`);
+          }
+
+          this.horasActividades[act.id] = hora;
         });
       }
-    });
+    } catch (err) {
+      console.error('Error cargando rutina o actividades', err);
+    }
   }
 
   async cargarActividades(): Promise<void> {
@@ -118,32 +117,36 @@ export class RoutineFormPageComponent implements OnInit {
   }
 
   guardarRutina(): void {
+    if (this.actividadesSeleccionadas.length === 0) {
+      console.error('Debes seleccionar al menos una actividad.');
+      return;
+    }
+  
     const payload = {
       nombre: this.rutina.nombre,
       descripcion: this.rutina.descripcion,
       frecuencia: this.rutina.frecuencia,
       fecha_fin: this.rutina.fecha_fin,
-      actividades_ids: this.actividadesSeleccionadas, // Solo IDs, como espera el backend
+      actividades_ids: this.actividadesSeleccionadas
     };
-
+  
     const callback = () => {
       this.router.navigate(['/dashboard/routine-list'], {
         queryParams: { id_nino: this.idNino },
       });
     };
-
+  
     if (this.editando) {
-      this.routineService.updateRoutine(this.idNino, this.rutinaId!, payload).subscribe({
-        next: callback,
-        error: (err) => console.error('Error al actualizar rutina', err),
-      });
+      this.routineService.updateRoutine(this.idNino, this.rutinaId!, payload)
+        .then(callback)
+        .catch((err) => console.error('Error al actualizar rutina', err));
     } else {
-      this.routineService.crearRutina(this.idNino, payload).subscribe({
-        next: callback,
-        error: (err) => console.error('Error al crear rutina', err),
-      });
+      this.routineService.crearRutina(this.idNino, payload)
+        .then(callback)
+        .catch((err) => console.error('Error al crear rutina', err));
     }
   }
+  
 
   cancelar(): void {
     this.router.navigate(['/dashboard/routine-list'], {
@@ -155,7 +158,6 @@ export class RoutineFormPageComponent implements OnInit {
     return this.actividadesDisponibles.find(a => a.id === id);
   }
 
-  // Propiedad computada para evitar errores en el template
   get actividadesSeleccionadasConDatos(): IActivity[] {
     return this.actividadesSeleccionadas
       .map(id => this.getActividadById(id))

@@ -1,36 +1,61 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import axios from 'axios';
 import { IRoutine } from '../interfaces';
+import { TokenService } from '../../features/auth/services'; 
 
 @Injectable({ providedIn: 'root' })
 export class RoutineService {
-  private baseUrl = '/api/ninos';
+  private readonly apiUrl = 'http://localhost:3000/api/ninos';
+  private readonly tokenService = inject(TokenService);
 
-  constructor(private http: HttpClient) {}
-
-  // ✔ Obtener todas las rutinas de un niño
-  getAllRoutines(idNino: number): Observable<IRoutine[]> {
-    return this.http.get<IRoutine[]>(`${this.baseUrl}/${idNino}/rutinas`);
+  private getAuthHeader() {
+    const token = this.tokenService.token();
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
   }
 
-  // ✔ Obtener una rutina específica de un niño
-  getRoutine(idNino: number, idRutina: number): Observable<{ data: IRoutine }> {
-    return this.http.get<{ data: IRoutine }>(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`);
+  async getAllRoutines(idNino: number): Promise<IRoutine[]> {
+    const response = await axios.get<{ data: IRoutine[] }>(
+      `${this.apiUrl}/${idNino}/rutinas`,
+      this.getAuthHeader()
+    );
+    return response.data.data; // accedemos al .data que está dentro del { data: [...] }
   }
 
-  // ✔ Actualizar una rutina
-  updateRoutine(idNino: number, idRutina: number, data: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`, data);
+  async getRoutine(idNino: number, idRutina: number): Promise<IRoutine> {
+    const response = await axios.get<{ data: IRoutine }>(
+      `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
+      this.getAuthHeader()
+    );
+    return response.data.data;
   }
 
-  // ✔ Eliminar una rutina
-  deleteRoutine(idNino: number, idRutina: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`);
+  async crearRutina(idNino: number, data: any): Promise<any> {
+    const response = await axios.post(
+      `${this.apiUrl}/${idNino}/rutinas`,
+      data,
+      this.getAuthHeader()
+    );
+    return response.data;
   }
 
-  // ✔ Crear una rutina
-  crearRutina(idNino: number, data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/${idNino}/rutinas`, data);
+  async updateRoutine(idNino: number, idRutina: number, data: any): Promise<any> {
+    const response = await axios.put(
+      `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
+      data,
+      this.getAuthHeader()
+    );
+    return response.data;
+  }
+
+  async deleteRoutine(idNino: number, idRutina: number): Promise<any> {
+    const response = await axios.delete(
+      `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
+      this.getAuthHeader()
+    );
+    return response.data;
   }
 }

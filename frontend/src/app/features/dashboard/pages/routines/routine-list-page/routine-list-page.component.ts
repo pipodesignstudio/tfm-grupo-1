@@ -16,37 +16,7 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, DropdownModule, ButtonModule, FormsModule]
 })
 export class RoutineListPageComponent implements OnInit {
-  rutinas: IRoutineConActividades[] = [
-    {
-      id: 1,
-      nombre: '',
-      descripcion: '',
-      frecuencia: {},
-      fecha_creacion: new Date().toISOString(),
-      fecha_fin: '',
-      ninosId: 1,
-      actividades: [
-        { id: 1, id_rutina: null, ninos_id: 1, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 2, id_rutina: null, ninos_id: 1, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 3, id_rutina: null, ninos_id: 1, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false }
-      ]
-    },
-    {
-      id: 2,
-      nombre: '',
-      descripcion: '',
-      frecuencia: {},
-      fecha_creacion: new Date().toISOString(),
-      fecha_fin: '',
-      ninosId: 2,
-      actividades: [
-        { id: 4, id_rutina: null, ninos_id: 2, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 5, id_rutina: null, ninos_id: 2, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 6, id_rutina: null, ninos_id: 2, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false }
-      ]
-    }
-  ];
-
+  rutinas: IRoutineConActividades[] = [];
   allRutinas: IRoutineConActividades[] = [];
   selectedChild: { id: number; nombre: string } = { id: 1, nombre: 'Max' };
 
@@ -62,38 +32,39 @@ export class RoutineListPageComponent implements OnInit {
     private activityService: ActivityService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     const id_nino = Number(this.route.snapshot.queryParamMap.get('id_nino'));
     if (id_nino) {
       const found = this.children.find(c => c.id === id_nino);
       if (found) this.selectedChild = found;
     }
-    this.cargarRutinas();
+
+    await this.cargarRutinas();
   }
 
-  cargarRutinas() {
+  async cargarRutinas(): Promise<void> {
     if (!this.selectedChild) return;
 
-    this.routineService.getAllRoutines(this.selectedChild.id).subscribe({
-      next: (data: IRoutine[]) => {
-        this.allRutinas = data.map((rutina: IRoutine) => ({
-          ...rutina,
-          actividades: rutina.actividades || [],
-          fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
-        }));
+    try {
+      const response = await this.routineService.getAllRoutines(this.selectedChild.id);
+      const data: IRoutine[] = Array.isArray(response) ? response : [];
 
-        this.filtrarRutinasPorNino();
-      },
-      error: (error) => {
-        console.error('Error cargando rutinas', error);
-      }
-    });
+
+      this.allRutinas = data.map((rutina: IRoutine) => ({
+        ...rutina,
+        actividades: rutina.actividades || [],
+        fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
+      }));
+
+      this.filtrarRutinasPorNino();
+    } catch (error) {
+      console.error('Error cargando rutinas', error);
+    }
   }
 
-  filtrarRutinasPorNino() {
-    this.rutinas = this.allRutinas.filter(r => r.ninosId === this.selectedChild.id);
+  filtrarRutinasPorNino(): void {
+    this.rutinas = this.allRutinas.filter(r => r?.ninosId === this.selectedChild.id);
 
-    // Garantizamos que haya al menos 2 rutinas con 3 actividades cada una
     while (this.rutinas.length < 2) {
       this.rutinas.push({
         id: 0,
@@ -103,28 +74,42 @@ export class RoutineListPageComponent implements OnInit {
         fecha_creacion: new Date().toISOString(),
         fecha_fin: '',
         ninosId: this.selectedChild.id,
-        actividades: [
-          { id: 0, id_rutina: null, ninos_id: this.selectedChild.id, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-          { id: 0, id_rutina: null, ninos_id: this.selectedChild.id, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-          { id: 0, id_rutina: null, ninos_id: this.selectedChild.id, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false }
-        ]
+        actividades: Array(3).fill(null).map(() => ({
+          id: 0,
+          id_rutina: null,
+          ninos_id: this.selectedChild.id,
+          titulo: '',
+          descripcion: '',
+          fecha_realizacion: new Date(),
+          hora_inicio: new Date(),
+          hora_fin: new Date(),
+          color: '',
+          tipo: 'Tarea',
+          ubicacion: null,
+          usuario_responsable: 0,
+          completado: false
+        }))
       });
     }
   }
 
-  cargarRutinasPorNino() {
+  cargarRutinasPorNino(): void {
     this.filtrarRutinasPorNino();
   }
 
-  nuevaRutina() {
-    this.router.navigate(['/dashboard/routine-form'], { queryParams: { id_nino: this.selectedChild.id } });
+  nuevaRutina(): void {
+    this.router.navigate(['/dashboard/routine-form'], {
+      queryParams: { id_nino: this.selectedChild.id }
+    });
   }
 
-  editarRutina(id: number) {
-    this.router.navigate(['/dashboard/routine-form'], { queryParams: { id } });
+  editarRutina(id: number): void {
+    this.router.navigate(['/dashboard/routine-form'], {
+      queryParams: { id }
+    });
   }
 
-  async eliminarRutina(id: number) {
+  async eliminarRutina(id: number): Promise<void> {
     try {
       const ninoId = this.selectedChild.id;
       if (!ninoId) return;
