@@ -12,12 +12,12 @@ import { ChildService } from '../../../../shared/services/child.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { IChild } from '../../../../shared/interfaces';
 import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterModule, DatePipe],
+  imports: [RouterModule, DatePipe, NgClass],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
 })
@@ -74,6 +74,8 @@ export class DashboardHomeComponent {
     });
   }
 
+  // Carga las actividades del niño activo filtrando por tipo "Evento" y ordenando por hora_inicio
+  //
   async loadActivitiesForActiveChild() {
     if (this.children.length > 0) {
       const childId = this.children[this.activeChild].id;
@@ -88,6 +90,35 @@ export class DashboardHomeComponent {
       this.activities = [];
     }
   }
+
+  //  Filtra las actividades del día actual y ordena por hora_inicio
+  //
+  // async loadActivitiesForActiveChild() {
+  //   if (this.children.length > 0) {
+  //     const childId = this.children[this.activeChild].id;
+  //     const allActivities = await this.activityService.getActivitiesNino(
+  //       childId.toString()
+  //     );
+  //     const today = new Date();
+  //     // Filtra solo "Evento" del día actual y ordena por hora_inicio
+  //     this.activities = allActivities
+  //       .filter(
+  //         (a) =>
+  //           a.tipo &&
+  //           a.tipo.toLowerCase() === 'evento' &&
+  //           a.fecha_realizacion &&
+  //           new Date(a.fecha_realizacion).toDateString() ===
+  //             today.toDateString()
+  //       )
+  //       .sort(
+  //         (a, b) =>
+  //           new Date(a.hora_inicio).getTime() -
+  //           new Date(b.hora_inicio).getTime()
+  //       );
+  //   } else {
+  //     this.activities = [];
+  //   }
+  // }
 
   async nextChild() {
     if (this.children.length > 1) {

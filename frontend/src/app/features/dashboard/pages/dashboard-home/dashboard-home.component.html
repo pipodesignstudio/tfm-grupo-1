@@ -56,12 +56,12 @@
             class="flex items-center px-3 py-2 rounded-lg shadow-sm transition-all duration-300 group bg-white dark:bg-gray-700"
           >
             <!-- Puedes mostrar un icono si quieres, aquí solo color -->
-            <!-- <span
+            <span
               class="w-12 h-12 mr-3 rounded-full flex items-center justify-center bg-white border-4 dark:bg-gray-400"
-              [ngClass]="getTaskColorClass(activity.color)"
+              [style.border-color]="activity.color || '#cccccc'"
             >
-              <span class="text-2xl">📅</span>
-            </span> -->
+              <span class="text-2xl">📌</span>
+            </span>
 
             <!-- Nombre de la actividad -->
             <span class="flex-1 text-gray-900 dark:text-white">
