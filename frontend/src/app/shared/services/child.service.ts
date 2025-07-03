@@ -20,9 +20,7 @@ export interface ChildProfile {
 export class ChildService {
   private apiUrl: string = 'http://localhost:3000/api';
 
-
-    private readonly tokenService = inject(TokenService);
-
+  private readonly tokenService = inject(TokenService);
 
   async getChildrenByFamily(id_familia: string): Promise<IChild[]> {
     const response = await axios.get<{ data: IChild[] }>(
@@ -46,23 +44,10 @@ export class ChildService {
   }
 
   async deleteChild(id: number): Promise<void> {
-    await axios.delete(`${this.apiUrl}/ninos/${id}`,
-      {
-        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
-      });
+    await axios.delete(`${this.apiUrl}/ninos/${id}`, {
+      headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+    });
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
   private childrenSubject = new BehaviorSubject<ChildProfile[]>([]);
   public children$: Observable<ChildProfile[]> =

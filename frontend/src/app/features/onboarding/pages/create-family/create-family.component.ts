@@ -15,7 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { AutoFocusModule } from 'primeng/autofocus';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
-import { ChildService } from '../../../../shared/services/child.service'; // Asegúrate de que la ruta es correcta
+import { ChildService } from '../../../../shared/services/child.service';
 
 @Component({
   selector: 'app-create-family',
@@ -57,12 +57,7 @@ export class CreateFamilyComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Obtén el familia_id desde localStorage
     this.familia_id = Number(localStorage.getItem('familia_id'));
-
-    // Si necesitas perfiles_aprendizaje_id, obténlo de donde corresponda (usuario, etc.)
-    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    this.perfiles_aprendizaje_id = user.perfiles_aprendizaje_id || null;
 
     this.childProfileForm = this.fb.group({
       name: ['', Validators.required],
@@ -91,8 +86,9 @@ export class CreateFamilyComponent implements OnInit {
 
     const formValue = this.childProfileForm.value;
 
+    // Asigna el valor por defecto a perfiles_aprendizaje_id (puedes cambiarlo según tu lógica)
     const payload = {
-      perfiles_aprendizaje_id: this.perfiles_aprendizaje_id,
+      perfiles_aprendizaje_id: 1,
       familia_id: this.familia_id,
       nombre: formValue.name,
       apellido: formValue.apellido,
