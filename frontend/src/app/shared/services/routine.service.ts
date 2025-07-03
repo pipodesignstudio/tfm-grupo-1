@@ -5,7 +5,7 @@ import { IRoutine } from '../interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class RoutineService {
-  private baseUrl = '/api/ninos';
+  private baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +16,9 @@ export class RoutineService {
 
   // ✔ Obtener una rutina específica de un niño
   getRoutine(idNino: number, idRutina: number): Observable<{ data: IRoutine }> {
-    return this.http.get<{ data: IRoutine }>(`${this.baseUrl}/${idNino}/rutinas/${idRutina}`);
+    return this.http.get<{ data: IRoutine }>(
+      `${this.baseUrl}/${idNino}/rutinas/${idRutina}`
+    );
   }
 
   // ✔ Actualizar una rutina

@@ -43,14 +43,13 @@ Nota: deberás ajustar a este puerto todas las referencias en el archivo .env
 
 ### 2.1 Entrar en backend
 
-``` bash
+```bash
 cd backend
 ```
 
 ### 2.2 Instalar dependencias
 
-
-``` bash
+```bash
 npm i
 
 ```
@@ -61,7 +60,7 @@ En ocasiones algunas dependencias no se actualizan correctamente en el package.j
 
 ### 2.3 En caso de que no exista .env crear archivo:
 
-``` env
+```env
 # backend/.env
 
 ```
@@ -70,7 +69,7 @@ En caso de que exista .env.development renombrar archivo y ajustar las variables
 
 ### 2.4 Sincronizar Prisma
 
-``` bash
+```bash
 npx prisma db pull // Sincroniza la base de datos con el esquema de prisma
 npx prisma generate // Genera el cliente de prisma
 npx prisma studio // Abre el studio de prisma para que puedas ver la BBDD
@@ -78,14 +77,14 @@ npx prisma studio // Abre el studio de prisma para que puedas ver la BBDD
 
 ### 2.5 Levantar el servidor en modo desarrollo
 
-``` bash
+```bash
 npm run start:dev
 
 ```
 
 Si todo va bien deberías ver un mensaje como el siguiente:
 
-``` bash
+```bash
 ✅ Conectado a la base de datos MySQL (Prisma)
 ✅ Conectado a la base de datos MongoDB (Mongoose)
 🚀 Servidor arrancado en el puerto: 3000
@@ -101,19 +100,20 @@ Con el servidor corriendo visita http://localhost:3000/api-docs
 
 ### Entrar en frontend
 
-``` bash
+```bash
 cd frontend
 ```
+
 ### Instalar dependencias
 
-``` bash
+```bash
 npm i
 
 ```
 
 ### Levantar el servidor de desarrollo de Angular
 
-``` bash
+```bash
 npx ng serve
 
 ```
