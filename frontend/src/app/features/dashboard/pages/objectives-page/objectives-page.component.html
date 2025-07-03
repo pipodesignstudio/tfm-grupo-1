@@ -1,43 +1,38 @@
-<!-- Toast y confirmación -->
-<p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>
-
-<section class="p-4 max-w-6xl mx-auto space-y-6">
-  <!-- Cabecera -->
-  <div class="pt-4">
-    <div class="flex flex-col gap-3">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Niño</h3>
-      <div class="flex justify-between items-center gap-4 flex-wrap">
-        <p-dropdown
-          [options]="childrenOptions"
-          [(ngModel)]="selectedChildId"
-          placeholder="Selecciona un niño"
-          optionLabel="label"
-          optionValue="value"
-          (onChange)="onChildChange()"
-          class="w-full max-w-md"
-        ></p-dropdown>
-
-        <!-- Botón para nuevo objetivo -->
-        <p-button
-          icon="pi pi-plus"
-          label="Nuevo Objetivo"
-          [raised]="true"
-          (onClick)="openNewObjectiveForm()"
-          severity="primary"
-        />
-      </div>
+<section class="p-6 min-h-screen">
+  <!-- Selector de niño -->
+  <div class="flex justify-between items-end mb-6">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Niño</label>
+      <p-dropdown
+        [options]="childrenOptions"
+        [(ngModel)]="selectedChildId"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="onChangeChild()"
+        placeholder="Seleccionar niño"
+        class="w-full md:w-60">
+      </p-dropdown>
     </div>
   </div>
 
   <!-- Lista de objetivos -->
-  <div class="mt-6">
-    @if (objectives.length === 0) {
-      <p class="text-center text-gray-500 mt-10 text-xl font-semibold">
-        No hay objetivos disponibles.
-      </p>
-    } @else {
-      <app-objectives-list [objectives]="objectives" />
+  <div class="space-y-4">
+    @if (objetivos.length === 0) {
+      <p class="text-gray-500 italic">Este niño aún no tiene objetivos.</p>
+    }
+    <p>DEBUG: {{ objetivos | json }}</p>
+    @for (obj of objetivos; track obj.id) {
+      <div class="p-4 border rounded-xl shadow-sm bg-white">
+        <h3 class="text-lg font-bold">{{ obj.nombre }}</h3>
+
+        @if (obj.tipo) {
+          <p class="text-sm text-gray-600">Tipo: {{ obj.tipo }}</p>
+        }
+
+        @if (obj.fecha_fin) {
+          <p class="text-sm text-gray-600">Hasta: {{ obj.fecha_fin | date }}</p>
+        }
+      </div>
     }
   </div>
 </section>

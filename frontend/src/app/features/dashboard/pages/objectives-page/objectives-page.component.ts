@@ -1,101 +1,71 @@
-import { Component, ChangeDetectorRef, effect } from '@angular/core';
+import { Component, ChangeDetectorRef, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ObjectivesService } from '../../../../shared/services/objectives.service';
-import { IObjective } from '../../../../shared/interfaces/iobjective.interface';
-import { ChildService } from '../../../../shared/services/child.service';
-import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
-import { IChild } from '../../../../shared/interfaces';
-import { ObjectivesListComponent } from '../../../../components/objectives-list/objectives-list.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { IChild } from '../../../../shared/interfaces/ichild.interface';
+import { IObjetivo } from '../../../../shared/interfaces/iobjective.interface';
+import { ChildService } from '../../../../shared/services/child.service';
+import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
+import { ObjectivesService } from '../../../../shared/services/objectives.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  standalone: true,
   selector: 'app-objectives-page',
+  standalone: true,
+  imports: [CommonModule, DropdownModule, ButtonModule, FormsModule],
   templateUrl: './objectives-page.component.html',
-  styleUrls: ['./objectives-page.component.css'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    DropdownModule,
-    ButtonModule,
-    ToastModule,
-    ConfirmDialogModule,
-    ObjectivesListComponent
-  ],
-  providers: [MessageService, ConfirmationService]
 })
 export class ObjectivesPageComponent {
-  /** Opciones para el selector de niños */
-  childrenOptions: { label: string; value: number }[] = [];
+  private familiesStore = inject(FamiliesStore);
+  private childService = inject(ChildService);
+  private objectivesService = inject(ObjectivesService);
+  private cdr = inject(ChangeDetectorRef);
 
-  /** ID del niño seleccionado actualmente */
+  children: IChild[] = [];
+  childrenOptions: { label: string; value: number }[] = [];
   selectedChildId: number | null = null;
 
-  /** Lista de objetivos del niño seleccionado */
-  objectives: IObjective[] = [];
+  objetivos: IObjetivo[] = [];
 
-  constructor(
-    private childService: ChildService,
-    private familiesStore: FamiliesStore,
-    private objectivesService: ObjectivesService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor() {
+    // Reacción automática al cargar la familia
+    effect(() => {
+      const familia = this.familiesStore.familiaSeleccionada();
+      if (!familia) return;
 
-  /**
-   * Efecto que escucha cambios en la familia seleccionada.
-   * Cuando cambia, carga la lista de niños y selecciona el primero por defecto.
-   */
-  private familiaEffect = effect(() => {
-    const familia = this.familiesStore.familiaSeleccionada();
-    if (!familia) return;
+      this.childService.getChildrenByFamily(String(familia.id)).then((children) => {
+        this.children = children;
 
-    this.childService.getChildrenByFamily(String(familia.id)).then(children => {
-      this.childrenOptions = children.map((child: IChild) => ({
-        label: child.nombre,
-        value: Number(child.id),
-      }));
+        this.childrenOptions = children.map((child) => ({
+          label: child.nombre,
+          value: Number(child.id),
+        }));
 
-      // Si hay niños, seleccionamos el primero y cargamos sus objetivos
-      if (this.childrenOptions.length > 0) {
-        this.selectedChildId = this.childrenOptions[0].value;
-        this.loadObjectives();
-      }
-    });
-  });
-
-  /**
-   * Al cambiar el niño manualmente desde el selector, se recargan sus objetivos
-   */
-  onChildChange(): void {
-    this.loadObjectives();
-  }
-
-  /**
-   * Carga los objetivos del niño seleccionado.
-   * Usamos el getter del servicio para obtener el array actualizado desde el BehaviorSubject.
-   */
-  loadObjectives(): void {
-    if (!this.selectedChildId) return;
-
-    this.objectivesService.getObjectivesByChildId(this.selectedChildId)
-      .then(() => {
-        // ✅ Usamos el getter que siempre devuelve un array limpio
-        const objetivos = this.objectivesService.getObjectives();
-        this.objectives = objetivos;
-        this.cdr.detectChanges();
-      })
-      .catch(error => {
-        console.error('Error al obtener los objetivos:', error);
-        this.objectives = [];
+        if (this.childrenOptions.length > 0) {
+          this.selectedChildId = this.childrenOptions[0].value;
+          this.cdr.detectChanges();
+          this.loadObjectives(this.selectedChildId);
+        }
       });
+
+      this.objectivesService.objectives$.subscribe((objetivos) => {
+        this.objetivos = Array.isArray(objetivos)
+          ? objetivos
+          : typeof objetivos === 'object' && 'data' in objetivos
+            ? (objetivos as any).data
+            : [];
+        this.cdr.detectChanges();
+      });
+    });
   }
 
-  openNewObjectiveForm(): void {
-  console.log('TODO: abrir formulario de nuevo objetivo');
-}
+  onChangeChild(): void {
+    if (this.selectedChildId != null) {
+      this.loadObjectives(this.selectedChildId);
+    }
+  }
+
+  private loadObjectives(idNino: number): void {
+    this.objectivesService.getAllObjectives(idNino);
+  }
 }
