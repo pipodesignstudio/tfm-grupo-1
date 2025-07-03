@@ -35,10 +35,12 @@ export class ChildService {
         headers: { Authorization: `Bearer ${this.tokenService.token()}` },
       }
     );
-    const newChild = response.data.data;
-    const currentChildren = this.childrenSubject.getValue();
-    this.childrenSubject.next([...currentChildren, newChild]);
-    return newChild;
+    // Refresca la lista desde el backend
+    const familia_id = childData.familia_id?.toString();
+    if (familia_id) {
+      await this.getChildrenByFamily(familia_id);
+    }
+    return response.data.data;
   }
 
   // Borra un niño individualmente (no actualiza el observable automáticamente)
@@ -46,7 +48,6 @@ export class ChildService {
     await axios.delete(`${this.apiUrl}/ninos/${id}`, {
       headers: { Authorization: `Bearer ${this.tokenService.token()}` },
     });
-    // Opcional: puedes actualizar el observable aquí si quieres
     const updatedChildren = this.childrenSubject
       .getValue()
       .filter((child) => child.id !== id);
@@ -58,10 +59,9 @@ export class ChildService {
     await axios.delete(`${this.apiUrl}/ninos/familia/${familia_id}`, {
       headers: { Authorization: `Bearer ${this.tokenService.token()}` },
     });
-    this.childrenSubject.next([]); // Limpia el observable tras borrar
+    this.childrenSubject.next([]);
   }
 
-  // Limpia la lista de niños (solo frontend)
   clearChildren(): void {
     this.childrenSubject.next([]);
   }

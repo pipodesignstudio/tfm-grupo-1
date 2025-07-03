@@ -86,7 +86,6 @@ export class CreateFamilyComponent implements OnInit {
 
     const formValue = this.childProfileForm.value;
 
-    // Asigna el valor por defecto a perfiles_aprendizaje_id (puedes cambiarlo según tu lógica)
     const payload = {
       perfiles_aprendizaje_id: 1,
       familia_id: this.familia_id,

@@ -89,7 +89,6 @@ export class RegisterPageComponent implements OnInit {
     const { username, email, password } = this.registerForm.value;
     const dto: RegisterDto = { nick: username, email, contrasena: password };
 
-    // 1. Registrar usuario
     const response = await this.authService.register(dto);
     this.isLoading = false;
 
@@ -103,14 +102,11 @@ export class RegisterPageComponent implements OnInit {
     }
 
     try {
-      // 2. Crear familia automáticamente
       const familiaResponse = await this.familyService.createFamily();
       const familiaId = familiaResponse.data.id;
 
-      // 3. Guardar familia_id para el siguiente paso
       localStorage.setItem('familia_id', familiaId.toString());
 
-      // 4. Redirigir al siguiente paso (crear niño)
       this.router.navigate([`auth/verificar/${dto.email}`]);
     } catch (error: any) {
       this.messageService.add({

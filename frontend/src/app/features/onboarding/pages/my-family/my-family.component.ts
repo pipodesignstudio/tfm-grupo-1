@@ -22,14 +22,11 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const familia_id = localStorage.getItem('familia_id');
     if (familia_id) {
-      // Carga inicial desde el backend
       this.childService.getChildrenByFamily(familia_id);
     }
-    // Suscríbete al observable para reactividad en tiempo real
     this.childrenSubscription = this.childService.children$.subscribe(
       (children) => {
         this.children = children;
-        // console.log('Niños cargados en MyFamily:', this.children);
       }
     );
   }
@@ -57,7 +54,6 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
     if (familia_id) {
       try {
         await this.childService.deleteAllChildrenByFamily(familia_id);
-        // El observable se limpia automáticamente
         alert('Todos los niños han sido borrados (Solo desarrollo).');
       } catch (error) {
         alert('Error al borrar los niños.');

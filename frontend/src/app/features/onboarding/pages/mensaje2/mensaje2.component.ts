@@ -12,6 +12,7 @@ export class Mensaje2Component {
   constructor(private router: Router) {}
 
   continueToDashboard(): void {
+    console.log('Navegando al dashboard...');
     this.router.navigate(['/dashboard']);
   }
 }
