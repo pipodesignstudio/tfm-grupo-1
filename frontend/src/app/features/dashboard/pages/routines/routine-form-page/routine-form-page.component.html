@@ -4,14 +4,14 @@
   </h2>
 
   <form (ngSubmit)="guardarRutina()">
-    <!-- Nombre -->
+    <!-- Nombre de la rutina -->
     <label class="block font-semibold text-[#3A3A3A] mb-1">Nombre de la Rutina</label>
     <input
       type="text"
       class="w-full p-3 mb-4 rounded-lg bg-[#C8E6F0] border border-[#9ED2C5] text-[#3A3A3A]"
       placeholder="Ej: Rutina Matutina"
       [(ngModel)]="rutina.nombre"
-      name="nombre"
+      name="nombreRutina"
       required
     />
 
@@ -21,50 +21,41 @@
       class="w-full p-3 mb-4 rounded-lg bg-[#C8E6F0] border border-[#9ED2C5] text-[#3A3A3A]"
       placeholder="Descripción de la rutina"
       [(ngModel)]="rutina.descripcion"
-      name="descripcion"
+      name="descripcionRutina"
     ></textarea>
 
-    <!-- Frecuencia -->
+    <!-- Días de la semana -->
     <label class="block font-semibold text-[#3A3A3A] mb-2">Días de la Semana</label>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
       @for (dia of diasSemana; track dia) {
         <label class="flex items-center gap-2 bg-white border border-[#9ED2C5] rounded-lg px-3 py-2">
-          <input
-            type="checkbox"
-            [(ngModel)]="rutina.frecuencia[dia]"
-            [name]="dia"
-          />
-          <span class="text-[#3A3A3A] font-medium">
-            {{
-              dia === 'lunes' ? 'Lunes' :
-              dia === 'martes' ? 'Martes' :
-              dia === 'miercoles' ? 'Miércoles' :
-              dia === 'jueves' ? 'Jueves' :
-              dia === 'viernes' ? 'Viernes' :
-              dia === 'sabado' ? 'Sábado' :
-              dia === 'domingo' ? 'Domingo' : dia
-            }}
-          </span>
+          <input type="checkbox" [(ngModel)]="rutina.frecuencia[dia]" name="dia_{{dia}}" />
+          <span class="text-[#3A3A3A] font-medium">{{ dia }}</span>
         </label>
       }
     </div>
 
-    <!-- Actividades seleccionadas -->
+    <!-- Actividades dinámicas -->
     <label class="block font-semibold text-[#3A3A3A] mb-2">Actividades</label>
     <div class="space-y-3 mb-4">
-      @for (actividad of actividadesSeleccionadasConDatos; track actividad.id) {
-        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-[#9ED2C5]">
-          <span class="text-[#3A3A3A] font-medium">{{ actividad.titulo }}</span>
+      @for (actividad of actividades; track actividad.id) {
+        <div class="flex items-center bg-white p-3 rounded-xl border border-[#9ED2C5] gap-2">
+          <input
+            type="text"
+            class="p-2 border border-[#9ED2C5] rounded-md flex-1"
+            placeholder="Nombre de la actividad"
+            [(ngModel)]="actividad.nombre"
+            name="nombre_{{actividad.id}}"
+            required
+          />
           <input
             type="time"
-            class="ml-4 p-1 border border-[#9ED2C5] rounded-md"
-            [(ngModel)]="horasActividades[actividad.id]"
-            [attr.name]="'hora_' + actividad.id"
+            class="p-2 border border-[#9ED2C5] rounded-md"
+            [(ngModel)]="actividad.hora"
+            name="hora_{{actividad.id}}"
+            required
           />
-          <button
-            type="button"
-            class="ml-4 text-red-500 text-sm hover:underline"
-            (click)="eliminarActividad(actividad.id)">
+          <button type="button" class="ml-2 text-red-500 text-sm hover:underline" (click)="eliminarActividad(actividad.id)">
             Eliminar
           </button>
         </div>
@@ -74,32 +65,17 @@
       }
     </div>
 
-    <!-- Agregar actividad -->
-    <div class="mb-6">
-      <button
-      type="button"
-      (click)="agregarActividad()"
-      class="text-sm text-[#FF7F50] hover:underline font-semibold"
-      [disabled]="actividadesDisponibles.length === actividadesSeleccionadas.length"
-    >
-      + Agregar Actividad
-    </button>
-    
+    <!-- Botón para agregar actividad -->
+    <div class="mb-6 flex gap-4">
+      <button type="button" (click)="agregarActividad()" class="text-sm text-[#FF7F50] hover:underline font-semibold">
+        + Añadir Actividad
+      </button>
     </div>
 
-    <!-- Botones -->
+    <!-- Guardar y Cancelar -->
     <div class="flex flex-col sm:flex-row justify-center gap-4">
-      <button
-        type="submit"
-        class="px-6 py-2 rounded-lg text-white bg-[#FF7F50] hover:opacity-90"
-      >
-        Guardar
-      </button>
-      <button
-        type="button"
-        (click)="cancelar()"
-        class="px-6 py-2 rounded-lg text-[#3A3A3A] bg-gray-200 hover:bg-gray-300"
-      >
+      <button type="submit" class="px-6 py-2 rounded-lg text-white bg-[#FF7F50] hover:opacity-90">Guardar</button>
+      <button type="button" (click)="cancelar()" class="px-6 py-2 rounded-lg text-[#3A3A3A] bg-gray-200 hover:bg-gray-300">
         Cancelar
       </button>
     </div>

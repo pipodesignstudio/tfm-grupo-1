@@ -1,18 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RoutineService } from '../../../../../shared/services/routine.service';
-import { ActivityService } from '../../../../../shared/services/activity.service';
 import { FormsModule } from '@angular/forms';
-import { IActivity, IRoutine } from '../../../../../shared/interfaces';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-routine-form-page',
   standalone: true,
   templateUrl: './routine-form-page.component.html',
-  imports: [FormsModule],
+  imports: [FormsModule, HttpClientModule],
 })
 export class RoutineFormPageComponent implements OnInit {
-  rutina: Partial<IRoutine> = {
+  rutina: any = {
     nombre: '',
     descripcion: '',
     frecuencia: {
@@ -24,14 +22,12 @@ export class RoutineFormPageComponent implements OnInit {
       sabado: false,
       domingo: false,
     },
-    actividades: [],
   };
 
   diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
 
-  actividadesDisponibles: IActivity[] = [];
-  actividadesSeleccionadas: number[] = [];
-  horasActividades: { [id: number]: string } = {};
+  actividades: { id: number; nombre: string; hora: string }[] = [];
+  actividadIdAuto = 1;
 
   idNino = 0;
   rutinaId: number | null = null;
@@ -39,128 +35,56 @@ export class RoutineFormPageComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
-    private routineService: RoutineService,
-    private activityService: ActivityService
+    private route: ActivatedRoute
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const paramIdNino = this.route.snapshot.queryParamMap.get('id_nino');
     const paramRutinaId = this.route.snapshot.queryParamMap.get('id');
 
     if (!paramIdNino) {
-      console.error('ID del niño faltante');
+      alert('Falta el parámetro id_nino en la URL. Ejemplo: ?id_nino=123');
+      this.router.navigate(['/dashboard/routine-list']);
       return;
     }
-
     this.idNino = Number(paramIdNino);
     this.rutinaId = paramRutinaId ? Number(paramRutinaId) : null;
     this.editando = !!this.rutinaId;
 
-    try {
-      await this.cargarActividades();
-
-      if (this.editando && this.rutinaId !== null) {
-        const rutinaData = await this.routineService.getRoutine(this.idNino, this.rutinaId);
-
-        this.rutina = {
-          ...rutinaData,
-          frecuencia: rutinaData.frecuencia ?? {},
-          actividades: rutinaData.actividades ?? [],
-        };
-
-        this.actividadesSeleccionadas = [];
-        this.horasActividades = {};
-
-        rutinaData.actividades?.forEach((act) => {
-          this.actividadesSeleccionadas.push(act.id);
-
-          let hora = '08:00';
-          try {
-            const fecha = new Date(act.hora_inicio);
-            if (!isNaN(fecha.getTime())) {
-              hora = fecha.toISOString().slice(11, 16);
-            }
-          } catch {
-            console.warn(`Hora inválida para actividad ID ${act.id}`);
-          }
-
-          this.horasActividades[act.id] = hora;
-        });
-      }
-    } catch (err) {
-      console.error('Error cargando rutina o actividades', err);
-    }
-  }
-
-  async cargarActividades(): Promise<void> {
-    try {
-      this.actividadesDisponibles = await this.activityService.getActivitiesNino(String(this.idNino));
-    } catch (error) {
-      console.error('Error cargando actividades', error);
-    }
+    // Si necesitas cargar datos de rutina existente, aquí iría la lógica.
   }
 
   agregarActividad(): void {
-    const nueva = this.actividadesDisponibles.find(
-      act => !this.actividadesSeleccionadas.includes(act.id)
-    );
-    if (nueva) {
-      this.actividadesSeleccionadas.push(nueva.id);
-      this.horasActividades[nueva.id] = '08:00';
-    }
+    this.actividades.push({
+      id: this.actividadIdAuto++,
+      nombre: '',
+      hora: '08:00'
+    });
   }
 
   eliminarActividad(id: number): void {
-    this.actividadesSeleccionadas = this.actividadesSeleccionadas.filter(actId => actId !== id);
-    delete this.horasActividades[id];
+    this.actividades = this.actividades.filter(act => act.id !== id);
   }
 
   guardarRutina(): void {
-    if (this.actividadesSeleccionadas.length === 0) {
-      console.error('Debes seleccionar al menos una actividad.');
-      return;
-    }
-  
+    // Aquí puedes transformar 'actividades' y 'rutina' para enviarlos a tu API según tu modelo.
     const payload = {
-      nombre: this.rutina.nombre,
-      descripcion: this.rutina.descripcion,
-      frecuencia: this.rutina.frecuencia,
-      fecha_fin: this.rutina.fecha_fin,
-      actividades_ids: this.actividadesSeleccionadas
+      ...this.rutina,
+      actividades: this.actividades.map(a => ({
+        nombre: a.nombre,
+        hora: a.hora
+      }))
     };
-  
-    const callback = () => {
-      this.router.navigate(['/dashboard/routine-list'], {
-        queryParams: { id_nino: this.idNino },
-      });
-    };
-  
-    if (this.editando) {
-      this.routineService.updateRoutine(this.idNino, this.rutinaId!, payload)
-        .then(callback)
-        .catch((err) => console.error('Error al actualizar rutina', err));
-    } else {
-      this.routineService.crearRutina(this.idNino, payload)
-        .then(callback)
-        .catch((err) => console.error('Error al crear rutina', err));
-    }
-  }
-  
-
-  cancelar(): void {
+    console.log('Rutina a guardar:', payload);
+    // Lógica para guardar la rutina (API)
     this.router.navigate(['/dashboard/routine-list'], {
       queryParams: { id_nino: this.idNino },
     });
   }
 
-  getActividadById(id: number): IActivity | undefined {
-    return this.actividadesDisponibles.find(a => a.id === id);
-  }
-
-  get actividadesSeleccionadasConDatos(): IActivity[] {
-    return this.actividadesSeleccionadas
-      .map(id => this.getActividadById(id))
-      .filter((act): act is IActivity => !!act);
+  cancelar(): void {
+    this.router.navigate(['/dashboard/routine-list'], {
+      queryParams: { id_nino: this.idNino },
+    });
   }
 }

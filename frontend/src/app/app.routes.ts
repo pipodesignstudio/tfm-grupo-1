@@ -42,12 +42,20 @@ export const routes: Routes = [
       {
         path: 'login',
         component: LoginPageComponent,
+
         //canActivate: [noAuthGuard],
+
+       // canActivate: [noAuthGuard],
+
       },
       {
         path: 'register',
         component: RegisterPageComponent,
+
         //canActivate: [noAuthGuard],
+
+       // canActivate: [noAuthGuard],
+
       },
 
       {
@@ -97,8 +105,13 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
+
     // canActivate: [authGuard],
     // canActivateChild: [dashboardGuard],
+
+    //canActivate: [authGuard],
+   // canActivateChild: [dashboardGuard],
+
     children: [
       {
         path: '',
@@ -145,6 +158,13 @@ export const routes: Routes = [
         component: RoutineListPageComponent,
       },
       {
+        path: 'routine-form',
+        component: RoutineFormPageComponent,
+      },
+      
+     
+      {
+
         path: '**',
         redirectTo: 'create-family',
         pathMatch: 'full',
