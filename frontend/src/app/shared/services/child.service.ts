@@ -49,6 +49,12 @@ export class ChildService {
     });
   }
 
+  async deleteAllChildrenByFamily(familia_id: string): Promise<void> {
+    await axios.delete(`${this.apiUrl}/ninos/familia/${familia_id}`, {
+      headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+    });
+  }
+
   private childrenSubject = new BehaviorSubject<ChildProfile[]>([]);
   public children$: Observable<ChildProfile[]> =
     this.childrenSubject.asObservable();
