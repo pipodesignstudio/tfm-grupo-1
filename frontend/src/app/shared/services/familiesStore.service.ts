@@ -12,16 +12,48 @@ export class FamiliesStore {
   constructor(private usersService: UsersService) {}
 
   public async loadFamilias(): Promise<void> {
-    const data = await this.usersService.getUserFamilias();
-    this._familias.set(data);
-    // Por defecto seleccionás la primera
-    if (data && data.length > 0) {
+  const data = await this.usersService.getUserFamilias();
+  this._familias.set(data);
+
+  if (data && data.length > 0) {
+    const savedId = Number(localStorage.getItem('familiaSeleccionadaId'));
+    const familiaGuardada = data.find(f => f.id === savedId);
+
+    if (familiaGuardada) {
+      this._familiaSeleccionada.set(familiaGuardada);
+    } else {
       this._familiaSeleccionada.set(data[0]);
+      localStorage.setItem('familiaSeleccionadaId', String(data[0].id));
     }
   }
+}
+  public seleccionarFamilia(id: number | null): void {
+    if(id === null){
+      // Si el ID es null selecionamos la primera familia
+      const primeraFamilia = this._familias()?.[0] ?? null;
+      this._familiaSeleccionada.set(primeraFamilia);
+      return;
+    }
+  const familia = this._familias()?.find(f => f.id === id) ?? null;
+  this._familiaSeleccionada.set(familia);
 
-  public seleccionarFamilia(id: number): void {
-    const familia = this._familias()?.find(f => f.id === id) ?? null;
-    this._familiaSeleccionada.set(familia);
+  if (familia) {
+    localStorage.setItem('familiaSeleccionadaId', String(familia.id));
+  } else {
+    localStorage.removeItem('familiaSeleccionadaId');
   }
+}
+
+public eliminarFamilia(id: number): void {
+  const familiasActuales = this._familias();
+  if (familiasActuales) {
+    this._familias.set(familiasActuales.filter(f => f.id !== id));
+  }
+
+  if (this._familiaSeleccionada()?.id === id) {
+    this._familiaSeleccionada.set(null);
+    localStorage.removeItem('familiaSeleccionadaId');
+  }
+
+}
 }

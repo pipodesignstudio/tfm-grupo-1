@@ -1,41 +1,43 @@
-import { Component, OnInit } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
-
-type TaskType = 'meal' | 'school' | 'homework' | 'play' | 'other';
-
-interface RoutineTask {
-  time: string;
-  icon: string;
-  label: string;
-  completed: boolean;
-  type: TaskType;
-}
-
-interface Child {
-  name: string;
-  photoUrl: string;
-  routine: RoutineTask[];
-}
+import { UsersService } from '../../../../shared/services/users.service';
+import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
+import { ChildService } from '../../../../shared/services/child.service';
+import { ActivityService } from '../../../../shared/services/activity.service';
+import { IChild } from '../../../../shared/interfaces';
+import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
+import { DatePipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-home',
-  imports: [CommonModule, RouterModule],
+  standalone: true,
+  imports: [RouterModule, DatePipe, NgClass],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
-  animations: [
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('300ms', style({ opacity: 1, transform: 'none' })),
-      ]),
-    ]),
-  ],
 })
 export class DashboardHomeComponent {
-  userName: string = 'Paula';
+  // INYECCIONES
+  private familiesStore = inject(FamiliesStore);
+  private usersService = inject(UsersService);
+  private childService = inject(ChildService);
+  private activityService = inject(ActivityService);
+  private changeDetector = inject(ChangeDetectorRef);
+
+  // PROPIEDADES
+  user = this.usersService.user; // signal reactiva
+  userName = '';
   date = new Date();
+
+  children: IChild[] = [];
+  activeChild = 0;
+  activities: IActivity[] = [];
+  loading = signal(true);
 
   links = [
     { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
@@ -44,112 +46,111 @@ export class DashboardHomeComponent {
     { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
-  children: Child[] = [
-    {
-      name: 'Mateo',
-      photoUrl:
-        'https://api.dicebear.com/9.x/dylan/svg?seed=Destiny&scale=85&backgroundColor=ffd700',
-      routine: [
-        {
-          time: '07:30',
-          icon: '🍳',
-          label: 'Desayuno',
-          completed: false,
-          type: 'meal',
-        },
-        {
-          time: '08:15',
-          icon: '🎒',
-          label: 'Colegio',
-          completed: false,
-          type: 'school',
-        },
-        {
-          time: '17:00',
-          icon: '📚',
-          label: 'Deberes',
-          completed: false,
-          type: 'homework',
-        },
-        {
-          time: '20:00',
-          icon: '🍽️',
-          label: 'Cena',
-          completed: false,
-          type: 'meal',
-        },
-      ],
-    },
-    {
-      name: 'Julia',
-      photoUrl:
-        'https://api.dicebear.com/9.x/dylan/svg?seed=Sawyer&scale=85&facialHairProbability=0&hairColor=000000,fff500,ffffff&mood=neutral,happy&skinColor=d2996c&backgroundColor=ffd700',
-      routine: [
-        {
-          time: '07:45',
-          icon: '🍳',
-          label: 'Desayuno',
-          completed: false,
-          type: 'meal',
-        },
-        {
-          time: '09:00',
-          icon: '🎒',
-          label: 'Guardería',
-          completed: false,
-          type: 'school',
-        },
-        {
-          time: '17:30',
-          icon: '🪁',
-          label: 'Jugar',
-          completed: false,
-          type: 'play',
-        },
-        {
-          time: '20:00',
-          icon: '🍽️',
-          label: 'Cena',
-          completed: false,
-          type: 'meal',
-        },
-      ],
-    },
-  ];
+  underlineIn = false;
 
-  activeChild = 0;
+  constructor() {
+    effect(async () => {
+      try {
+        const familia = this.familiesStore.familiaSeleccionada();
+        if (!familia) return;
 
-  nextChild() {
-    this.activeChild = (this.activeChild + 1) % this.children.length;
+        this.loading.set(true);
+
+        this.userName = this.user()?.nombre || this.user()?.nick || 'usuario';
+
+        this.children = await this.childService.getChildrenByFamily(
+          String(familia.id)
+        );
+
+        this.activeChild = 0;
+        await this.loadActivitiesForActiveChild();
+
+        this.loading.set(false);
+        this.changeDetector.detectChanges();
+      } catch (e) {
+        console.error('Error en efecto dashboard:', e);
+        this.loading.set(false);
+      }
+    });
   }
 
-  previousChild() {
-    this.activeChild =
-      (this.activeChild - 1 + this.children.length) % this.children.length;
+  // NO BORRAR DE MOMENTO
+  // Carga las actividades del niño activo filtrando por tipo "Evento" y ordenando por hora_inicio
+  //
+  // async loadActivitiesForActiveChild() {
+  //   if (this.children.length > 0) {
+  //     const childId = this.children[this.activeChild].id;
+  //     const allActivities = await this.activityService.getActivitiesNino(
+  //       childId.toString()
+  //     );
+  //     // Filtra solo las de tipo "Evento"
+  //     this.activities = allActivities.filter(
+  //       (a) => a.tipo && a.tipo.toLowerCase() === 'evento'
+  //     );
+  //   } else {
+  //     this.activities = [];
+  //   }
+  // }
+
+  //  Filtra las actividades del día actual y ordena por hora_inicio
+
+  async loadActivitiesForActiveChild() {
+    if (this.children.length > 0) {
+      const childId = this.children[this.activeChild].id;
+      const allActivities = await this.activityService.getActivitiesNino(
+        childId.toString()
+      );
+      const today = new Date();
+      // Filtra solo "Evento" del día actual y ordena por hora_inicio
+      this.activities = allActivities
+        .filter(
+          (a) =>
+            a.tipo &&
+            a.tipo.toLowerCase() === 'evento' &&
+            a.fecha_realizacion &&
+            new Date(a.fecha_realizacion).toDateString() ===
+              today.toDateString()
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.hora_inicio).getTime() -
+            new Date(b.hora_inicio).getTime()
+        );
+    } else {
+      this.activities = [];
+    }
   }
 
-  getTaskColorClass(type: string): string {
-    switch (type) {
-      case 'meal':
+  async nextChild() {
+    if (this.children.length > 1) {
+      this.activeChild = (this.activeChild + 1) % this.children.length;
+      await this.loadActivitiesForActiveChild();
+      this.changeDetector.detectChanges();
+    }
+  }
+
+  async previousChild() {
+    if (this.children.length > 1) {
+      this.activeChild =
+        (this.activeChild - 1 + this.children.length) % this.children.length;
+      await this.loadActivitiesForActiveChild();
+      this.changeDetector.detectChanges();
+    }
+  }
+
+  getTaskColorClass(tipo: string): string {
+    // Puedes personalizar colores según el tipo de evento
+    switch ((tipo || '').toLowerCase()) {
+      case 'evento':
+        return 'border-blue-400';
+      case 'rutina':
         return 'border-yellow-200';
-      case 'school':
-        return 'border-blue-200';
-      case 'homework':
-        return 'border-green-200';
-      case 'play':
-        return 'border-pink-200';
       default:
         return 'border-gray-200';
     }
   }
 
-  toggleTaskComplete(task: RoutineTask) {
-    task.completed = !task.completed;
-  }
-
-  underlineIn = false;
-
   ngOnInit() {
-    setTimeout(() => (this.underlineIn = true), 100); // pequeño delay para ver la animación
+    setTimeout(() => (this.underlineIn = true), 100);
   }
 }

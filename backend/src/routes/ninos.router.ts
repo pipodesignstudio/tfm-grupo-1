@@ -1,14 +1,12 @@
-import { Router } from 'express';
-import { authMiddleware, validationMiddleware } from '../middlewares';
-import { CreateNinoDto } from '../dtos/ninos/create-nino.dto';
-import { UpdateNinoDto } from '../dtos/ninos/update-nino.dto';
-import { NinosController } from '../controllers/ninos.controller';
-import { asyncMiddlewareWrapper } from '../utils';
+import { Router } from "express";
+import { authMiddleware, validationMiddleware } from "../middlewares";
+import { CreateNinoDto } from "../dtos/ninos/create-nino.dto";
+import { UpdateNinoDto } from "../dtos/ninos/update-nino.dto";
+import { NinosController } from "../controllers/ninos.controller";
+import { asyncMiddlewareWrapper } from "../utils";
 
 const controller = new NinosController();
 const router = Router();
-
-
 
 /**
  * @openapi
@@ -58,7 +56,7 @@ const router = Router();
  *             schema: { $ref: '#/components/schemas/InternalServerError' }
  */
 router.post(
-  '/',
+  "/",
   asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(CreateNinoDto),
   asyncMiddlewareWrapper(controller.create.bind(controller))
@@ -100,7 +98,7 @@ router.post(
  *             schema: { $ref: '#/components/schemas/InternalServerError' }
  */
 router.get(
-  '/:id',
+  "/:id",
   asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.getById.bind(controller))
 );
@@ -151,7 +149,7 @@ router.get(
  *             schema: { $ref: '#/components/schemas/InternalServerError' }
  */
 router.put(
-  '/:id',
+  "/:id",
   asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(UpdateNinoDto, true),
   asyncMiddlewareWrapper(controller.update.bind(controller))
@@ -193,9 +191,23 @@ router.put(
  *             schema: { $ref: '#/components/schemas/InternalServerError' }
  */
 router.delete(
-  '/:id',
+  "/:id",
   asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.delete.bind(controller))
+);
+
+router.delete(
+  "/familia/:familiaId",
+  asyncMiddlewareWrapper(authMiddleware),
+  async (req, res, next) => {
+    try {
+      const familiaId = Number(req.params.familiaId);
+      // Llama al servicio para borrar todos los niños de esa familia
+      await controller.deleteByFamilia(req, res, next);
+    } catch (err) {
+      next(err);
+    }
+  }
 );
 
 /**
@@ -236,7 +248,7 @@ router.delete(
  *             schema: { $ref: '#/components/schemas/InternalServerError' }
  */
 router.get(
-  '/familia/:familiaId',
+  "/familia/:familiaId",
   asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.listByFamilia.bind(controller))
 );

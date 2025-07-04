@@ -26,6 +26,6 @@ export const generateJwtToken = (user: IUser): string => {
         id: user.id,
         email: user.email,
     };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '48h' });
     return token;
 };

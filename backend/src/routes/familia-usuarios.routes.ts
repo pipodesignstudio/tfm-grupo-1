@@ -1,8 +1,11 @@
-import { Router } from 'express';
-import { FamiliaUsuariosController } from '../controllers/familia-usuarios.controller';
-import { asyncMiddlewareWrapper } from '../utils';
-import { authMiddleware, validationMiddleware } from '../middlewares';
-import { AddUsuarioFamiliaDto, UpdateRolUsuarioDto } from '../dtos/familia-usuarios';
+import { Router } from "express";
+import { FamiliaUsuariosController } from "../controllers/familia-usuarios.controller";
+import { asyncMiddlewareWrapper } from "../utils";
+import { authMiddleware, validationMiddleware } from "../middlewares";
+import {
+  AddUsuarioFamiliaDto,
+  UpdateRolUsuarioDto,
+} from "../dtos/familia-usuarios";
 
 const familiaUsuariosRoutes = Router({ mergeParams: true });
 const controller = new FamiliaUsuariosController();
@@ -31,9 +34,9 @@ const controller = new FamiliaUsuariosController();
  *         description: Lista de usuarios obtenida
  */
 familiaUsuariosRoutes.get(
-  '/',
-/*   asyncMiddlewareWrapper(authMiddleware),
- */  controller.getAll
+  "/",
+  /*   asyncMiddlewareWrapper(authMiddleware),
+   */ controller.getAll
 );
 
 /**
@@ -66,7 +69,7 @@ familiaUsuariosRoutes.get(
  *         description: Usuario añadido a la familia
  */
 familiaUsuariosRoutes.post(
-  '/',
+  "/",
   asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(AddUsuarioFamiliaDto),
   controller.create
@@ -106,10 +109,38 @@ familiaUsuariosRoutes.post(
  *         description: Rol actualizado
  */
 familiaUsuariosRoutes.put(
-  '/:usuarioId',
-/*   asyncMiddlewareWrapper(authMiddleware),
- */  validationMiddleware(UpdateRolUsuarioDto),
+  "/:usuarioId",
+  /*   asyncMiddlewareWrapper(authMiddleware),
+   */ validationMiddleware(UpdateRolUsuarioDto),
   controller.changeRol
+);
+
+/**
+ * DELETE - Salir de la familia
+ */
+/**
+ * @openapi
+ * /familia/{id}/usuarios/salir:
+ *   delete:
+ *     summary: Salir de la familia
+ *     tags:
+ *       - FamiliaUsuarios
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '204':
+ *         description: Usuario eliminado de la familia
+ */
+familiaUsuariosRoutes.delete(
+  "/salir",
+  asyncMiddlewareWrapper(authMiddleware),
+  controller.salir
 );
 
 /**
@@ -140,9 +171,12 @@ familiaUsuariosRoutes.put(
  *         description: Usuario eliminado de la familia
  */
 familiaUsuariosRoutes.delete(
-  '/:usuarioId',
-/*   asyncMiddlewareWrapper(authMiddleware),
- */  controller.delete
+  "/:usuarioId",
+  asyncMiddlewareWrapper(authMiddleware),
+  controller.delete
 );
+
+
+
 
 export default familiaUsuariosRoutes;

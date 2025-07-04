@@ -6,7 +6,9 @@
   @for (child of children; track child.id) {
   <div class="card-secondary">
     <div class="flex-1">
-      <p class="text-lg font-medium text-gray-800">{{ child.name }}</p>
+      <p class="text-lg font-medium text-gray-800">
+        {{ child.nombre }} {{ child.apellido }}
+      </p>
     </div>
   </div>
   } @empty {

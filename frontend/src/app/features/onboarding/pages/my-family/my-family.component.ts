@@ -1,12 +1,10 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
-import {
-  ChildService,
-  ChildProfile,
-} from '../../../../shared/services/child.service';
+import { ChildService } from '../../../../shared/services/child.service';
 import { ButtonModule } from 'primeng/button';
+import { IChild } from '../../../../shared/interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-my-family',
@@ -16,19 +14,19 @@ import { ButtonModule } from 'primeng/button';
   styleUrl: './my-family.component.css',
 })
 export class MyFamilyComponent implements OnInit, OnDestroy {
-  children: ChildProfile[] = [];
+  children: IChild[] = [];
   private childrenSubscription!: Subscription;
 
-  constructor(
-    private router: Router,
-    @Inject(ChildService) private childService: ChildService
-  ) {}
+  constructor(private router: Router, private childService: ChildService) {}
 
   ngOnInit(): void {
+    const familia_id = localStorage.getItem('familia_id');
+    if (familia_id) {
+      this.childService.getChildrenByFamily(familia_id);
+    }
     this.childrenSubscription = this.childService.children$.subscribe(
-      (children: ChildProfile[]) => {
+      (children) => {
         this.children = children;
-        console.log('Niños cargados en MyFamily:', this.children);
       }
     );
   }
@@ -51,8 +49,15 @@ export class MyFamilyComponent implements OnInit, OnDestroy {
     this.router.navigate(['/onboarding/complete']);
   }
 
-  clearAllChildren(): void {
-    this.childService.clearChildren();
-    alert('Todos los niños han sido borrados (Solo desarrollo).');
+  async clearAllChildren(): Promise<void> {
+    const familia_id = localStorage.getItem('familia_id');
+    if (familia_id) {
+      try {
+        await this.childService.deleteAllChildrenByFamily(familia_id);
+        alert('Todos los niños han sido borrados (Solo desarrollo).');
+      } catch (error) {
+        alert('Error al borrar los niños.');
+      }
+    }
   }
 }

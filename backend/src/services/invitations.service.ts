@@ -3,7 +3,12 @@ import dotenv from "dotenv";
 import prisma from "../config/prisma.config";
 import { InvitationResponseDto, NewInvitationDto } from "../dtos";
 import { IInvitation, IExistingInvitationResponse } from "../interfaces";
-import { BadRequestError, InternalServerError, logger, UnauthorizedError } from "../utils";
+import {
+  BadRequestError,
+  InternalServerError,
+  logger,
+  UnauthorizedError,
+} from "../utils";
 import { UserService } from "./user.service";
 import { EmailService } from "./email.service";
 
@@ -27,6 +32,13 @@ export class InvitationsService {
   ): Promise<IInvitation | null> {
     const { destinationEmail, familyId, role } = dto;
 
+    const [sender, userExists, family] = await Promise.all([
+      this.userService.getUserById(requesterId),
+      prisma.usuarios.findUnique({ where: { email: destinationEmail } }),
+      prisma.familia.findUnique({ where: { id: familyId } }),
+    ]);
+    if (!sender || !family) return null;
+
     const invitation: Omit<IInvitation, "id" | "sentDate"> = {
       destinationEmail,
       familyId,
@@ -41,14 +53,6 @@ export class InvitationsService {
     if (!saved) return null;
 
     try {
-      const sender = await this.userService.getUserById(requesterId);
-      if (!sender) throw new Error("Emisor no encontrado");
-
-      const userExists = await this.userService.getUserByEmail(
-        destinationEmail
-      );
-
-      // TODO: Obtener el nombre real de la familia
       const url = userExists
         ? `${this.baseUrl}/dashboard/invitations/${saved.id}`
         : `${this.baseUrl}/auth/register?invitationId=${saved.id}`;
@@ -57,7 +61,7 @@ export class InvitationsService {
         destinationEmail,
         sender.nick,
         url,
-        "FAMILIA PROVISIONAL",
+        family.descripcion ?? "Familia sin nombre",
         !!userExists
       );
 
@@ -301,7 +305,6 @@ export class InvitationsService {
     }
   }
 
-
   /**
    * Obtiene una lista de invitaciones de un usuario.
    *
@@ -312,15 +315,18 @@ export class InvitationsService {
    * @param type - Tipo de invitaciones a obtener, "sent" o "received". Busca reutilizar el método
    * @returns Un array de invitaciones.
    */
-  async getInvitationsFromUser(userId: number, type: "sent" | "received"): Promise<IInvitation[]> {
+  async getInvitationsFromUser(
+    userId: number,
+    type: "sent" | "received"
+  ): Promise<IInvitation[]> {
     if (type === "received") {
       try {
         const user = await prisma.usuarios.findUnique({
-        where: { id: userId },
-        select: {
-          email: true,
-        }
-      });
+          where: { id: userId },
+          select: {
+            email: true,
+          },
+        });
 
         const invitations = await prisma.invitacion_usuario_familia.findMany({
           where: { email_destinatario: user?.email },
@@ -333,6 +339,11 @@ export class InvitationsService {
             atentido: true,
             aceptado: true,
             fecha_envio: true,
+            familia: {
+              select: {
+                descripcion: true,
+              },
+            },
           },
         });
 
@@ -345,6 +356,7 @@ export class InvitationsService {
           attended: invitation.atentido ?? false,
           accepted: invitation.aceptado ?? false,
           sentDate: invitation.fecha_envio ?? undefined,
+          familyDescription: invitation.familia?.descripcion ?? "",
         }));
       } catch (error) {
         const err = new InternalServerError(
@@ -391,7 +403,6 @@ export class InvitationsService {
     }
   }
 
-
   /**
    * Obtiene una invitación por su ID.
    *
@@ -400,57 +411,59 @@ export class InvitationsService {
    * @throws InternalServerError si ocurre un error al acceder a la base de datos.
    */
 
-  async getInvitationById(id: number, requesterId: number): Promise<IInvitation | null> {
+  async getInvitationById(
+    id: number,
+    requesterId: number
+  ): Promise<IInvitation | null> {
     const invitation = await prisma.invitacion_usuario_familia.findUnique({
-        where: { id },
-        select: {
-            id: true,
-            familia_id: true,
-            usuario_emisor: true,
-            email_destinatario: true,
-            rol: true,
-            atentido: true,
-            aceptado: true,
-            fecha_envio: true,
-        },
+      where: { id },
+      select: {
+        id: true,
+        familia_id: true,
+        usuario_emisor: true,
+        email_destinatario: true,
+        rol: true,
+        atentido: true,
+        aceptado: true,
+        fecha_envio: true,
+      },
     });
 
     if (!invitation) {
-        return null;
+      return null;
     }
 
     if (invitation.usuario_emisor !== requesterId) {
-        const err = new UnauthorizedError(
-            "No tienes permiso para acceder a esta invitación.",
-            { error: "UNAUTHORIZED" },
-            false
-        );
-        logger.logError(err); 
-        throw err; // Este error será capturado por el controlador, no por el catch de esta función.
+      const err = new UnauthorizedError(
+        "No tienes permiso para acceder a esta invitación.",
+        { error: "UNAUTHORIZED" },
+        false
+      );
+      logger.logError(err);
+      throw err; // Este error será capturado por el controlador, no por el catch de esta función.
     }
 
     // Si el error no es UnauthorizedError, o si ocurre un error inesperado de Prisma, etc.
     try {
-        return {
-            id: invitation.id,
-            familyId: invitation.familia_id,
-            senderId: invitation.usuario_emisor!,
-            destinationEmail: invitation.email_destinatario,
-            role: invitation.rol,
-            attended: invitation.atentido ?? false,
-            accepted: invitation.aceptado ?? false,
-            sentDate: invitation.fecha_envio ?? undefined,
-        };
+      return {
+        id: invitation.id,
+        familyId: invitation.familia_id,
+        senderId: invitation.usuario_emisor!,
+        destinationEmail: invitation.email_destinatario,
+        role: invitation.rol,
+        attended: invitation.atentido ?? false,
+        accepted: invitation.aceptado ?? false,
+        sentDate: invitation.fecha_envio ?? undefined,
+      };
     } catch (error) {
-        // Aquí capturamos SOLO errores inesperados que NO son UnauthorizedError
-        // O podrías tener un catch más específico para errores de Prisma, etc.
-        const err = new InternalServerError(
-            "Error interno al procesar la solicitud del usuario.",
-            { error: "INTERNAL_SERVER_ERROR" }
-        );
-        logger.logError(err);
-        throw err;
+      // Aquí capturamos SOLO errores inesperados que NO son UnauthorizedError
+      // O podrías tener un catch más específico para errores de Prisma, etc.
+      const err = new InternalServerError(
+        "Error interno al procesar la solicitud del usuario.",
+        { error: "INTERNAL_SERVER_ERROR" }
+      );
+      logger.logError(err);
+      throw err;
     }
-}
-
+  }
 }

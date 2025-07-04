@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { authMiddleware, validationMiddleware } from '../middlewares';
-import { ActividadController } from '../controllers/actividad.controller';
-import { asyncMiddlewareWrapper } from '../utils';
-import { CreateActividadDto } from '../dtos/actividades/create-actividad.dto';
+import { Router } from "express";
+import { authMiddleware, validationMiddleware } from "../middlewares";
+import { ActividadController } from "../controllers/actividad.controller";
+import { asyncMiddlewareWrapper } from "../utils";
+import { CreateActividadDto } from "../dtos/actividades/create-actividad.dto";
 import { UpdateActividadDto } from "../dtos/actividades/update-actividad.dto";
-import { ExportActivitiesDto } from '../dtos/actividades';
+import { ExportActivitiesDto } from "../dtos/actividades";
 
 const controller = new ActividadController();
 const router = Router({ mergeParams: true });
@@ -13,9 +13,11 @@ const router = Router({ mergeParams: true });
  * @openapi
  * /api/ninos/{id_nino}/actividades:
  *   post:
- *     summary: Crea una actividad 
+ *     summary: Crea una actividad
  *     tags:
  *       - Actividades
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -33,7 +35,9 @@ const router = Router({ mergeParams: true });
  *         description: Actividad creada exitosamente
  */
 router.post(
-  '/ninos/:id_nino',
+  "/ninos/:id_nino",
+  asyncMiddlewareWrapper(authMiddleware),
+
   validationMiddleware(CreateActividadDto),
   asyncMiddlewareWrapper(controller.crearActividad.bind(controller))
 );
@@ -45,6 +49,8 @@ router.post(
  *     summary: Lista todas las actividades del niño
  *     tags:
  *       - Actividades
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -56,7 +62,8 @@ router.post(
  *         description: Listado de actividades
  */
 router.get(
-  '/ninos/:id_nino',
+  "/ninos/:id_nino",
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.listarActividadesPorNino.bind(controller))
 );
 
@@ -67,6 +74,8 @@ router.get(
  *     summary: Lista todas las actividades de la familia
  *     tags:
  *       - Actividades
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_familia
@@ -78,8 +87,11 @@ router.get(
  *         description: Listado de actividades de la familia
  */
 router.get(
-  '/familias/:id_familia',
-  asyncMiddlewareWrapper(controller.listarActividadesPorFamilia.bind(controller))
+  "/familias/:id_familia",
+  asyncMiddlewareWrapper(authMiddleware),
+  asyncMiddlewareWrapper(
+    controller.listarActividadesPorFamilia.bind(controller)
+  )
 );
 
 /**
@@ -89,6 +101,8 @@ router.get(
  *     summary: Actualiza una actividad
  *     tags:
  *       - Actividades
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -111,7 +125,8 @@ router.get(
  *         description: Actividad actualizada exitosamente
  */
 router.put(
-  '/ninos/:id_nino/:id',
+  "/ninos/:id_nino/:id",
+  asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(UpdateActividadDto, true),
   asyncMiddlewareWrapper(controller.actualizarActividad.bind(controller))
 );
@@ -123,6 +138,8 @@ router.put(
  *     summary: Elimina una actividad
  *     tags:
  *       - Actividades
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -139,7 +156,8 @@ router.put(
  *         description: Actividad eliminada exitosamente
  */
 router.delete(
-  '/ninos/:id_nino/:id',
+  "/ninos/:id_nino/:id",
+  asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.borrarActividad.bind(controller))
 );
 
@@ -147,9 +165,11 @@ router.delete(
  * @openapi
  * /api/actividades/export:
  *   post:
- *     summary: Genera un reporte de actividades en base a la selección del usuario 
+ *     summary: Genera un reporte de actividades en base a la selección del usuario
  *     tags:
  *       - Actividades
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id_nino
@@ -167,10 +187,37 @@ router.delete(
  *         description: Actividades exportadas exitosamente
  */
 router.post(
-  '/export',
+  "/export",
   asyncMiddlewareWrapper(authMiddleware),
   validationMiddleware(ExportActivitiesDto),
   controller.exportarActividades
+);
+
+
+/**
+ * @openapi
+ * /api/actividades/all:
+ *   get:
+ *     summary: Obtiene todas las actividades de un niño
+ *     tags:
+ *       - Actividades
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id_nino
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Listado de todas las actividades del niño
+ */
+
+router.get(
+  "/all",
+  asyncMiddlewareWrapper(authMiddleware),
+  asyncMiddlewareWrapper(controller.getAllActivitiesFromArray.bind(controller))
 );
 
 export default router;

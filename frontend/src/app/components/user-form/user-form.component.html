@@ -16,32 +16,37 @@
     <form
       [formGroup]="form"
       (ngSubmit)="onSubmit()"
-      class="flex flex-col gap-4"
+      class="flex flex-col gap-4  overflow-y-auto grow pr-1 scroll-invisible"
     >
       @if (tipo === 'edit') {
-
-      <div class="profile-picture-section">
+        <div class="flex justify-center align-middle">
+      <div
+        class="profile-picture-section flex justify-center  align-middle w-32 h-32 rounded-full overflow-hidden"
+      >
         <input
           type="file"
           #fileInput
           (change)="onFileSelected($event)"
           accept="image/*"
           class="file-input hidden"
+          id="img_perfil"
         />
         <div
-          class="profile-picture-placeholder cursor-pointer"
+          class="profile-picture-placeholder cursor-pointer flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full"
           (click)="fileInput.click()"
         >
           <img
             [src]="
               profileImageUrl
-                ? profileImageUrl
-                : 'https://img.icons8.com/?size=40&id=85103&format=png&color=000000'
+                ? imgFromDB ? formatImgPerfil(profileImageUrl) : profileImageUrl
+                : 'https://img.icons8.com/?size=40&id=85103&format=png&color=' +
+                  (isDarkMode() ? 'ffffff' : '000000')
             "
             alt="Foto de Perfil"
             class="profile-image"
           />
         </div>
+      </div>
       </div>
       } @if (tipo !== 'login') {
       <div class="flex flex-col">

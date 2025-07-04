@@ -4,12 +4,12 @@ services:
     container_name: nidodb_mysql
     restart: always
     environment:
-      LANG: C.UTF-8 
-      LC_ALL: C.UTF-8     
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: nidodb
     ports:
-      - "3306:3306"
+      - "3308:3306"
     volumes:
       - ./db/charset.cnf:/etc/mysql/conf.d/charset.cnf
       - ./db/init.sql:/docker-entrypoint-initdb.d/1_init.sql
@@ -18,14 +18,13 @@ services:
 
   # Nueva instancia de MongoDB
   mongodb:
-    image: mongo:latest 
-    container_name: nidodb_mongo 
-    restart: always 
+    image: mongo:latest
+    container_name: nidodb_mongo
+    restart: always
     ports:
-      - "27017:27017" 
+      - "27017:27017"
     volumes:
       - ./db/data/mongodb:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root_mongo_password
-      MONGO_INITDB_DATABASE: nidodb_mongo 

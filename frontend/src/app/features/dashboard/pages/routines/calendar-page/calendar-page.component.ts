@@ -34,7 +34,8 @@ import { Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { IChild, IUser } from '../../../../../shared/interfaces';
 import { IFamiliaUsuario } from '../../../../../shared/interfaces/ifamily-users.interface';
-
+import { IUsersFamilies } from '../../../../../shared/interfaces/iusers-families.interface';
+import esLocale from '@fullcalendar/core/locales/es';
 
 @Component({
   selector: 'app-calendar-page',
@@ -68,6 +69,7 @@ export class CalendarPageComponent {
 
   familyService = inject(FamilyService);
   usersFamily: IFamiliaUsuario[] = [];
+  userFamilia: IUsersFamilies | null = null;
 
   allEvents: IActivity[] = [];
   currentEvents: EventInput[] = [];
@@ -78,20 +80,21 @@ export class CalendarPageComponent {
   mostrarActivityModal = false;
   actividadInfo: IActivity | null = null;
 
-  clickedDate: string  = new Date().toISOString().slice(0, 10);
+  clickedDate: string = new Date().toISOString().slice(0, 10);
 
   private familiaEffect = effect(async () => {
-    const familia = this.familiesStore.familiaSeleccionada();
-    if (familia == null || !this.calendarComponent) return;
+    this.userFamilia = this.familiesStore.familiaSeleccionada();
+    if (this.userFamilia == null || !this.calendarComponent) return;
+    console.log(this.userFamilia);
 
     try {
       // Cargar los niños de la familia seleccionada
       this.children = await this.childService.getChildrenByFamily(
-        String(familia.id)
+        String(this.userFamilia.id)
       );
 
       this.usersFamily = await this.familyService.getAllUsersFamily(
-        String(familia.id)
+        String(this.userFamilia.id)
       );
 
       console.log('usuarios de la familia:', this.usersFamily);
@@ -103,18 +106,16 @@ export class CalendarPageComponent {
       this.changeDetector.detectChanges();
 
       // Cargar los eventos de la familia seleccionada
-       const activities = await this.activityService.getActivitiesFamily(
-        String(familia.id)
+      const activities = await this.activityService.getActivitiesFamily(
+        String(this.userFamilia.id)
       );
       this.initEventosCalendario(activities);
-      
     } catch (error) {
       console.error('Error al cargar los eventos:', error);
     }
   });
 
-  selectedDate = format(new Date(), 'MMMM, do, EEE'); // Formato YYYY-MM-DD
-
+  selectedDate = format(new Date(), 'MMMM, do, EEE');
   filtroSeleccionado: number | null = null;
 
   async filtrarEventos() {
@@ -142,7 +143,6 @@ export class CalendarPageComponent {
     calendarApi.addEventSource(this.currentEvents);
     calendarApi.render(); // Renderiza el calendario con los nuevos eventos
   }
-
 
   private filtrarEventosPorFecha(fecha: string) {
     const filtrados = this.currentEvents.filter(
@@ -178,6 +178,7 @@ export class CalendarPageComponent {
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
     eventDidMount: this.eventDidMount.bind(this),
+    locale: esLocale,
   });
 
   // Metodo para añadir el dot
@@ -195,8 +196,6 @@ export class CalendarPageComponent {
     this.filtrarEventosPorFecha(this.clickedDate);
     this.changeDetector.detectChanges();
   }
-
-  
 
   private mapActivitiesToEvents(activities: IActivity[]): EventInput[] {
     return activities.map((activity) => ({
@@ -245,7 +244,6 @@ export class CalendarPageComponent {
         .createActivity(actividadConFechas)
         .then((actividadCreada) => {
           console.log('Actividad creada:', actividadCreada);
-         
 
           this.allEvents.push(actividadCreada);
           this.initEventosCalendario(this.allEvents);
@@ -257,32 +255,28 @@ export class CalendarPageComponent {
     }
   }
 
-
   initEventosCalendario(activities: IActivity[]) {
-   
-      this.allEvents = activities;
-      console.log(this.allEvents);
-      const eventInputs = this.mapActivitiesToEvents(activities);
-      this.currentEvents = eventInputs;
+    this.allEvents = activities;
+    console.log(this.allEvents);
+    const eventInputs = this.mapActivitiesToEvents(activities);
+    this.currentEvents = eventInputs;
 
-      // Actualizar el calendario con los nuevos eventos
-      const calendarApi = this.calendarComponent.getApi();
-      calendarApi.removeAllEvents(); // Limpia los eventos anteriores
+    // Actualizar el calendario con los nuevos eventos
+    const calendarApi = this.calendarComponent.getApi();
+    calendarApi.removeAllEvents(); // Limpia los eventos anteriores
 
-      console.log('Eventos antes de añadir:', eventInputs);
-      calendarApi.addEventSource(eventInputs);
-      calendarApi.render(); // Renderiza el calendario con los nuevos eventos
+    console.log('Eventos antes de añadir:', eventInputs);
+    calendarApi.addEventSource(eventInputs);
+    calendarApi.render(); // Renderiza el calendario con los nuevos eventos
 
-      this.filtrarEventosPorFecha(this.clickedDate);
+    this.filtrarEventosPorFecha(this.clickedDate);
   }
 
   onCheckedChange(event: EventInput) {
     this.editarActividad(event['actividadInfo']);
   }
 
-
-
-/*   formato JsonValuecolor
+  /*   formato JsonValuecolor
 {
     "titulo": "aaaa",
     "descripcion": "aaa",
@@ -320,34 +314,34 @@ export class CalendarPageComponent {
  */
   editarActividad(actividad: Partial<IActivity>) {
     console.log('Editar actividad con ID:', actividad);
-    this.activityService.updateActivity(actividad as IActivity).then(
-      (actividadActualizada) => {
+    this.activityService
+      .updateActivity(actividad as IActivity)
+      .then((actividadActualizada) => {
         console.log('Actividad actualizada:', actividadActualizada);
 
         // Actualizar el evento en el calendario
         this.allEvents = this.allEvents.map((event) =>
           event.id === actividad.id
-            ? { 
+            ? {
                 ...event,
-                ...actividadActualizada, 
+                ...actividadActualizada,
                 titulo: actividad.titulo ?? event.titulo,
                 descripcion: actividad.descripcion ?? event.descripcion,
                 hora_inicio: actividad.hora_inicio ?? event.hora_inicio,
                 hora_fin: actividad.hora_fin ?? event.hora_fin,
                 color: actividad.color ?? event.color,
-                usuario_responsable: actividad.usuario_responsable ?? event.usuario_responsable,
+                usuario_responsable:
+                  actividad.usuario_responsable ?? event.usuario_responsable,
                 ubicacion: actividad.ubicacion ?? event.ubicacion,
                 fecha_realizacion: actividad.fecha_realizacion
                   ? new Date(actividad.fecha_realizacion)
                   : event.fecha_realizacion,
-            }
+              }
             : event
         );
         this.initEventosCalendario(this.allEvents);
-      }
-    );
+      });
     this.cerrarActivityModal();
-
   }
 
   deleteActivity(actividad: IActivity) {

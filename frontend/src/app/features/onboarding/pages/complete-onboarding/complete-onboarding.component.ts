@@ -18,14 +18,13 @@ import { ToastModule } from 'primeng/toast';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CompleteOnboardingComponent {
-
   private router = inject(Router);
   private userService = inject(UsersService);
   private messageService = inject(MessageService);
 
   public isLoading: boolean = false;
 
-  async onContinue(): Promise<void> {    
+  async onContinue(): Promise<void> {
     this.isLoading = true;
     const response = await this.userService.completeOnboarding();
     this.isLoading = false;
@@ -39,5 +38,4 @@ export class CompleteOnboardingComponent {
     }
     this.router.navigate(['dashboard']);
   }
-
 }

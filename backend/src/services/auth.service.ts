@@ -8,6 +8,7 @@ import {
   ConflictError,
   CustomError,
   InternalServerError,
+  logger,
   UnauthorizedError,
 } from "../utils";
 import prisma from "../config/prisma.config";
@@ -15,6 +16,7 @@ import { IUser } from "../interfaces";
 import { EmailService } from "./email.service";
 
 const emailService = new EmailService();
+
 dotenv.config();
 
 export class AuthService {
@@ -27,29 +29,51 @@ export class AuthService {
    * @throws {ConflictError} Si el email ya existe.
    * @throws {InternalServerError} Para otros errores inesperados de la base de datos.
    */
-    public async createUser(dto: RegisterUserDto): Promise<IUser> {
-    try {
+  public async createUser(dto: RegisterUserDto): Promise<IUser> {
+    const { email, nick } = dto;
 
-      // 1. Verificar si el email ya existe
-      const existingUser = await prisma.usuarios.findUnique({
-        where: { email: dto.email, id: dto.familyId },
+    try {
+      console.log(`🔍 Verificando usuario existente - Email: ${email.trim().toLowerCase()}, Nick: ${nick.trim().toLowerCase()}`);
+
+      const existingUser = await prisma.usuarios.findFirst({
+        where: {
+          AND: [
+            { borrado: false }, 
+            {
+              OR: [
+                { email: email.trim().toLowerCase() },
+                { nick: nick.trim().toLowerCase() }
+              ]
+            }
+          ]
+        },
       });
 
       if (existingUser) {
-        throw new ConflictError("El usuario ya está registrado, por favor inicie sesión.", {
+        console.log(`❌ Usuario existente encontrado:`, {
+          id: existingUser.id,
+          email: existingUser.email,
+          nick: existingUser.nick,
+          inputEmail: email.trim().toLowerCase(),
+          inputNick: nick.trim().toLowerCase()
+        });
+
+        const field = existingUser.email === email.trim().toLowerCase() ? "correo" : "nick";
+        throw new ConflictError(`El ${field} ya está registrado, por favor inicie sesión.`, {
           error: "EMAIL_IN_USE",
         });
       }
 
-      // 2. Hashear la contraseña antes de guardarla en la base de datos
+      console.log(`✅ No se encontró usuario existente, procediendo con la creación`);
+
       const hashedPassword = await bcrypt.hash(dto.contrasena, 10);
 
-      // 3. Insertar el nuevo usuario en la base de datos
-      const newUser: IUser = await prisma.usuarios.create({
+      console.log(`🔐 Creando usuario en base de datos...`);
+      const newUser = await prisma.usuarios.create({
         data: {
-          email: dto.email,
+          email: email.trim().toLowerCase(),
           contrasena: hashedPassword,
-          nick: dto.nick,
+          nick: nick.trim().toLowerCase(),
           primera_sesion: true,
           fecha_creacion: new Date(),
           borrado: false,
@@ -58,28 +82,65 @@ export class AuthService {
         },
       });
 
-      const _baseurl = process.env.FRONTEND_URL || "http://localhost:3000";
+      console.log(`✅ Usuario creado exitosamente con ID: ${newUser.id}`);
+
+      const _baseurl = process.env.FRONTEND_URL || "http://localhost:4200";
       const url = `${_baseurl}/auth/verificar/${newUser.email}`;
-      await emailService.sendWelcomeVerificationEmail(
-        dto.email,
-        dto.nick,
-        url
-      );
 
+      try {
+        await emailService.sendWelcomeVerificationEmail(dto.email, dto.nick, url);
+      } catch (e) {
+        console.warn("Fallo al enviar email de bienvenida:", e);
+        logger.logError("Fallo al enviar email de bienvenida:" + e);
+      }
 
+      logger.logInfo("Usuario registrado con éxito " + dto.email);
       return newUser;
+
     } catch (error: any) {
-      if (error instanceof CustomError) {
-        throw error;
+      if (error instanceof CustomError) throw error;
+
+      // Manejo específico del error de constraint único de Prisma
+      if (error.code === 'P2002') {
+        console.log("❌ Error P2002 - Constraint único violado:", {
+          code: error.code,
+          message: error.message,
+          meta: error.meta,
+          inputData: { email: email.trim().toLowerCase(), nick: nick.trim().toLowerCase() }
+        });
+
+        // Intentar determinar qué campo causó el conflicto
+        let field = 'usuario'; // valor por defecto genérico
+
+        if (error.meta?.target) {
+          if (Array.isArray(error.meta.target)) {
+            field = error.meta.target.includes('nick') ? 'nick' :
+              error.meta.target.includes('email') ? 'correo' : 'usuario';
+          } else if (typeof error.meta.target === 'string') {
+            field = error.meta.target.includes('nick') ? 'nick' :
+              error.meta.target.includes('email') ? 'correo' : 'usuario';
+          }
+        } else if (error.message) {
+          // Fallback: buscar en el mensaje de error
+          if (error.message.includes('nick')) {
+            field = 'nick';
+          } else if (error.message.includes('email')) {
+            field = 'correo';
+          }
+        }
+
+        throw new ConflictError(`El ${field} ya está registrado, por favor inicie sesión.`, {
+          error: "DUPLICATE_USER",
+        });
       }
 
       console.error("Error en UserService.createUser:", error);
-      throw new InternalServerError(
-        "Hubo un problema al registrar el usuario."
-      );
+      logger.logError("Error en UserService.createUser:");
+      throw new InternalServerError("Hubo un problema al registrar el usuario.", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
-
 
   /**
    * Autentica un usuario verificando sus credenciales.
@@ -121,11 +182,11 @@ export class AuthService {
       return user;
     } catch (error: any) {
       if (error instanceof CustomError) {
-         throw error;
+        throw error;
       } else {
-          throw new InternalServerError(
-            "Hubo un problema al intentar iniciar sesión."
-          );
+        throw new InternalServerError(
+          "Hubo un problema al intentar iniciar sesión."
+        );
       }
     }
   }
