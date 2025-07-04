@@ -82,6 +82,13 @@ export class CalendarPageComponent {
 
   clickedDate: string  = new Date().toISOString().slice(0, 10);
 
+  ngOnInit() {
+    // Inicializar el calendario y cargar la familia seleccionada
+    this.familiaEffect;
+    this.changeDetector.detectChanges();
+  }
+
+
   private familiaEffect = effect(async () => {
     this.userFamilia = this.familiesStore.familiaSeleccionada();
     if (this.userFamilia == null || !this.calendarComponent) return;

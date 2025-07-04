@@ -15,6 +15,8 @@ import { MessageModalComponent } from '../../../../../components/message-modal/m
 
 import { FamilyFormComponent } from '../../../../../components/family/family-form/family-form.component';
 import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
+import { FormsModule } from '@angular/forms';
+import { FamilyService } from '../../../../../shared/services/family.service';
 
 @Component({
   selector: 'app-settings-family',
@@ -25,6 +27,7 @@ import { FamiliaUsuariosService } from '../../../../../shared/services/familia-u
     ButtonModule,
     MessageModalComponent,
     FamilyFormComponent,
+    FormsModule 
   ],
 })
 export class SettingsFamilyComponent {
@@ -33,6 +36,7 @@ export class SettingsFamilyComponent {
   private familiesStore = inject(FamiliesStore);
   private invitationsService = inject(InvitationsService);
   private familiaUsuariosService = inject(FamiliaUsuariosService);
+  private familyService = inject(FamilyService)
 
   showInvitacionModal = false;
 
@@ -70,6 +74,45 @@ export class SettingsFamilyComponent {
     }
   }
 
+  showEditarFamiliaModal = false;
+  familiaEditar: IUsersFamilies | null = null;
+  familiaDescripcion: string | null = null;
+
+  showFamiliaEditarModal(familia: IUsersFamilies | null) {
+    if (!familia) {
+      console.error('Familia no puede ser nula al abrir el modal de edición');
+      return;
+    }
+    this.familiaEditar = familia;
+    this.familiaDescripcion = familia.descripcion || '';
+    this.showEditarFamiliaModal = true;
+  }
+
+  closeFamiliaEditarModal() {
+    this.showEditarFamiliaModal = false;
+    this.changeDetector.detectChanges();
+    this.familiaEditar = null;
+    this.familiaDescripcion = null;
+  }
+
+  editarFamilia() {
+    console.log('Editar familia', this.familiaEditar);
+
+    if (!this.familiaEditar || !this.familiaDescripcion) {
+      console.error('Familia o descripción no pueden ser nulos al editar');
+      return;
+    }
+    this.familyService.editFamilyDescription(this.familiaEditar.id, this.familiaDescripcion)
+      .then(updatedFamily => {
+        console.log('Familia editada con éxito:', updatedFamily);
+        // Actualizar la familia en el store
+        this.closeFamiliaEditarModal();
+      })
+      .catch(error => {
+        console.error('Error al editar familia:', error);
+      });
+  }
+
   openInvitacionModal() {
     this.showInvitacionModal = true;
   }
@@ -80,18 +123,26 @@ export class SettingsFamilyComponent {
 
   aceptarInvitacion(id: number) {
     console.log('Aceptar invitación', id);
-    // Lógica real aquí
     this.invitationsService.respondInvitation(id, true).then(() => {
       this.loadInvitacionesAsync();
     });
+    this.actualizarFamilia();
   }
 
   rechazarInvitacion(id: number) {
     console.log('Rechazar invitación', id);
-    // Lógica real aquí
     this.invitationsService.respondInvitation(id, false).then(() => {
       this.loadInvitacionesAsync();
     });
+  }
+
+  actualizarFamilia() {
+    this.familiesStore.loadFamilias();
+    this.familiaActual = this.familiesStore.familiaSeleccionada();
+    this.familiasUsuario = this.familiesStore.familias();
+    console.log('Familia actualizada:', this.familiaActual);
+    console.log('Familias de usuario actualizadas:', this.familiasUsuario);
+    this.changeDetector.detectChanges();
   }
 
   cambiarAFamilia(familiaId: number) {
@@ -114,7 +165,6 @@ export class SettingsFamilyComponent {
         this.familiaActual = this.familiesStore.familiaSeleccionada();
       }
       this.familiasUsuario = this.familiesStore.familias();
-
 
       console.log(this.familiaActual, this.familiasUsuario);
 

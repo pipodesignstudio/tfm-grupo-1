@@ -29,5 +29,25 @@ export class FamilyService {
     return response.data.data;
   }
 
+  /**
+   * Edit description of a family by its ID.
+   * @param id_familia - The unique identifier of the family.
+   * @param descripcion - The new description for the family.
+   * @returns A promise that resolves to the updated family data.
+   * @throws Will throw an error if the HTTP request fails.
+   */
+  async editFamilyDescription(
+    id_familia: number,
+    descripcion: string
+  ): Promise<IFamiliaUsuario> {
+    const response = await axios.put<{ data: IFamiliaUsuario }>(
+      `${this.apiUrl}/familia/${id_familia}`,
+      { descripcion },
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
+    );
+    return response.data.data;
+  }
 
 }
