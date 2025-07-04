@@ -5,100 +5,134 @@ import axios from 'axios';
 import { ObjetivoDto } from '../interfaces';
 import { TokenService } from '../../features/auth/services';
 
-@Injectable({ providedIn: 'root' })
+export interface Activity {
+  id: number;
+  titulo: string;
+  descripcion?: string;
+  dia_semana?: number;
+  hora_inicio?: string;
+  hora_fin?: string;
+  color?: string;
+  tipo?: string;
+  ubicacion?: string;
+  usuario_responsable?: number;
+  completado: boolean;
+  fechas_realizacion?: string[];
+}
+
+export interface Objective {
+  id: number;
+  ninos_id: number;
+  nombre: string;
+  color: string;
+  tipo: 'Salud' | 'Educación' | 'Alimentación' | 'Social' | 'Actividades' | 'Cuidado Diario' | 'Otros';
+  fecha_inicio: Date;
+  fecha_fin: Date;
+  activities: Activity[];
+  completado: boolean;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
 export class ObjectivesService {
 
   private baseUrl = environment.backendUrl;
+  private tokenService = inject(TokenService)
 
 
   private objectivesSubject = new BehaviorSubject<Objective[]>([]);
   public objectives$: Observable<Objective[]> = this.objectivesSubject.asObservable();
-  private tokenService = inject(TokenService)
 
-  private objectivesSubject = new BehaviorSubject<IObjetivo[]>([]);
-  public objectives$: Observable<IObjetivo[]> = this.objectivesSubject.asObservable();
+  private nextObjectiveId = 1;
+  private nextActivityId = 1;
 
-  constructor(private tokenService: TokenService) {}
+  constructor() {
+    const storedObjectives = localStorage.getItem('objectives');
+    if (storedObjectives) {
+      const objectives = JSON.parse(storedObjectives);
+      this.objectivesSubject.next(objectives);
+      if (objectives.length > 0) {
+        this.nextObjectiveId = Math.max(...objectives.map((o: Objective) => o.id)) + 1;
+        const maxActivityId = Math.max(...objectives.flatMap((o: Objective) => 
+          o.activities.map((a: Activity) => a.id)
+        ));
+        this.nextActivityId = maxActivityId + 1;
+      }
+    }
+  }
 
-  private getAuthHeaders() {
-    return {
-      headers: {
-        Authorization: `Bearer ${this.tokenService.token()}`,
-      },
+  getObjectivesByChild(childId: number): Objective[] {
+    return this.objectivesSubject.getValue().filter(obj => obj.ninos_id === childId);
+  }
+
+  getActiveObjectives(childId: number): Objective[] {
+    return this.getObjectivesByChild(childId).filter(obj => !obj.completado);
+  }
+
+  getInactiveObjectives(childId: number): Objective[] {
+    return this.getObjectivesByChild(childId).filter(obj => obj.completado);
+  }
+
+  addObjective(objective: Omit<Objective, 'id'>): void {
+    const newObjective: Objective = {
+      ...objective,
+      id: this.nextObjectiveId++,
     };
+    const currentObjectives = this.objectivesSubject.getValue();
+    const updatedObjectives = [...currentObjectives, newObjective];
+    this.objectivesSubject.next(updatedObjectives);
+    this.saveObjectivesToLocalStorage(updatedObjectives);
   }
 
-  public async getAllObjectives(idNino: number): Promise<void> {
-    try {
-      const response = await axios.get<{ data: IObjetivo[] }>(
-        `${this.baseUrl}/${idNino}/objetivos`,
-        this.getAuthHeaders()
-      );
-      const objetivos = response.data.data;
-      this.objectivesSubject.next(objetivos);
-    } catch (error) {
-      console.error('Error al obtener los objetivos:', error);
-      this.objectivesSubject.next([]);
+  updateObjective(objective: Objective): void {
+    const currentObjectives = this.objectivesSubject.getValue();
+    const index = currentObjectives.findIndex(obj => obj.id === objective.id);
+    if (index !== -1) {
+      currentObjectives[index] = objective;
+      this.objectivesSubject.next(currentObjectives);
+      this.saveObjectivesToLocalStorage(currentObjectives);
     }
   }
 
-  public getObjectives(): IObjetivo[] {
-    return this.objectivesSubject.getValue();
+  deleteObjective(objectiveId: number): void {
+    const currentObjectives = this.objectivesSubject.getValue();
+    const updatedObjectives = currentObjectives.filter(obj => obj.id !== objectiveId);
+    this.objectivesSubject.next(updatedObjectives);
+    this.saveObjectivesToLocalStorage(updatedObjectives);
   }
 
-  public clearObjectives(): void {
-    this.objectivesSubject.next([]);
-  }
-
-  public async createObjective(idNino: number, data: Partial<IObjetivo>): Promise<void> {
-    try {
-      await axios.post(
-        `${this.baseUrl}/${idNino}/objetivos`,
-        data,
-        this.getAuthHeaders()
-      );
-      await this.getAllObjectives(idNino); // refrescar lista
-    } catch (error) {
-      console.error('Error al crear el objetivo:', error);
-      throw error;
+  addActivityToObjective(objectiveId: number, activity: Omit<Activity, 'id'>): void {
+    const currentObjectives = this.objectivesSubject.getValue();
+    const objective = currentObjectives.find(obj => obj.id === objectiveId);
+    if (objective) {
+      const newActivity: Activity = {
+        ...activity,
+        id: this.nextActivityId++,
+      };
+      objective.activities.push(newActivity);
+      this.updateObjective(objective);
     }
   }
 
-  public async updateObjective(idNino: number, idObjetivo: number, data: Partial<IObjetivo>): Promise<void> {
-    try {
-      await axios.put(
-        `${this.baseUrl}/${idNino}/objetivos/${idObjetivo}`,
-        data,
-        this.getAuthHeaders()
-      );
-      await this.getAllObjectives(idNino); // refrescar lista
-    } catch (error) {
-      console.error('Error al actualizar el objetivo:', error);
-      throw error;
+  toggleActivityCompletion(objectiveId: number, activityId: number): void {
+    const currentObjectives = this.objectivesSubject.getValue();
+    const objective = currentObjectives.find(obj => obj.id === objectiveId);
+    if (objective) {
+      const activity = objective.activities.find(act => act.id === activityId);
+      if (activity) {
+        activity.completado = !activity.completado;
+        this.updateObjectiveProgress(objective);
+        this.updateObjective(objective);
+      }
     }
   }
 
-  // NUEVO: Eliminar objetivo
-  public async deleteObjective(idNino: number, idObjetivo: number): Promise<void> {
-    try {
-      await axios.delete(
-        `${this.baseUrl}/${idNino}/objetivos/${idObjetivo}`,
-        this.getAuthHeaders()
-      );
-      await this.getAllObjectives(idNino); // refrescar lista
-    } catch (error) {
-      console.error('Error al eliminar el objetivo:', error);
-      throw error;
-    }
+  private updateObjectiveProgress(objective: Objective): void {
+    const completedActivities = objective.activities.filter(act => act.completado).length;
+    const totalActivities = objective.activities.length;
+    objective.completado = totalActivities > 0 && completedActivities === totalActivities;
   }
-
-  public async addActivityToObjective(idObjetivo: number, idActividad: number): Promise<void> {
-  await axios.post(
-    `${this.baseUrl}/objetivos/${idObjetivo}/actividades`,
-    { actividad_id: idActividad },
-    this.getAuthHeaders()
-  );
-}
 
   getObjectiveProgress(objective: Objective): number {
     if (objective.activities.length === 0) return 0;
