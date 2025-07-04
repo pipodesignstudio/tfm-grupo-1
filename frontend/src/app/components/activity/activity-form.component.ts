@@ -50,29 +50,12 @@ export class ActivityFormComponent {
 
   usuariosResponsables: { label: string; value: number | null }[] = [];
 
-  form: FormGroup;
+  form!: FormGroup;
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group(
-      {
-        titulo: ['', Validators.required],
-        descripcion: [''],
-        ninos_id: [null, Validators.required],
-        fecha_realizacion: ['', Validators.required],
-        hora_inicio: ['', Validators.required],
-        hora_fin: ['', Validators.required],
-        usuario_responsable: [null, Validators.required],
-        color: ['#7c3aed'],
-        tipo: [this.tipo],
-        ubicacion: [null],
-      },
-      {
-        validators: this.validarHoras,
-      }
-    );
-  }
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
+    this.createForm();
     this.filtroOpciones = this.children.map((child) => ({
       label: child.nombre,
       value: Number(child.id),
@@ -97,6 +80,64 @@ export class ActivityFormComponent {
       this.editMode = true;
       console.log('values form', this.form.value);
     }
+  }
+
+  private createForm(): void {
+    /* ---------- controles comunes a TODOS los tipos ---------- */
+    const base = {
+      titulo: ['', Validators.required],
+      descripcion: [''],
+      ninos_id: [null, Validators.required],
+      tipo: [this.tipo],
+    };
+
+    /* ---------- extras específicos por tipo ---------- */
+    const eventoExtras = {
+      fecha_realizacion: ['', Validators.required],
+      usuario_responsable: [null, Validators.required],
+
+      color: ['#7c3aed'],
+      hora_inicio: ['', Validators.required],
+      hora_fin: ['', Validators.required],
+      ubicacion: [null],
+    };
+
+    const objetivoExtras = {
+      fecha_realizacion: ['', Validators.required],
+      hora_inicio: ['', Validators.required],
+    };
+
+    const rutinaExtras = {
+      hora_inicio: ['', Validators.required],
+      hora_fin: ['', Validators.required],
+    };
+
+    /* ---------- elegir configuración y validador de grupo ---------- */
+    let groupConfig: any = base;
+    let groupValidators = null;
+
+    switch (this.tipo) {
+      case 'evento':
+        groupConfig = { ...base, ...eventoExtras };
+        groupValidators = this.validarHoras; // hora_inicio < hora_fin
+        break;
+
+      case 'objetivo':
+        groupConfig = { ...base, ...objetivoExtras };
+        break;
+
+      case 'rutina':
+        groupConfig = { ...base, ...rutinaExtras };
+        groupValidators = this.validarHoras; // opcional: mismo validador
+        break;
+
+      default: // null o tipo desconocido
+        groupConfig = base;
+    }
+
+    this.form = this.fb.group(groupConfig, {
+      validators: groupValidators,
+    });
   }
 
   onSubmit() {
