@@ -58,7 +58,6 @@ export class ObjectivesPageComponent {
             ? (objetivos as any).data
             : [];
 
-        // Cargar las actividades relacionadas
         const ids = this.objetivos.flatMap(obj => obj.objetivos_has_actividades?.map(a => a.actividad_id) ?? []);
         const actividades = await this.activityService.getActivitiesByIds(ids);
         this.activitiesMap = new Map(actividades.map(act => [act.id, act]));
@@ -94,4 +93,26 @@ export class ObjectivesPageComponent {
     const completadas = actividades.filter(a => a?.completado).length;
     return total === 0 ? 0 : Math.round((completadas / total) * 100);
   }
+
+  async onToggleActividad(objetivo: IObjetivo, actividadId: number): Promise<void> {
+    const actividad = this.activitiesMap.get(actividadId);
+    if (!actividad) return;
+
+    const nuevoEstado = !actividad.completado;
+
+    // Actualización optimista
+    this.activitiesMap.set(actividadId, { ...actividad, completado: nuevoEstado });
+    this.cdr.detectChanges();
+
+    try {
+      await this.activityService.updateActivityCompleted(actividadId, nuevoEstado, actividad.ninos_id);
+    } catch (error) {
+      console.error('Error al actualizar la actividad:', error);
+
+      // Revertir si falla
+      this.activitiesMap.set(actividadId, { ...actividad });
+      this.cdr.detectChanges();
+    }
+  }
+
 }

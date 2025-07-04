@@ -77,8 +77,15 @@
                 type="checkbox"
                 class="accent-blue-500"
                 [checked]="activitiesMap.get(act.actividad_id)?.completado"
+                (change)="onToggleActividad(obj, act.actividad_id)"
               />
-              {{ activitiesMap.get(act.actividad_id)?.titulo || ('Actividad #' + act.actividad_id) }}
+              <span
+                [ngClass]="{
+                  'line-through text-gray-500': activitiesMap.get(act.actividad_id)?.completado
+                }"
+              >
+                {{ activitiesMap.get(act.actividad_id)?.titulo || ('Actividad #' + act.actividad_id) }}
+              </span>
             </label>
           }
         </div>

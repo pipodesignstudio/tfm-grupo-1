@@ -16,7 +16,6 @@ interface CreateActivityResponse {
 export class ActivityService {
   private httpClient = inject(HttpClient);
   private apiUrl: string = 'http://localhost:3000/api';
-
   private readonly tokenService = inject(TokenService);
 
   getActivitiesFamily(id_familia: string): Promise<IActivity[]> {
@@ -101,7 +100,6 @@ export class ActivityService {
     ).then((response) => response.data);
   }
 
-  // ✅ NUEVO: Obtener varias actividades por IDs
   getActivitiesByIds(ids: number[]): Promise<IActivity[]> {
     return lastValueFrom(
       this.httpClient.post<{ data: IActivity[] }>(
@@ -115,4 +113,20 @@ export class ActivityService {
       )
     ).then((response) => response.data);
   }
+
+  updateActivityCompleted(id: number, completado: boolean, ninoId: number): Promise<void> {
+    return lastValueFrom(
+      this.httpClient.put(
+        `${this.apiUrl}/actividades/ninos/${ninoId}/${id}`,
+        { completado },
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    ).then(() => {});
+  }
+
 }
