@@ -214,7 +214,7 @@ router.post(
  *         description: Listado de todas las actividades del niño
  */
 
-router.get(
+router.post(
   "/all",
   asyncMiddlewareWrapper(authMiddleware),
   asyncMiddlewareWrapper(controller.getAllActivitiesFromArray.bind(controller))

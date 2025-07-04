@@ -5,5 +5,7 @@ export interface IObjetivo {
   color?: string | null;
   tipo?: string | null;
   fecha_fin?: string | null; // puede venir como string de la API
-  actividades_ids?: number[];
+  objetivos_has_actividades?: {
+    actividad_id: number;
+  }[];
 }
