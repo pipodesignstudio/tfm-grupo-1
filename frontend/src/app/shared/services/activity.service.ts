@@ -5,7 +5,6 @@ import { ActivityDto, IActivity } from '../interfaces/iactivity.interface';
 import { TokenService } from '../../features/auth/services';
 import axios from 'axios';
 
-
 interface CreateActivityResponse {
   success: boolean;
   message: string;
@@ -13,7 +12,7 @@ interface CreateActivityResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ActivityService {
   private httpClient = inject(HttpClient)
@@ -34,14 +33,17 @@ export class ActivityService {
    * @throws Will propagate any HTTP or network errors encountered during the request.
    */
   getActivitiesFamily(id_familia: string): Promise<IActivity[]> {
-  return lastValueFrom(
-    this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/familias/${id_familia}`, {
-      headers: {
-        Authorization: `Bearer ${this.tokenService.token()}`,
-      },
-    })
-  ).then(response => response.data);
-}
+    return lastValueFrom(
+      this.httpClient.get<{ data: IActivity[] }>(
+        `${this.apiUrl}/actividades/familias/${id_familia}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    ).then((response) => response.data);
+  }
 
   /**
    * Retrieves the list of activities associated with a specific child (niño) by their ID.
@@ -55,12 +57,15 @@ export class ActivityService {
    */
   getActivitiesNino(nino_id: string): Promise<IActivity[]> {
     return lastValueFrom(
-      this.httpClient.get<{ data: IActivity[] }>(`${this.apiUrl}/actividades/ninos/${nino_id}`, {
-      headers: {
-        Authorization: `Bearer ${this.tokenService.token()}`,
-      },
-    })
-    ).then(response => response.data);
+      this.httpClient.get<{ data: IActivity[] }>(
+        `${this.apiUrl}/actividades/ninos/${nino_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    ).then((response) => response.data);
   }
 
   /**
@@ -73,11 +78,16 @@ export class ActivityService {
    * @throws Will propagate any HTTP or network errors encountered during the request.
    */
   deleteActivity(id: number, nino_id: number): Promise<IActivity> {
-    return lastValueFrom(this.httpClient.delete<IActivity>(`${this.apiUrl}/actividades/ninos/${nino_id}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${this.tokenService.token()}`,
-      },
-    }));
+    return lastValueFrom(
+      this.httpClient.delete<IActivity>(
+        `${this.apiUrl}/actividades/ninos/${nino_id}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    );
   }
 
   /**
@@ -90,12 +100,18 @@ export class ActivityService {
    * The `activity` parameter should include the `id` and `ninos_id` properties, which are used to identify the activity and the child respectively.
    */
   updateActivity(activity: IActivity): Promise<IActivity> {
-    let { id, ninos_id , ...activityBody } = activity;
-    return lastValueFrom(this.httpClient.put<IActivity>(`${this.apiUrl}/actividades/ninos/${ninos_id}/${id}`, activityBody, {
-      headers: {
-        Authorization: `Bearer ${this.tokenService.token()}`,
-      },
-    }));
+    const { id, ninos_id, ...activityBody } = activity;
+    return lastValueFrom(
+      this.httpClient.put<IActivity>(
+        `${this.apiUrl}/actividades/ninos/${ninos_id}/${id}`,
+        activityBody,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    );
   }
 
   /**
@@ -190,6 +206,49 @@ export class ActivityService {
       return false;
     }
     return true;
+  }
+
+
+  getActivityById(id: number): Promise<IActivity> {
+    return lastValueFrom(
+      this.httpClient.get<{ data: IActivity }>(
+        `${this.apiUrl}/actividades/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    ).then((response) => response.data);
+  }
+
+  getActivitiesByIds(ids: number[]): Promise<IActivity[]> {
+    return lastValueFrom(
+      this.httpClient.post<{ data: IActivity[] }>(
+        `${this.apiUrl}/actividades/all`,
+        { ids },
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
+    ).then((response) => response.data);
+  }
+
+  updateActivityCompleted(id: number, completado: boolean, ninoId: number): Promise<void> {
+    return lastValueFrom(
+      this.httpClient.put(
+        `${this.apiUrl}/actividades/ninos/${ninoId}/${id}`,
+        { completado },
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    ).then(() => {});
   }
 
 }

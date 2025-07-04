@@ -36,6 +36,7 @@ export class HeaderComponent {
     '/dashboard/settings/edit-profile': 'Editar perfil',
     '/dashboard/about-us': 'Sobre nosotros',
     '/dashboard/notes': 'Notas',
+    '/dashboard/objectives': 'Objetivos',
     '/dashboard/downloads': 'Descargas',
   };
 
