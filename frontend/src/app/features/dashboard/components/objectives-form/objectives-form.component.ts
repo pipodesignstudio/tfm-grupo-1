@@ -6,6 +6,8 @@ import { SelectModule } from 'primeng/select';
 import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DatePickerModule } from 'primeng/datepicker';
+
 
 @Component({
   selector: 'app-objectives-form',
@@ -20,6 +22,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     CalendarModule,
     ButtonModule,
     ColorPickerModule,
+    DatePickerModule
   ],
 })
 export class ObjectivesFormComponent implements OnChanges {

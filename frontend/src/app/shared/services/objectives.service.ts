@@ -71,4 +71,27 @@ export class ObjectivesService {
       throw error;
     }
   }
+
+  // NUEVO: Eliminar objetivo
+  public async deleteObjective(idNino: number, idObjetivo: number): Promise<void> {
+    try {
+      await axios.delete(
+        `${this.baseUrl}/${idNino}/objetivos/${idObjetivo}`,
+        this.getAuthHeaders()
+      );
+      await this.getAllObjectives(idNino); // refrescar lista
+    } catch (error) {
+      console.error('Error al eliminar el objetivo:', error);
+      throw error;
+    }
+  }
+
+  public async addActivityToObjective(idObjetivo: number, idActividad: number): Promise<void> {
+  await axios.post(
+    `${this.baseUrl}/objetivos/${idObjetivo}/actividades`,
+    { actividad_id: idActividad },
+    this.getAuthHeaders()
+  );
+}
+
 }

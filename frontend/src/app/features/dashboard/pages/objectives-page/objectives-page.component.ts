@@ -11,6 +11,7 @@ import { FamiliesStore } from '../../../../shared/services/familiesStore.service
 import { ObjectivesService } from '../../../../shared/services/objectives.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { ObjectivesFormComponent } from '../../components/objectives-form/objectives-form.component';
+import { ActivityFormComponent } from '../../../../components/activity/activity-form.component';
 
 @Component({
   selector: 'app-objectives-page',
@@ -21,6 +22,7 @@ import { ObjectivesFormComponent } from '../../components/objectives-form/object
     ButtonModule,
     FormsModule,
     ObjectivesFormComponent,
+    ActivityFormComponent,
   ],
   templateUrl: './objectives-page.component.html',
 })
@@ -44,6 +46,16 @@ export class ObjectivesPageComponent {
   // Modal formulario
   showForm = false;
   objectiveToEdit: IObjetivo | null = null;
+
+  // Modal borrado
+  objectiveToDelete: IObjetivo | null = null;
+  showDeleteConfirm = false;
+
+  // Modal añadir actividad
+    mostrarActivityModal = false;
+    actividadInfo: IActivity | null = null;
+    objetivoParaNuevaActividad: IObjetivo | null = null;
+
 
   constructor() {
     effect(() => {
@@ -143,6 +155,12 @@ export class ObjectivesPageComponent {
     this.cdr.detectChanges();
   }
 
+  openEditObjectiveForm(obj: IObjetivo): void {
+    this.objectiveToEdit = obj;
+    this.showForm = true;
+    this.cdr.detectChanges();
+  }
+
   closeForm(): void {
     this.showForm = false;
     this.objectiveToEdit = null;
@@ -165,4 +183,83 @@ export class ObjectivesPageComponent {
       console.error('Error al editar el objetivo');
     });
   }
+
+  // ========================
+  // BORRAR OBJETIVO - MODAL
+  // ========================
+
+  confirmDeleteObjective(obj: IObjetivo): void {
+    this.objectiveToDelete = obj;
+    this.showDeleteConfirm = true;
+    this.cdr.detectChanges();
+  }
+
+  cancelDeleteObjective(): void {
+    this.showDeleteConfirm = false;
+    this.objectiveToDelete = null;
+  }
+
+  async deleteObjectiveConfirmed(): Promise<void> {
+    if (!this.objectiveToDelete) return;
+    const idNino = this.selectedChildId!;
+    const idObjetivo = this.objectiveToDelete.id;
+    try {
+      await this.objectivesService.deleteObjective(idNino, idObjetivo);
+      this.loadObjectives(idNino);
+      this.showDeleteConfirm = false;
+      this.objectiveToDelete = null;
+    } catch (error) {
+      console.error('Error al borrar el objetivo:', error);
+    }
+  }
+
+  // ========================
+  // AÑADIR ACTIVIDAD (Pendiente implementar)
+  // ========================
+
+  onAddActivity(obj: IObjetivo): void {
+    this.actividadInfo = null; // Nueva actividad
+    this.objetivoParaNuevaActividad = obj; // Guardamos el objetivo
+    this.mostrarActivityModal = true;
+  }
+
+  cerrarActivityModal(): void {
+    this.mostrarActivityModal = false;
+    this.actividadInfo = null;
+    this.objetivoParaNuevaActividad = null;
+  }
+
+async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+  if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
+
+  try {
+    // Construye el objeto de tipo IActivity SIN id
+    const actividadAEnviar: IActivity = {
+      ...nuevaActividad,
+      tipo: 'Tarea',
+      ninos_id: this.selectedChildId,
+      // No incluyas 'id'
+    } as IActivity;
+
+    // Crea la actividad
+    const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
+
+    // Asocia la actividad al objetivo (esto ya lo tienes en tu ObjectivesService)
+    await this.objectivesService.addActivityToObjective(
+      this.objetivoParaNuevaActividad.id,
+      actividadCreada.id
+    );
+
+    // Refresca la lista de objetivos
+    this.loadObjectives(this.selectedChildId);
+  } catch (error) {
+    console.error('Error al crear y asociar la actividad:', error);
+  } finally {
+    this.cerrarActivityModal();
+  }
+}
+
+
+
+
 }

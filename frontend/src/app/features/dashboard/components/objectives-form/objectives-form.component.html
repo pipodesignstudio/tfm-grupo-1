@@ -33,16 +33,17 @@
       />
 
       <!-- Fecha de fin -->
-      <div class="flex items-center gap-3">
-        <label class="text-sm min-w-max">Fecha de fin:</label>
-        <p-calendar
-          formControlName="fecha_fin"
-          dateFormat="dd/mm/yy"
-          [showIcon]="true"
-          iconDisplay="input"
-          class="w-full"
-          [appendTo]="'body'"
-        ></p-calendar>
+      <div class="flex items-center gap-4">
+        <span class="min-w-max text-gray-700">Fecha de fin:</span>
+        <div class="flex-1 flex justify-end">
+          <p-datepicker
+            formControlName="fecha_realizacion"
+            class="border-0 rounded-md w-full max-w-[220px]"
+            [iconDisplay]="'input'"
+            [appendTo]="'body'"
+            [showIcon]="true"
+          ></p-datepicker>
+        </div>
       </div>
 
       <!-- Color -->
