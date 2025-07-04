@@ -97,6 +97,7 @@ export class ActivityService {
       },
     }));
   }
+
   /**
    * Creates a new activity for a specific child (niño).
    *
@@ -106,7 +107,7 @@ export class ActivityService {
    * @remarks
    * The `ninos_id` property is extracted from the `activity` object and used to associate the activity with the specific child.
    */
-  createActivity(activity: IActivity): Promise<IActivity> {
+  async createActivity(activity: IActivity): Promise<IActivity> {
     console.log("activity", activity);
     let { ninos_id, ...activityBody } = activity;
     const response = await lastValueFrom(
