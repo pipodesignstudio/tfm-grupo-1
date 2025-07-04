@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
+import { FormsModule } from '@angular/forms';
 import { IChild } from '../../../../shared/interfaces/ichild.interface';
 import { IObjetivo } from '../../../../shared/interfaces/iobjective.interface';
 import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
@@ -9,12 +10,18 @@ import { ChildService } from '../../../../shared/services/child.service';
 import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
 import { ObjectivesService } from '../../../../shared/services/objectives.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
-import { FormsModule } from '@angular/forms';
+import { ObjectivesFormComponent } from '../../components/objectives-form/objectives-form.component';
 
 @Component({
   selector: 'app-objectives-page',
   standalone: true,
-  imports: [CommonModule, DropdownModule, ButtonModule, FormsModule],
+  imports: [
+    CommonModule,
+    DropdownModule,
+    ButtonModule,
+    FormsModule,
+    ObjectivesFormComponent,
+  ],
   templateUrl: './objectives-page.component.html',
 })
 export class ObjectivesPageComponent {
@@ -33,6 +40,10 @@ export class ObjectivesPageComponent {
   objetivosCompletados: IObjetivo[] = [];
 
   activitiesMap: Map<number, IActivity> = new Map();
+
+  // Modal formulario
+  showForm = false;
+  objectiveToEdit: IObjetivo | null = null;
 
   constructor() {
     effect(() => {
@@ -65,7 +76,6 @@ export class ObjectivesPageComponent {
         const actividades = await this.activityService.getActivitiesByIds(ids);
         this.activitiesMap = new Map(actividades.map(act => [act.id, act]));
 
-        // Dividir objetivos en activos y completados
         this.objetivosActivos = this.objetivos.filter(o => this.getProgreso(o) < 100);
         this.objetivosCompletados = this.objetivos.filter(o => this.getProgreso(o) === 100);
 
@@ -106,24 +116,53 @@ export class ObjectivesPageComponent {
     if (!actividad) return;
 
     const nuevoEstado = !actividad.completado;
-
-    // Actualización optimista
     this.activitiesMap.set(actividadId, { ...actividad, completado: nuevoEstado });
     this.cdr.detectChanges();
 
     try {
       await this.activityService.updateActivityCompleted(actividadId, nuevoEstado, actividad.ninos_id);
 
-      // Volver a clasificar los objetivos tras el cambio
       this.objetivosActivos = this.objetivos.filter(o => this.getProgreso(o) < 100);
       this.objetivosCompletados = this.objetivos.filter(o => this.getProgreso(o) === 100);
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al actualizar la actividad:', error);
-
-      // Revertir si falla
       this.activitiesMap.set(actividadId, { ...actividad });
       this.cdr.detectChanges();
     }
+  }
+
+  // ========================
+  // NUEVO OBJETIVO - MODAL
+  // ========================
+
+  openNewObjectiveForm(): void {
+    if (!this.selectedChildId) return;
+    this.objectiveToEdit = null;
+    this.showForm = true;
+    this.cdr.detectChanges();
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.objectiveToEdit = null;
+  }
+
+  onGuardarObjetivo({ idNino, data }: { idNino: number; data: any }): void {
+    this.objectivesService.createObjective(idNino, data).then(() => {
+      this.loadObjectives(idNino);
+      this.closeForm();
+    }).catch(() => {
+      console.error('Error al guardar el objetivo');
+    });
+  }
+
+  onEditarObjetivo({ idNino, idObjetivo, data }: { idNino: number; idObjetivo: number; data: any }): void {
+    this.objectivesService.updateObjective(idNino, idObjetivo, data).then(() => {
+      this.loadObjectives(idNino);
+      this.closeForm();
+    }).catch(() => {
+      console.error('Error al editar el objetivo');
+    });
   }
 }

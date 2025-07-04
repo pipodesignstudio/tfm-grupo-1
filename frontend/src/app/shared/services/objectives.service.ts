@@ -28,16 +28,13 @@ export class ObjectivesService {
         `${this.baseUrl}/${idNino}/objetivos`,
         this.getAuthHeaders()
       );
-      console.log('RESPONSE DE LA API', response.data);
-      const objetivos = response.data.data; // asegúrate que es un array
-      this.objectivesSubject.next(objetivos); // ✅
-
+      const objetivos = response.data.data;
+      this.objectivesSubject.next(objetivos);
     } catch (error) {
       console.error('Error al obtener los objetivos:', error);
       this.objectivesSubject.next([]);
     }
   }
-
 
   public getObjectives(): IObjetivo[] {
     return this.objectivesSubject.getValue();
@@ -45,5 +42,33 @@ export class ObjectivesService {
 
   public clearObjectives(): void {
     this.objectivesSubject.next([]);
+  }
+
+  public async createObjective(idNino: number, data: Partial<IObjetivo>): Promise<void> {
+    try {
+      await axios.post(
+        `${this.baseUrl}/${idNino}/objetivos`,
+        data,
+        this.getAuthHeaders()
+      );
+      await this.getAllObjectives(idNino); // refrescar lista
+    } catch (error) {
+      console.error('Error al crear el objetivo:', error);
+      throw error;
+    }
+  }
+
+  public async updateObjective(idNino: number, idObjetivo: number, data: Partial<IObjetivo>): Promise<void> {
+    try {
+      await axios.put(
+        `${this.baseUrl}/${idNino}/objetivos/${idObjetivo}`,
+        data,
+        this.getAuthHeaders()
+      );
+      await this.getAllObjectives(idNino); // refrescar lista
+    } catch (error) {
+      console.error('Error al actualizar el objetivo:', error);
+      throw error;
+    }
   }
 }

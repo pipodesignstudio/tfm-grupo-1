@@ -18,6 +18,7 @@
           label="Crear Objetivo"
           [raised]="true"
           severity="primary"
+          (onClick)="openNewObjectiveForm()"
         />
       </div>
     </div>
@@ -39,21 +40,22 @@
               borderColor: obj.color ?? '#3b82f6'
             }"
           >
-            <!-- Acciones -->
-            <div class="absolute top-4 right-4 flex text-gray-500">
-              <p-button
-                icon="pi pi-pen-to-square"
-                styleClass="p-button-text text-blue-500 hover:text-blue-700"
-                size="small">
-              </p-button>
-              <p-button
-                icon="pi pi-trash"
-                styleClass="p-button-text text-red-500 hover:text-red-700"
-                size="small">
-              </p-button>
+            <div class="flex gap-3 justify-between">
+              <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
+              <!-- Acciones -->
+              <div class="top-4 right-4 flex text-gray-500">
+                <p-button
+                  icon="pi pi-pen-to-square"
+                  styleClass="p-button-text text-blue-500 hover:text-blue-700"
+                  size="small">
+                </p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  styleClass="p-button-text text-red-500 hover:text-red-700"
+                  size="small">
+                </p-button>
+              </div>
             </div>
-
-            <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
 
             @if (obj.tipo) {
               <span
@@ -125,16 +127,17 @@
               borderColor: obj.color ?? '#10b981'
             }"
           >
+          <div class="flex gap-3 justify-between">
+            <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
             <!-- Acciones -->
-            <div class="absolute top-4 right-4 flex gap-2 text-gray-500">
+            <div class="top-4 right-4 flex gap-2 text-gray-500">
               <p-button
                 icon="pi pi-trash"
                 styleClass="p-button-text text-red-500 hover:text-red-700"
                 size="small">
               </p-button>
             </div>
-
-            <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
+          </div>
 
             @if (obj.tipo) {
               <span
@@ -173,3 +176,13 @@
     }
   </div>
 </section>
+
+@if (showForm) {
+  <app-objectives-form
+    [objectiveInfo]="objectiveToEdit"
+    [children]="childrenOptions"
+    (cerrar)="closeForm()"
+    (guardar)="onGuardarObjetivo($event)"
+    (editar)="onEditarObjetivo($event)"
+  />
+}

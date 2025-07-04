@@ -1,228 +1,94 @@
-<div class="p-6 min-h-screen bg-surface-50">
-  <!-- Header -->
-  <div class="flex items-center gap-4 mb-6">
-    <p-button 
-      icon="pi pi-arrow-left" 
-      [rounded]="true" 
-      [text]="true"
-      severity="secondary"
-      (click)="goBack()"
-      class="text-surface-600 hover:text-surface-700">
-    </p-button>
-    <h1 class="text-2xl font-bold text-surface-800">
-      {{ isEditMode ? 'Editar Objetivo' : 'Crear Objetivo' }}
-    </h1>
-  </div>
+<div class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden">
+    <!-- Título -->
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 shrink-0">
+      @if (editMode) {
+        Editar Objetivo
+      } @else {
+        Nuevo Objetivo
+      }
+    </h2>
 
-  <!-- Form -->
-  <div class="max-w-4xl mx-auto">
-    <form [formGroup]="objectiveForm" (ngSubmit)="onSubmit()" class="space-y-6">
-      
-      <!-- Main Form Card -->
-      <div class="bg-white rounded-lg shadow-sm border border-surface-200 p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <!-- Child Selection -->
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-surface-700 mb-2">
-              Niño <span class="text-red-500">*</span>
-            </label>
-            <p-dropdown 
-              [options]="children" 
-              formControlName="ninos_id"
-              optionLabel="name" 
-              optionValue="id"
-              placeholder="Selecciona un niño"
-              [style]="{'width': '100%'}">
-            </p-dropdown>
-          </div>
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible dark:text-white"
+    >
+      <!-- Título -->
+      <input
+        type="text"
+        pInputText
+        placeholder="Título del objetivo"
+        formControlName="nombre"
+        class="p-3 rounded-md"
+      />
 
-          <!-- Objective Name -->
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-surface-700 mb-2">
-              Nombre del Objetivo <span class="text-red-500">*</span>
-            </label>
-            <input 
-              pInputText 
-              formControlName="nombre"
-              placeholder="Ingresa el nombre del objetivo"
-              class="w-full" />
-          </div>
+      <!-- Tipo -->
+      <input
+        type="text"
+        pInputText
+        placeholder="Tipo"
+        formControlName="tipo"
+        class="p-3 rounded-md"
+      />
 
-          <!-- End Date -->
-          <div>
-            <label class="block text-sm font-medium text-surface-700 mb-2">
-              Fecha Fin <span class="text-red-500">*</span>
-            </label>
-            <p-calendar 
-              formControlName="fecha_fin"
-              [showIcon]="true"
-              dateFormat="dd/mm/yy"
-              placeholder="Selecciona fecha fin"
-              [style]="{'width': '100%'}">
-            </p-calendar>
-          </div>
-
-          <!-- Category -->
-          <div>
-            <label class="block text-sm font-medium text-surface-700 mb-2">
-              Categoría <span class="text-red-500">*</span>
-            </label>
-            <p-dropdown 
-              [options]="categories" 
-              formControlName="tipo"
-              placeholder="Selecciona categoría"
-              [style]="{'width': '100%'}">
-            </p-dropdown>
-          </div>
-
-          <!-- Color -->
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-surface-700 mb-2">
-              Color
-            </label>
-            <div class="flex flex-wrap gap-2">
-              <div *ngFor="let color of colors" 
-                   class="w-8 h-8 rounded-full cursor-pointer border-2 transition-all hover:scale-110"
-                   [style]="{'background-color': color.value}"
-                   [class]="{'border-surface-800': selectedColor === color.value, 'border-surface-300': selectedColor !== color.value}"
-                   (click)="selectColor(color.value)">
-              </div>
-            </div>
-          </div>
-
-        </div>
+      <!-- Fecha de fin -->
+      <div class="flex items-center gap-3">
+        <label class="text-sm min-w-max">Fecha de fin:</label>
+        <p-calendar
+          formControlName="fecha_fin"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          iconDisplay="input"
+          class="w-full"
+          [appendTo]="'body'"
+        ></p-calendar>
       </div>
 
-      <!-- Activities Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-surface-200 p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold text-surface-800">Actividades</h2>
-          <p-button 
-            label="Agregar Actividad" 
-            icon="pi pi-plus" 
-            [outlined]="true"
-            (click)="showAddActivityDialog = true">
-          </p-button>
-        </div>
-
-        <div class="space-y-3" *ngIf="activities.length > 0; else noActivities">
-          <div *ngFor="let activity of activities; let i = index" 
-               class="flex items-center justify-between p-3 border border-surface-200 rounded-lg">
-            <div class="flex-1">
-              <h4 class="font-medium text-surface-800">{{ activity.titulo }}</h4>
-              <p class="text-sm text-surface-600" *ngIf="activity.descripcion">
-                {{ activity.descripcion }}
-              </p>
-              <div class="flex gap-4 text-sm text-surface-500 mt-1">
-                <span *ngIf="activity.hora_inicio">
-                  <i class="pi pi-clock mr-1"></i>
-                  {{ activity.hora_inicio }}
-                </span>
-              </div>
-            </div>
-            <p-button 
-              icon="pi pi-trash" 
-              [rounded]="true" 
-              [text]="true"
-              severity="danger"
-              size="small"
-              (click)="removeActivity(i)">
-            </p-button>
-          </div>
-        </div>
-        
-        <ng-template #noActivities>
-          <p class="text-surface-500 text-center py-8">
-            No hay actividades agregadas. Haz clic en "Agregar Actividad" para empezar.
-          </p>
-        </ng-template>
+      <!-- Color -->
+      <div>
+        <label class="text-sm block mb-1">Color del objetivo:</label>
+        <p-colorPicker
+          formControlName="color"
+          [inline]="false"
+          [appendTo]="'body'"
+          format="hex"
+          class="w-full h-12 border-0 rounded-md p-1"
+        ></p-colorPicker>
       </div>
 
-      <!-- Form Actions -->
-      <div class="flex justify-end gap-3">
-        <p-button 
-          label="Cancelar" 
-          icon="pi pi-times" 
-          severity="secondary"
-          [outlined]="true"
-          (click)="goBack()">
-        </p-button>
-        <p-button 
-          label="{{ isEditMode ? 'Actualizar' : 'Crear' }} Objetivo"
-          icon="pi pi-check" 
+      <!-- Niño -->
+      <p-select
+        [options]="children"
+        formControlName="ninos_id"
+        optionLabel="label"
+        [optionValue]="'value'"
+        placeholder="Selecciona Niño"
+        [appendTo]="'body'"
+        class="w-full"
+      ></p-select>
+
+      <!-- Acciones -->
+      <div class="flex justify-end gap-2 mt-4 shrink-0">
+        <button
+          type="button"
+          (click)="cerrarModal()"
+          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancelar
+        </button>
+        <button
           type="submit"
-          [disabled]="!objectiveForm.valid">
-        </p-button>
+          [disabled]="form.invalid"
+          class="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+        >
+          @if (editMode) {
+            Actualizar Objetivo
+          } @else {
+            Guardar Objetivo
+          }
+        </button>
       </div>
-
     </form>
   </div>
 </div>
-
-<!-- Add Activity Dialog -->
-<p-dialog 
-  header="Agregar Actividad" 
-  [(visible)]="showAddActivityDialog" 
-  [modal]="true"
-  [style]="{'width': '500px'}">
-  
-  <form [formGroup]="activityForm" (ngSubmit)="addActivity()" class="space-y-4">
-    
-    <!-- Activity Name -->
-    <div>
-      <label class="block text-sm font-medium text-surface-700 mb-2">
-        Nombre de la Actividad <span class="text-red-500">*</span>
-      </label>
-      <input 
-        pInputText 
-        formControlName="titulo"
-        placeholder="Ingresa el nombre de la actividad"
-        class="w-full" />
-    </div>
-
-    <!-- Activity Description -->
-    <div>
-      <label class="block text-sm font-medium text-surface-700 mb-2">
-        Descripción
-      </label>
-      <textarea 
-        pInputTextarea 
-        formControlName="descripcion"
-        placeholder="Describe la actividad"
-        rows="3"
-        class="w-full">
-      </textarea>
-    </div>
-
-    <!-- Activity Time -->
-    <div>
-      <label class="block text-sm font-medium text-surface-700 mb-2">
-        Hora de Inicio
-      </label>
-      <p-calendar 
-        formControlName="hora_inicio"
-        [timeOnly]="true"
-        [showIcon]="true"
-        placeholder="Selecciona hora"
-        [style]="{'width': '100%'}">
-      </p-calendar>
-    </div>
-
-  </form>
-
-  <ng-template pTemplate="footer">
-    <p-button 
-      label="Cancelar" 
-      icon="pi pi-times" 
-      [text]="true" 
-      (click)="cancelAddActivity()">
-    </p-button>
-    <p-button 
-      label="Agregar" 
-      icon="pi pi-check" 
-      (click)="addActivity()"
-      [disabled]="!activityForm.valid">
-    </p-button>
-  </ng-template>
-</p-dialog>

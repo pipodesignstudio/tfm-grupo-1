@@ -1,215 +1,88 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
-import { IChild } from '../../../../shared/interfaces/ichild.interface';
-import { IObjective } from '../../../../shared/interfaces/iobjective.interface';
-import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
-import { ChildService } from '../../../../shared/services/child.service';
-import { ObjectivesService } from '../../../../shared/services/objectives.service';
-
-// PrimeNG modules (solo para imports en el decorador standalone)
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
+import { CalendarModule } from 'primeng/calendar';
+import { ButtonModule } from 'primeng/button';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   selector: 'app-objectives-form',
+  standalone: true,
   templateUrl: './objectives-form.component.html',
   styleUrls: ['./objectives-form.component.css'],
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule,
-    ButtonModule,
-    DropdownModule,
-    CalendarModule,
     InputTextModule,
-    TextareaModule,
-    DialogModule
-  ]
+    SelectModule,
+    CalendarModule,
+    ButtonModule,
+    ColorPickerModule,
+  ],
 })
-export class ObjectivesFormComponent implements OnInit {
-  objectiveForm!: FormGroup;
-  activityForm!: FormGroup;
+export class ObjectivesFormComponent implements OnChanges {
+  @Input() objectiveInfo: any = null;
+  @Input() children: { label: string; value: number }[] = [];
 
-  children: IChild[] = [];
-  activities: Partial<IActivity>[] = [];
+  @Output() guardar = new EventEmitter<{ idNino: number; data: any }>();
+  @Output() cerrar = new EventEmitter<void>();
+  @Output() editar = new EventEmitter<{ idNino: number; idObjetivo: number; data: any }>();
 
-  showAddActivityDialog = false;
-  isEditMode = false;
-  currentObjectiveId: number | null = null;
-  selectedColor = '#FFD700';
+  form!: FormGroup;
+  editMode = false;
 
-  categories = [
-    { label: 'Salud', value: 'Salud' },
-    { label: 'Educación', value: 'Educación' },
-    { label: 'Alimentación', value: 'Alimentación' },
-    { label: 'Social', value: 'Social' },
-    { label: 'Actividades', value: 'Actividades' },
-    { label: 'Cuidado Diario', value: 'Cuidado Diario' },
-    { label: 'Otros', value: 'Otros' }
-  ];
+  constructor(private fb: FormBuilder) {}
 
-  colors = [
-    { name: 'Amarillo', value: '#FFD700' },
-    { name: 'Verde', value: '#22C55E' },
-    { name: 'Azul', value: '#3B82F6' },
-    { name: 'Rojo', value: '#EF4444' },
-    { name: 'Morado', value: '#8B5CF6' },
-    { name: 'Rosa', value: '#EC4899' },
-    { name: 'Naranja', value: '#F97316' },
-    { name: 'Turquesa', value: '#14B8A6' }
-  ];
+  ngOnChanges(): void {
+    this.editMode = !!this.objectiveInfo;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private route: ActivatedRoute,
-    private location: Location,
-    private childService: ChildService,
-    private objectivesService: ObjectivesService
-  ) {}
+    const defaultChild = this.children.length > 0 ? this.children[0].value : null;
 
-  ngOnInit(): void {
-    this.initForms();
-    this.loadChildren();
-    this.checkRouteParams();
-  }
+    const fecha = this.objectiveInfo?.fecha_fin;
+    const parsedFecha = fecha ? new Date(fecha) : null;
 
-  private initForms(): void {
-    this.objectiveForm = this.fb.group({
-      ninos_id: [null, Validators.required],
-      nombre: ['', Validators.required],
-      fecha_fin: [null, Validators.required],
-      tipo: ['', Validators.required],
-      color: [this.selectedColor]
-    });
-
-    this.activityForm = this.fb.group({
-      titulo: ['', Validators.required],
-      descripcion: [''],
-      hora_inicio: [null]
+    this.form = this.fb.group({
+      nombre: [this.objectiveInfo?.nombre ?? '', Validators.required],
+      tipo: [this.objectiveInfo?.tipo ?? '', Validators.required],
+      color: [this.objectiveInfo?.color ?? '#3b82f6', Validators.required],
+      fecha_fin: [parsedFecha],
+      ninos_id: [
+        {
+          value: this.objectiveInfo?.ninos_id ?? defaultChild,
+          disabled: this.editMode,
+        },
+        Validators.required,
+      ],
     });
   }
 
-  private loadChildren(): void {
-    // Suponiendo que tienes un método que devuelve Promise<IChild[]>
-    this.childService.getChildren().then(children => {
-      this.children = children;
-    }).catch(err => {
-      console.error('Error cargando niños', err);
-    });
-  }
+  onSubmit(): void {
+    if (this.form.invalid) return;
 
-  private checkRouteParams(): void {
-    this.route.queryParams.subscribe(params => {
-      if (params['childId']) {
-        this.objectiveForm.patchValue({ ninos_id: Number(params['childId']) });
-      }
-      if (params['mode'] === 'edit' && params['objectiveId']) {
-        this.isEditMode = true;
-        this.currentObjectiveId = Number(params['objectiveId']);
-        this.loadObjectiveForEdit();
-      }
-    });
-  }
-
-  private async loadObjectiveForEdit(): Promise<void> {
-    if (!this.currentObjectiveId || !this.objectiveForm.value.ninos_id) return;
-    try {
-      const objectives = await this.objectivesService.getObjectivesByChild(String(this.objectiveForm.value.ninos_id));
-      const objective = objectives.find(obj => obj.id === this.currentObjectiveId);
-      if (!objective) return;
-
-      this.objectiveForm.patchValue({
-        ninos_id: objective.ninos_id,
-        nombre: objective.nombre,
-        fecha_fin: objective.fecha_fin ? new Date(objective.fecha_fin) : null,
-        tipo: objective.tipo,
-        color: objective.color ?? this.selectedColor
-      });
-      this.selectedColor = objective.color ?? this.selectedColor;
-      // Si tienes activities completas en el objetivo
-      this.activities = (objective.activities ?? []).map(activity => ({
-        ...activity
-      }));
-    } catch (error) {
-      console.error('Error cargando objetivo para editar', error);
-    }
-  }
-
-  selectColor(color: string): void {
-    this.selectedColor = color;
-    this.objectiveForm.patchValue({ color });
-  }
-
-  addActivity(): void {
-    if (this.activityForm.valid) {
-      const newActivity: Partial<IActivity> = {
-        titulo: this.activityForm.value.titulo,
-        descripcion: this.activityForm.value.descripcion,
-        hora_inicio: this.activityForm.value.hora_inicio,
-        completado: false
-      };
-      this.activities.push(newActivity);
-      this.activityForm.reset();
-      this.showAddActivityDialog = false;
-    }
-  }
-
-  removeActivity(index: number): void {
-    this.activities.splice(index, 1);
-  }
-
-  cancelAddActivity(): void {
-    this.activityForm.reset();
-    this.showAddActivityDialog = false;
-  }
-
-  async onSubmit(): Promise<void> {
-    if (this.objectiveForm.invalid) return;
-
-    // Prepara el objetivo para enviar al backend
-    const { ninos_id, nombre, fecha_fin, tipo, color } = this.objectiveForm.value;
-    const activitiesToSend = this.activities.map(activity => ({
-      titulo: activity.titulo || '',
-      descripcion: activity.descripcion || '',
-      hora_inicio: activity.hora_inicio || null,
-      completado: activity.completado ?? false
-    }));
-
-    // El backend espera activities, no activities_ids
-    const objectiveData: Omit<IObjective, 'id'> = {
-      ninos_id,
+    const { nombre, tipo, color, fecha_fin } = this.form.getRawValue(); // getRawValue para incluir campos deshabilitados
+    const data = {
       nombre,
-      fecha_fin,
       tipo,
       color,
-      activities: activitiesToSend
+      fecha_fin: fecha_fin ? new Date(fecha_fin).toISOString() : null,
     };
 
-    try {
-      if (this.isEditMode && this.currentObjectiveId) {
-        await this.objectivesService.updateObjective({
-          ...objectiveData,
-          id: this.currentObjectiveId
-        } as IObjective);
-      } else {
-        await this.objectivesService.createObjective(objectiveData);
-      }
-      this.router.navigate(['/dashboard/objectives']);
-    } catch (error) {
-      console.error('Error guardando objetivo', error);
+    const idNino = this.form.getRawValue().ninos_id;
+
+    if (this.editMode && this.objectiveInfo) {
+      this.editar.emit({
+        idNino: this.objectiveInfo.ninos_id,
+        idObjetivo: this.objectiveInfo.id,
+        data,
+      });
+    } else {
+      this.guardar.emit({ idNino, data: { ...data, ninos_id: idNino } });
     }
   }
 
-  goBack(): void {
-    this.router.navigate(['/dashboard/objectives']);
+  cerrarModal(): void {
+    this.cerrar.emit();
   }
 }
