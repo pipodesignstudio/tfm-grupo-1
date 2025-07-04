@@ -8,9 +8,10 @@ const actividadService = new ActividadService();
 export class ActividadController {
   public async crearActividad(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const user = req.user!;
       const id_nino = Number(req.params.id_nino);
       const dto = req.body;
-      const nueva = await actividadService.createActividad(id_nino, dto);
+      const nueva = await actividadService.createActividad(id_nino, dto, user.id);
       ApiCorrectResponse.genericSuccess(res, nueva, true, 'Actividad creada', 201);
     } catch (err) {
       next(err);

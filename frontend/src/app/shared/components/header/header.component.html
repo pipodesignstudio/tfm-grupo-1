@@ -51,6 +51,13 @@
                 class="w-full">
         </button>
 
+        <p-button label="Descargas" 
+                (click)="goToDownloads(); menu.hide()" 
+                icon="pi pi-download"
+                [hidden]="isOnRoute('/dashboard/downloads')" 
+                styleClass="w-full">
+        </p-button>
+
         <!-- Opción 5: Ir a Sobre Nosotros -->
         <button pButton label="Sobre Nosotros" 
                 (click)="goToAboutUs(); menu.hide()" 

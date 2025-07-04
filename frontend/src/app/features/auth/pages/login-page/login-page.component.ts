@@ -65,8 +65,8 @@ export class LoginPageComponent implements OnInit {
     const { email, password } = this.loginForm.value;
 
     const response = await this.authService.login(email, password);
-    if (response?.token) {
-      this.tokenService.setToken(response.token);
+    if (response?.token && response.expiresIn) {
+      this.tokenService.setSession({ token: response.token, expiresIn: response.expiresIn });
       this.router.navigate(['/dashboard']);
     } else {
       this.messageService.add({

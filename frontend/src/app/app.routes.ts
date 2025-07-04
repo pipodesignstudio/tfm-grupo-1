@@ -5,13 +5,11 @@ import { RegisterPageComponent } from './features/auth/pages/register-page/regis
 import { CalendarPageComponent } from './features/dashboard/pages/routines/calendar-page/calendar-page.component';
 import { CreateFamilyComponent } from './features/onboarding/pages/create-family/create-family.component';
 import { ChildProfileComponent } from './features/dashboard/pages/profiles/child-profile/child-profile.component';
-import { MyFamilyComponent } from './features/onboarding/pages/my-family/my-family.component';
 import { AboutUsPageComponent } from './features/dashboard/pages/about-us-page/about-us-page.component';
 import { ObjectivesPageComponent } from './features/dashboard/pages/objectives-page/objectives-page.component';
 import { ObjectivesFormComponent } from './features/dashboard/components/objectives-form/objectives-form.component';
 import { LandingPageComponent } from './features/landing-page/pages/landing-page/landing-page.component';
 import { CreateRoutineComponent } from './features/auth/pages/create-routine/create-routine.component';
-import { Mensaje2Component } from './features/onboarding/pages/mensaje2/mensaje2.component';
 import { RoutineFormPageComponent } from './features/dashboard/pages/routines/routine-form-page/routine-form-page.component';
 import { RoutineListPageComponent } from './features/dashboard/pages/routines/routine-list-page/routine-list-page.component';
 import { AuthLayoutComponent } from './features/auth/layouts/auth-layout/auth-layout.component';
@@ -30,6 +28,8 @@ import { ActivityFormComponent } from './components/activity/activity-form.compo
 import { SettingsFamilyComponent } from './features/dashboard/pages/profiles/settings-family/settings-family.component';
 import { InitOnboardingPageComponent } from './features/onboarding/pages/init-onboarding-page/init-onboarding-page.component';
 import { CreateNinoPageComponent } from './features/onboarding/pages/create-nino-page/create-nino-page.component';
+import { CreateFirstObjetivoPageComponent } from './features/onboarding/pages/create-first-objetivo-page/create-first-objetivo-page.component';
+import { CreateFirstActividadPageComponent } from './features/onboarding/pages/create-first-actividad-page/create-first-actividad-page.component';
 
 export const routes: Routes = [
   {
@@ -51,10 +51,6 @@ export const routes: Routes = [
         path: 'register',
         component: RegisterPageComponent,
         canActivate: [noAuthGuard],
-      },
-      {
-        path: 'create-routine',
-        component: CreateRoutineComponent,
       },
       {
         path: 'verificar/:email',
@@ -86,8 +82,16 @@ export const routes: Routes = [
         component: CreateNinoPageComponent,
       },
       {
+        path: 'create-objetivo',
+        component: CreateFirstObjetivoPageComponent,
+      },
+      {
+        path: 'create-actividad',
+        component: CreateFirstActividadPageComponent,
+      },
+      {
         path: 'complete',
-        component: Mensaje2Component,
+        component: CompleteOnboardingComponent,
       },
       {
         path: '**',

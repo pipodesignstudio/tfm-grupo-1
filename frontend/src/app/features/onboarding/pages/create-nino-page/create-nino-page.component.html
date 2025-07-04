@@ -64,7 +64,7 @@
     <div class="grid md:grid-cols-2 gap-5">
         <div class="flex flex-col gap-2">
             <label>Fecha de nacimiento*</label>
-            <p-datepicker fluid formControlName="fecha_nacimiento" [iconDisplay]="'input'" [showIcon]="true" inputId="fecha_nacimiento" />
+            <p-datepicker fluid [maxDate]="maxDate" formControlName="fecha_nacimiento" [iconDisplay]="'input'" [showIcon]="true" inputId="fecha_nacimiento" />
             @if (ninoForm.get('fecha_nacimiento')?.errors 
             && !ninoForm.get('fecha_nacimiento')?.pristine) {
                 <p-message severity="error">Necesitamos una fecha de nacimiento</p-message>
@@ -80,11 +80,11 @@
             }
         </div>
         <div class="flex flex-col gap-2">
-            <label>Peso</label>
+            <label>Peso (kg)</label>
             <p-inputnumber inputId="peso" formControlName="peso" suffix="kg" [showButtons]="true" step="0.1"  [min]="0" [max]="100"  />
         </div>
         <div class="flex flex-col gap-2">
-            <label>Altura</label>
+            <label>Altura (cm)</label>
             <p-inputnumber inputId="altura" formControlName="altura" suffix="cm" [showButtons]="true" step="1"  [min]="0" [max]="250"  />
         </div>
     </div>
@@ -97,10 +97,10 @@
 
 
 <div class="mt-3 flex flex-row gap-2 items-center justify-center">
-    <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
-    <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
     <div class="h-2 w-2 rounded-full bg-primary"></div>
-    <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
-    <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
 </div>
 <p-toast />

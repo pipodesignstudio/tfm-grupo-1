@@ -35,6 +35,7 @@ export class CreateNinoPageComponent {
   private ms = inject(MessageService);
 
   public picture: File | null = null;
+  public maxDate = new Date();
 
   public genres = ['Masculino', 'Femenino', 'No especificar'];
 
@@ -96,8 +97,9 @@ export class CreateNinoPageComponent {
       return;
     }
     this.familyStore.seleccionarNiño(child.id);
+    this.familyStore.setCurrentKidName(childDto.nombre);
     this.isLoading = false;
-    this.router.navigate(['/onboarding/crear-nino']);
+    this.router.navigate(['/onboarding/create-objetivo']);
   }
 
 }

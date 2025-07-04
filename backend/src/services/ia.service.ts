@@ -23,10 +23,7 @@ export class IAService {
     {
       titulo: string;
       descripcion: string;
-      dia_semana: number;
-      hora_inicio: Date;
       color: string;
-      tipo: 'Hábito' | 'Tarea' | 'Evento;
     }
 
     Example of expected output (array of 3 IActividadSuggestion objects):
@@ -34,26 +31,17 @@ export class IAService {
       {
         "titulo": "Lavarse los dientes antes de acostarse",
         "descripcion": "Lavarse los dientes al menos durante 3 minutos antes de ir a la cama",
-        "dia_semana": 1,
-        "hora_inicio": "2025-05-30T10:00:00.000Z",
         "color": "#FF5733",
-        "tipo": "Hábito",
       },
       {
         "titulo": "Sugerencia de Juego Exterior",
         "descripcion": "Juegos al aire libre en el parque",
-        "dia_semana": 3,
-        "hora_inicio": "2025-05-30T15:00:00.000Z",
         "color": "#33FF57",
-        "tipo": "Evento",
       },
       {
         "titulo": "Clase de Música",
         "descripcion": "Clase de introducción a instrumentos musicales",
-        "dia_semana": 5,
-        "hora_inicio": "2025-05-30T17:00:00.000Z",
         "color": "#5733FF",
-        "tipo": "Hábito",
       }
     ]
   `;

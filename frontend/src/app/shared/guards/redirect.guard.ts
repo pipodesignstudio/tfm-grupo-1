@@ -19,7 +19,7 @@ export const redirectGuard: CanActivateFn = async () => {
   const user = response?.user;
 
   if (!user) {
-    tokenService.clearToken();
+    tokenService.clear();
     // Sin usuario y con token inválido → ir a landing y bloquear acceso a la ruta actual
     await router.navigate(['/landing']);
     return false;

@@ -8,3 +8,5 @@ export interface IObjetivo {
   // Si sueles incluir las actividades asociadas:
   actividades_ids?: number[];
 }
+
+

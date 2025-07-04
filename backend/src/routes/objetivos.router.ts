@@ -87,7 +87,7 @@ objetivosRouter.post(
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/objetivos/{id}:
+ * /api/ninos/{id_nino}/objetivos:
  *   put:
  *     summary: Actualiza un objetivo
  *     tags: [Objetivos]

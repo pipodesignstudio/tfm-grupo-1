@@ -19,7 +19,7 @@ export class ActividadService {
     this.printerService = new PdfGeneratorService();
   }
 
-  public async createActividad(id_nino: number, dto: CreateActividadDto) {
+  public async createActividad(id_nino: number, dto: CreateActividadDto, usuario_responsable: number) {
     try {
       const data: any = {
         tipo: dto.tipo,
@@ -31,7 +31,7 @@ export class ActividadService {
         hora_fin: dto.hora_fin ?? undefined,
         color: dto.color ?? undefined,
         ubicacion: dto.ubicacion ?? undefined,
-        usuario_responsable: dto.usuario_responsable ?? undefined,
+        usuario_responsable: usuario_responsable,
         completado: dto.completado ?? false,
       };
 
@@ -39,7 +39,19 @@ export class ActividadService {
         data.rutina_id = dto.rutina_id;
       }
 
-      return await prisma.actividades.create({ data });
+      // Hot fix tabla intermedia
+      
+      const ac = await prisma.actividades.create({ data });
+      if (dto.objetivo_id) {
+        await prisma.objetivos_has_actividades.create({
+          data: {
+            actividad_id: ac.id,
+            objetivo_id: dto.objetivo_id,
+          },
+        });
+      }
+      return ac;
+
     } catch (error) {
       throw new InternalServerError('Error interno al crear el evento', {
         error: 'INTERNAL_SERVER_ERROR',

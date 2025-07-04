@@ -1,0 +1,87 @@
+<div class="mb-5 flex justify-end">
+    ⌛ 1,5 min
+</div>
+<h1>Y ya para terminar... vamos a añadir la primera actividad para acercarnos a tu objetivo</h1>
+<p class="my-5 font-semibold">
+    @if(isRetrievingSuggestions()) {
+    Generando sugerencias por IA...    
+    }
+@else { 
+    Sugerencias de la IA
+}
+</p>
+<div class="grid md:grid-cols-3 gap-5 mt-5">
+    
+    @if (isRetrievingSuggestions()) {
+        @for (_ of [1,2,3]; track $index) {
+          <div class="border border-neutral-200 dark:border-neutral-800 p-5 rounded flex flex-col gap-2">
+            <div class="h-8 w-8 rounded-full bg-primary/30 text-primary-700 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                  </svg>
+                  
+            </div>
+            <p-skeleton width="10rem" />
+            <p-skeleton height="2rem" />
+            <p-skeleton size="2rem" class="mr-2" />
+          </div>
+        }
+      } @else {
+        @for (item of iaSuggestions; track $index) {
+          <div (click)="onIaSuggestionSelected($index)" class="border cursor-pointer  border-neutral-200 hover:border-primary hover:bg-primary/10 dark:border-neutral-800 p-5 rounded flex flex-col gap-2">
+            <div class="flex flex-row justify-end my-3">
+                @if (selectedIaSuggestion === $index) {
+                    <i class="pi pi-circle-on text-primary"></i>
+                } @else {
+                    <i class="pi pi-circle text-neutral-400"></i>
+                }
+            </div>
+            <h3 class="font-semibold">{{ item.titulo }}</h3>
+            <p class="text-sm">{{ item.descripcion }}</p>
+            <div class="w-6 h-6 rounded-sm" [style.backgroundColor]="item.color"></div>
+          </div>
+        }
+      }
+</div>
+<form [formGroup]="actividadForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 my-5">
+<div class="flex flex-col gap-2">
+    <label>Nombre*</label>
+    <input type="text" formControlName="titulo" pInputText>
+    @if (actividadForm.get('titulo')?.errors 
+    && !actividadForm.get('titulo')?.pristine) {
+        <p-message severity="error">Necesitamos un nombre</p-message>
+    }
+</div>
+<div class="flex flex-col gap-2">
+    <label>Descripción</label>
+    <textarea formControlName="descripcion" pTextarea></textarea>
+</div>
+<div class="grid md:grid-cols-4 gap-5">
+    <div class="flex flex-col gap-2">
+        <label>Fecha realización</label>
+        <p-datepicker fluid [minDate]="minDate" formControlName="fecha_realizacion" [iconDisplay]="'input'" [showIcon]="true" inputId="fecha_realizacion" />
+    </div>
+    <div class="flex flex-col gap-2">
+        <label>Hora inicio</label>
+        <p-datepicker fluid formControlName="hora_inicio"  inputId="hora_inicio" [showTime]="true" hourFormat="24" [timeOnly]="true" />
+    </div>
+    <div class="flex flex-col gap-2">
+        <label>Hora fin</label>
+        <p-datepicker fluid formControlName="hora_fin"  inputId="hora_fin" [showTime]="true" hourFormat="24" [timeOnly]="true" />
+    </div>
+    <div class="flex flex-col gap-2">
+        <label>Color identificativo</label>
+        <p-colorPicker formControlName="color" />
+    </div>
+</div>    
+<div class="flex flex-row justify-end">
+    <p-button label="Crear actividad" [disabled]="actividadForm.invalid" (click)="onSubmit()" icon="pi pi-arrow-right" iconPos="right"  [loading]="isLoading" />
+</div>  
+</form>
+<div class="my-5 flex flex-row gap-2 items-center justify-center">
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-primary"></div>
+</div>

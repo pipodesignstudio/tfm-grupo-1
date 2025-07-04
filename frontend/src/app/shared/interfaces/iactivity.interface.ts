@@ -1,4 +1,4 @@
-type ActivityType = 'Tarea' | 'Evento' | 'Habito';
+type ActivityType = 'Objetivo' | 'Rutina' | 'Evento' | 'Tarea';
 
 export interface IActivity {
   id: number;
@@ -20,4 +20,16 @@ interface IUbicacion {
   address: string;
   lat: number;
   lon: number;
+}
+
+export interface ActivityDto {
+  titulo: string;
+  descripcion: string | null;
+  fecha_realizacion: Date;
+  hora_inicio: Date;
+  hora_fin: Date;
+  objetivo_id: number | null;
+  completado: boolean | null;
+  color: string | null;
+  tipo: ActivityType;
 }

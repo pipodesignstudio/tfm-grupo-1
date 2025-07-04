@@ -25,14 +25,16 @@ class="flex flex-col gap-5"
     </p-message>
   }
 </div>
-<p-button label="Continuar" (click)="onSubmit()" [disabled]="familyForm.invalid" [loading]="isLoading" styleClass="w-full" icon="pi pi-arrow-right" iconPos="right" />
+<div class="flex flex-row justify-end">
+  <p-button label="Continuar" (click)="onSubmit()" [disabled]="familyForm.invalid" [loading]="isLoading" styleClass="w-full" icon="pi pi-arrow-right" iconPos="right" />
 
+</div>
 </form>
 
-<div class="mt-3 flex flex-row gap-2 items-center justify-center">
-  <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
+<div class="my-5 flex flex-row gap-2 items-center justify-center">
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
   <div class="h-2 w-2 rounded-full bg-primary"></div>
-  <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
-  <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
-  <div class="h-2 w-2 rounded-full bg-[#3A665B]"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
 </div>

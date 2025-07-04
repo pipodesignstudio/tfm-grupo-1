@@ -8,6 +8,7 @@ import {
   IsBoolean,
   ValidateNested,
   IsDateString,
+  IsInt,
 } from "class-validator";
 
 import { Type } from 'class-transformer';
@@ -32,6 +33,11 @@ export class CreateActividadDto {
   @IsOptional()
   descripcion?: string;
 
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  objetivo_id?: number;
+
   @IsDateString()
   @IsNotEmpty({ message: "La fecha de realización es obligatoria." })
   fecha_realizacion!: Date;
@@ -41,8 +47,8 @@ export class CreateActividadDto {
   hora_inicio!: Date;
 
   @IsDateString()
-  @IsNotEmpty({ message: "La hora de finalización es obligatoria." })
-  hora_fin!: Date;
+  @IsOptional()
+  hora_fin?: Date;
 
   @IsOptional()
   @IsString({ message: "El color debe ser una cadena de texto." })
@@ -53,12 +59,6 @@ export class CreateActividadDto {
   @Type(() => UbicacionDto)
   ubicacion?: UbicacionDto;
 
-  @IsNumber({}, { message: "El ID del usuario responsable debe ser un número." })
-  @IsPositive({
-    message: "El ID del usuario responsable debe ser un número positivo.",
-  })
-  @IsNotEmpty({ message: "El ID del usuario responsable es obligatorio." })
-  usuario_responsable!: number;
 
   @IsOptional()
   @IsBoolean()
