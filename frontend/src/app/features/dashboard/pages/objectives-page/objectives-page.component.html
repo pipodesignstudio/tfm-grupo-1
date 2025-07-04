@@ -13,83 +13,149 @@
         class="w-full md:w-60">
       </p-dropdown>
     </div>
+
+    <button class="px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 transition-all">
+      <i class="pi pi-plus mr-2"></i> Crear Objetivo
+    </button>
   </div>
 
-  <!-- Lista de objetivos -->
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch mt-6">
-    @if (objetivos.length === 0) {
-      <p class="col-span-full text-center text-gray-500 italic">
-        Este niño aún no tiene objetivos.
-      </p>
-    }
+  <!-- Objetivos Activos -->
+  <h2 class="text-lg font-semibold text-gray-700 mb-2 flex items-center gap-2">
+    <i class="pi pi-check-circle text-green-500"></i> Objetivos Activos
+  </h2>
 
-    @for (obj of objetivos; track obj.id) {
-      <div
-        class="p-4 rounded-2xl shadow-sm border relative"
-        [ngStyle]="{
-          backgroundColor: getColorWithOpacity(obj.color, 0.15),
-          borderColor: obj.color ?? '#3b82f6'
-        }"
-      >
-        <!-- Acciones -->
-        <div class="absolute top-4 right-4 flex gap-2 text-gray-500">
-          <button class="hover:text-blue-600 transition-colors">
-            <i class="pi pi-pencil"></i>
-          </button>
-          <button class="hover:text-red-500 transition-colors">
-            <i class="pi pi-trash"></i>
-          </button>
-        </div>
+  @if (objetivosActivos.length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch mb-6">
+      @for (obj of objetivosActivos; track obj.id) {
+        <div
+          class="p-4 rounded-2xl shadow-sm border relative"
+          [ngStyle]="{
+            backgroundColor: getColorWithOpacity(obj.color, 0.15),
+            borderColor: obj.color ?? '#3b82f6'
+          }"
+        >
+          <!-- Acciones -->
+          <div class="absolute top-4 right-4 flex gap-2 text-gray-500">
+            <button class="hover:text-blue-600 transition-colors">
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button class="hover:text-red-500 transition-colors">
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
 
-        <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
+          <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
 
-        @if (obj.tipo) {
-          <span
-            class="inline-block text-white text-sm font-semibold rounded px-2 py-1 mb-2"
-            [ngStyle]="{ backgroundColor: obj.color ?? '#3b82f6' }"
-          >
-            {{ obj.tipo }}
-          </span>
-        }
-
-        @if (obj.fecha_fin) {
-          <p class="text-sm text-gray-700 mb-2">
-            Fin: {{ obj.fecha_fin | date: 'dd/MM/yyyy' }}
-          </p>
-        }
-
-        <p class="text-sm text-gray-800 font-medium mb-1">Progreso</p>
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
-          <div
-            class="h-2 rounded-full transition-all duration-300"
-            [ngStyle]="{
-              width: getProgreso(obj) + '%',
-              backgroundColor: obj.color ?? '#3b82f6'
-            }"
-          ></div>
-        </div>
-
-        <p class="text-sm font-semibold text-gray-800 mb-2">Actividades</p>
-        <div class="space-y-1">
-          @for (act of obj.objetivos_has_actividades ?? []; track act.actividad_id) {
-            <label class="flex items-center gap-2 text-sm text-gray-800">
-              <input
-                type="checkbox"
-                class="accent-blue-500"
-                [checked]="activitiesMap.get(act.actividad_id)?.completado"
-                (change)="onToggleActividad(obj, act.actividad_id)"
-              />
-              <span
-                [ngClass]="{
-                  'line-through text-gray-500': activitiesMap.get(act.actividad_id)?.completado
-                }"
-              >
-                {{ activitiesMap.get(act.actividad_id)?.titulo || ('Actividad #' + act.actividad_id) }}
-              </span>
-            </label>
+          @if (obj.tipo) {
+            <span
+              class="inline-block text-white text-sm font-semibold rounded px-2 py-1 mb-2"
+              [ngStyle]="{ backgroundColor: obj.color ?? '#3b82f6' }"
+            >
+              {{ obj.tipo }}
+            </span>
           }
+
+          @if (obj.fecha_fin) {
+            <p class="text-sm text-gray-700 mb-2">
+              Fin: {{ obj.fecha_fin | date: 'dd/MM/yyyy' }}
+            </p>
+          }
+
+          <p class="text-sm text-gray-800 font-medium mb-1">Progreso</p>
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+            <div
+              class="h-2 rounded-full transition-all duration-300"
+              [ngStyle]="{
+                width: getProgreso(obj) + '%',
+                backgroundColor: obj.color ?? '#3b82f6'
+              }"
+            ></div>
+          </div>
+
+          <p class="text-sm font-semibold text-gray-800 mb-2">Actividades</p>
+          <div class="space-y-1">
+            @for (act of obj.objetivos_has_actividades ?? []; track act.actividad_id) {
+              <label class="flex items-center gap-2 text-sm text-gray-800">
+                <input
+                  type="checkbox"
+                  class="accent-blue-500"
+                  [checked]="activitiesMap.get(act.actividad_id)?.completado"
+                  (change)="onToggleActividad(obj, act.actividad_id)"
+                />
+                <span
+                  [ngClass]="{
+                    'line-through text-gray-500': activitiesMap.get(act.actividad_id)?.completado
+                  }"
+                >
+                  {{ activitiesMap.get(act.actividad_id)?.titulo || ('Actividad #' + act.actividad_id) }}
+                </span>
+              </label>
+            }
+          </div>
         </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  } @else {
+    <p class="text-gray-500 italic mb-6">No hay objetivos activos.</p>
+  }
+
+  <!-- Objetivos Completados -->
+  <h2 class="text-lg font-semibold text-gray-700 mb-2 flex items-center gap-2">
+    <i class="pi pi-check-circle text-green-500"></i> Objetivos Completados
+  </h2>
+
+  @if (objetivosCompletados.length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+      @for (obj of objetivosCompletados; track obj.id) {
+        <div
+          class="p-4 rounded-2xl shadow-sm border relative"
+          [ngStyle]="{
+            backgroundColor: getColorWithOpacity(obj.color, 0.15),
+            borderColor: obj.color ?? '#10b981'
+          }"
+        >
+          <!-- Acciones -->
+          <div class="absolute top-4 right-4 flex gap-2 text-gray-500">
+            <button class="hover:text-red-500 transition-colors">
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+
+          <h3 class="text-lg font-bold mb-2">{{ obj.nombre }}</h3>
+
+          @if (obj.tipo) {
+            <span
+              class="inline-block text-white text-sm font-semibold rounded px-2 py-1 mb-2"
+              [ngStyle]="{ backgroundColor: obj.color ?? '#10b981' }"
+            >
+              {{ obj.tipo }}
+            </span>
+          }
+
+          @if (obj.fecha_fin) {
+            <p class="text-sm text-gray-700 mb-2">
+              Fin: {{ obj.fecha_fin | date: 'dd/MM/yyyy' }}
+            </p>
+          }
+
+          <p class="text-sm text-gray-800 font-medium mb-1">Progreso</p>
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+            <div
+              class="h-2 rounded-full transition-all duration-300"
+              [ngStyle]="{
+                width: '100%',
+                backgroundColor: obj.color ?? '#10b981'
+              }"
+            ></div>
+          </div>
+
+          <p class="text-sm font-medium text-gray-700">
+            {{ obj.objetivos_has_actividades?.length }} actividades completadas
+          </p>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="text-gray-500 italic">No hay objetivos completados.</p>
+  }
 </section>

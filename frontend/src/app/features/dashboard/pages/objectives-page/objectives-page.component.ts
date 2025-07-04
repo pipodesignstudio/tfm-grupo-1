@@ -29,6 +29,9 @@ export class ObjectivesPageComponent {
   selectedChildId: number | null = null;
 
   objetivos: IObjetivo[] = [];
+  objetivosActivos: IObjetivo[] = [];
+  objetivosCompletados: IObjetivo[] = [];
+
   activitiesMap: Map<number, IActivity> = new Map();
 
   constructor() {
@@ -61,6 +64,10 @@ export class ObjectivesPageComponent {
         const ids = this.objetivos.flatMap(obj => obj.objetivos_has_actividades?.map(a => a.actividad_id) ?? []);
         const actividades = await this.activityService.getActivitiesByIds(ids);
         this.activitiesMap = new Map(actividades.map(act => [act.id, act]));
+
+        // Dividir objetivos en activos y completados
+        this.objetivosActivos = this.objetivos.filter(o => this.getProgreso(o) < 100);
+        this.objetivosCompletados = this.objetivos.filter(o => this.getProgreso(o) === 100);
 
         this.cdr.detectChanges();
       });
@@ -106,6 +113,11 @@ export class ObjectivesPageComponent {
 
     try {
       await this.activityService.updateActivityCompleted(actividadId, nuevoEstado, actividad.ninos_id);
+
+      // Volver a clasificar los objetivos tras el cambio
+      this.objetivosActivos = this.objetivos.filter(o => this.getProgreso(o) < 100);
+      this.objetivosCompletados = this.objetivos.filter(o => this.getProgreso(o) === 100);
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al actualizar la actividad:', error);
 
@@ -114,5 +126,4 @@ export class ObjectivesPageComponent {
       this.cdr.detectChanges();
     }
   }
-
 }
