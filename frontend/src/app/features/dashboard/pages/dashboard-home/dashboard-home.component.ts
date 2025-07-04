@@ -43,7 +43,7 @@ export class DashboardHomeComponent {
     { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
     { url: '/dashboard/objectives', icon: 'pi pi-star', label: 'Objetivos' },
     { url: '/dashboard/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
-    { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
+    { url: '/dashboard/notes', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
   underlineIn = false;
@@ -73,49 +73,29 @@ export class DashboardHomeComponent {
       }
     });
   }
-
-  // NO BORRAR DE MOMENTO
-  // Carga las actividades del niño activo filtrando por tipo "Evento" y ordenando por hora_inicio
-  //
-  // async loadActivitiesForActiveChild() {
-  //   if (this.children.length > 0) {
-  //     const childId = this.children[this.activeChild].id;
-  //     const allActivities = await this.activityService.getActivitiesNino(
-  //       childId.toString()
-  //     );
-  //     // Filtra solo las de tipo "Evento"
-  //     this.activities = allActivities.filter(
-  //       (a) => a.tipo && a.tipo.toLowerCase() === 'evento'
-  //     );
-  //   } else {
-  //     this.activities = [];
-  //   }
-  // }
-
-  //  Filtra las actividades del día actual y ordena por hora_inicio
-
   async loadActivitiesForActiveChild() {
     if (this.children.length > 0) {
       const childId = this.children[this.activeChild].id;
       const allActivities = await this.activityService.getActivitiesNino(
         childId.toString()
       );
-      const today = new Date();
-      // Filtra solo "Evento" del día actual y ordena por hora_inicio
+
       this.activities = allActivities
+        // .filter((a) => a.tipo && a.tipo.toLowerCase() === 'evento')
         .filter(
           (a) =>
             a.tipo &&
             a.tipo.toLowerCase() === 'evento' &&
             a.fecha_realizacion &&
             new Date(a.fecha_realizacion).toDateString() ===
-              today.toDateString()
+              new Date().toDateString()
         )
         .sort(
           (a, b) =>
             new Date(a.hora_inicio).getTime() -
             new Date(b.hora_inicio).getTime()
         );
+      console.log('Actividades cargadas:', this.date, this.activities);
     } else {
       this.activities = [];
     }
@@ -139,7 +119,7 @@ export class DashboardHomeComponent {
   }
 
   getTaskColorClass(tipo: string): string {
-    // Puedes personalizar colores según el tipo de evento
+    // personalizar colores según el tipo de evento
     switch ((tipo || '').toLowerCase()) {
       case 'evento':
         return 'border-blue-400';
@@ -151,6 +131,6 @@ export class DashboardHomeComponent {
   }
 
   ngOnInit() {
-    setTimeout(() => (this.underlineIn = true), 100);
+    setTimeout(() => (this.underlineIn = true), 0);
   }
 }
