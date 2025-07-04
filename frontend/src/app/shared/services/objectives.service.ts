@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import axios from 'axios';
-import { ObjetivoDto } from '../interfaces';
+import { IObjetivo, ObjetivoDto } from '../interfaces';
 import { TokenService } from '../../features/auth/services';
 
 export interface Activity {
@@ -160,6 +160,40 @@ export class ObjectivesService {
     }
   }
 
+private getAuthHeaders() {
+    return {
+      headers: {
+        Authorization: `Bearer ${this.tokenService.token()}`,
+      },
+    };
+  }
+
+  public async getAllObjectives(idNino: number): Promise<void> {
+    try {
+      const response = await axios.get<{ data: Objective[] }>(
+        `${this.baseUrl}/${idNino}/objetivos`,
+        this.getAuthHeaders()
+      );
+      const objetivos = response.data.data;
+      this.objectivesSubject.next(objetivos);
+    } catch (error) {
+      console.error('Error al obtener los objetivos:', error);
+      this.objectivesSubject.next([]);
+    }
+  }
+
+  public getObjectives(): Objective[] {
+    return this.objectivesSubject.getValue();
+  }
+
+  public clearObjectives(): void {
+    this.objectivesSubject.next([]);
+  }
+
+
 
 
 }
+
+
+

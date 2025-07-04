@@ -167,7 +167,42 @@ export class ObjectivesPageComponent {
   }
 
   onGuardarObjetivo({ idNino, data }: { idNino: number; data: any }): void {
-    const ObjetivoConFechas: IObjetivo = {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   /*  const ObjetivoConFechas: IObjetivo = {
       ...data,
       fecha_fin: new Date(data.fecha_fin!)
     } as IObjetivo;
@@ -179,16 +214,50 @@ export class ObjectivesPageComponent {
       this.closeForm();
     }).catch(() => {
       console.error('Error al guardar el objetivo');
-    });
+    }); */
   }
 
   onEditarObjetivo({ idNino, idObjetivo, data }: { idNino: number; idObjetivo: number; data: any }): void {
-    this.objectivesService.updateObjective(idNino, idObjetivo, data).then(() => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   /*  this.objectivesService.updateObjective(idNino, idObjetivo, data).then(() => {
       this.loadObjectives(idNino);
       this.closeForm();
     }).catch(() => {
       console.error('Error al editar el objetivo');
-    });
+    }); */
   }
 
   // ========================
@@ -207,7 +276,41 @@ export class ObjectivesPageComponent {
   }
 
   async deleteObjectiveConfirmed(): Promise<void> {
-    if (!this.objectiveToDelete) return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+   /*  if (!this.objectiveToDelete) return;
     const idNino = this.selectedChildId!;
     const idObjetivo = this.objectiveToDelete.id;
     try {
@@ -217,7 +320,7 @@ export class ObjectivesPageComponent {
       this.objectiveToDelete = null;
     } catch (error) {
       console.error('Error al borrar el objetivo:', error);
-    }
+    } */
   }
 
   // ========================
@@ -252,10 +355,47 @@ async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
     const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
 
     // Asocia la actividad al objetivo (esto ya lo tienes en tu ObjectivesService)
-    await this.objectivesService.addActivityToObjective(
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   /*  await this.objectivesService.addActivityToObjective(
       this.objetivoParaNuevaActividad.id,
       actividadCreada.id
-    );
+    ); */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Refresca la lista de objetivos
     this.loadObjectives(this.selectedChildId);
