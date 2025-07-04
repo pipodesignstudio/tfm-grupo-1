@@ -104,6 +104,48 @@ export class ActivityService {
     }
 
   }
+
+  async getMyActivities(): Promise<IActivity[]> {
+    try {
+      const response = await axios.get(`${this.apiUrl}/actividades/my-activities`, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+  async downloadActivities(ids: number[]): Promise<boolean> {
+    try {
+      const response = await axios.post(`${this.apiUrl}/actividades/export`, { activityIds: ids }, {
+        headers: {
+          Authorization: `Bearer ${this.tokenService.token()}`,
+        },
+        responseType: 'blob', 
+      });
+  
+      const file = new Blob([response.data], { type: 'application/pdf' });
+      const fileURL = URL.createObjectURL(file);
+      const link = document.createElement('a');
+      link.href = fileURL;
+      link.setAttribute('download', 'actividades.pdf'); 
+      document.body.appendChild(link); 
+      link.click(); 
+  
+      document.body.removeChild(link);
+      URL.revokeObjectURL(fileURL);
+  
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      return false;
+    }
+    return true;
+  }
+
 }
 
 

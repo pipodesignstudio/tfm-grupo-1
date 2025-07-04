@@ -30,6 +30,7 @@ import { InitOnboardingPageComponent } from './features/onboarding/pages/init-on
 import { CreateNinoPageComponent } from './features/onboarding/pages/create-nino-page/create-nino-page.component';
 import { CreateFirstObjetivoPageComponent } from './features/onboarding/pages/create-first-objetivo-page/create-first-objetivo-page.component';
 import { CreateFirstActividadPageComponent } from './features/onboarding/pages/create-first-actividad-page/create-first-actividad-page.component';
+import { DownloadActivitiesPageComponent } from './features/dashboard/pages/download-activities-page/download-activities-page.component';
 
 export const routes: Routes = [
   {
@@ -145,6 +146,10 @@ export const routes: Routes = [
       {
         path: 'objectives-form',
         component: ObjectivesFormComponent,
+      },
+      {
+        path: 'downloads',
+        component: DownloadActivitiesPageComponent,
       },
       {
         path: 'activity-form',

@@ -30,6 +30,7 @@ export interface IActividadPdf {
   description:string;
   responsable:string;
   fecha_realizacion:Date | null;
+  completado:boolean | null;
   hora_inicio:Date | null;
   hora_fin:Date | null;
   color:string;

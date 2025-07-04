@@ -123,6 +123,21 @@ export class ActividadService {
     return;
   }
 
+
+  public async getAllActivitiesByUser(id_user: number) {
+    try {
+      return await prisma.actividades.findMany({
+        where: { usuario_responsable: id_user }
+      });
+    } catch (error) {
+      throw new InternalServerError('Error al obtener actividades', {
+        error: 'INTERNAL_SERVER_ERROR',
+        detalle: error,
+      });
+    }
+  }
+
+
   public async exportActivitiesToPdf(
     dto: ExportActivitiesDto,
   ): Promise<PDFKit.PDFDocument> {
@@ -145,10 +160,10 @@ export class ActividadService {
     ];
     const responsables = await prisma.usuarios.findMany({
       where: { id: { in: responsableIds } },
-      select: { id: true, nombre: true },
+      select: { id: true, nombre: true, nick: true },
     });
     const responsablesMap = new Map(
-      responsables.map(r => [r.id, r.nombre ?? '']),
+      responsables.map(r => [r.id, r.nick ?? '']),
     );
   
     const actividadesPdf: IActividadPdf[] = actividades.map(a => ({
@@ -158,6 +173,7 @@ export class ActividadService {
       title:             a.titulo ?? '',
       description:       a.descripcion ?? '',
       fecha_realizacion: a.fecha_realizacion,
+      completado:        a.completado,
       hora_inicio:       a.hora_inicio,
       hora_fin:          a.hora_fin,
       color:             a.color ?? '',

@@ -1,0 +1,13 @@
+@if (isLoading()) {
+  <p-skeleton size="20" [shape]="'circle'"></p-skeleton>
+}
+@else {
+@if (img_perfil) {
+    <div class="w-10 h-10 rounded-full overflow-hidden">
+        <img pTooltip="{{nino?.nombre}}" [src]="img_perfil" class="w-full h-full object-cover" [alt]="nino?.nombre">
+    </div>
+}
+@else {
+    <p-avatar pTooltip="{{nino?.nombre}}" [label]="nino?.nombre?.[0]"></p-avatar>
+}
+}

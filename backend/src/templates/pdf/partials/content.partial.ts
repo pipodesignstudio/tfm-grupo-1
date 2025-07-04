@@ -26,7 +26,7 @@ export const buildActivitiesTable = (activities: IActividadPdf[]): Content => {
         { text: duration(a.hora_inicio, a.hora_fin), style: 'tableCell' },
         { text: a.responsable,                style: 'tableCell' },
         { text: a.nino,                       style: 'tableCell' },
-        { text: a.hora_fin ? 'Completado' : 'Pendiente', style: 'tableCell' },
+        { text: a.completado ? 'Completado' : 'Pendiente', style: 'tableCell' },
       ]),
     ] as const;
 

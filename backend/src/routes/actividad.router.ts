@@ -220,4 +220,10 @@ router.get(
   asyncMiddlewareWrapper(controller.getAllActivitiesFromArray.bind(controller))
 );
 
+router.get(
+  "/my-activities",
+  asyncMiddlewareWrapper(authMiddleware),
+  controller.getMyActivities
+);
+
 export default router;

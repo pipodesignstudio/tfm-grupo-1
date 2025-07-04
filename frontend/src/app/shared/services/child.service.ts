@@ -67,6 +67,22 @@ export class ChildService {
     this.childrenSubject.next([]);
   }
 
+  public async getNinoById(id: number): Promise<IChild | null> {
+    try {
+      const response = await axios.get<{ data: IChild }>(
+        `${this.apiUrl}/ninos/${id}`,
+        {
+          headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+        }
+      );
+      console.log(response.data);
+      return response.data.data;
+    } catch (error) {
+      console.error('Error al obtener niño:', error);
+      return null;
+    }
+  }
+
   private async createPerfilAprendizaje(nombre:string, apellido:string):Promise<number | null> {
     try {
       const response = await axios.post<{ data: number }>(
