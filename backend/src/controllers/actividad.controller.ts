@@ -8,9 +8,10 @@ const actividadService = new ActividadService();
 export class ActividadController {
   public async crearActividad(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const user = req.user!;
       const id_nino = Number(req.params.id_nino);
       const dto = req.body;
-      const nueva = await actividadService.createActividad(id_nino, dto);
+      const nueva = await actividadService.createActividad(id_nino, dto, user.id);
       ApiCorrectResponse.genericSuccess(res, nueva, true, 'Actividad creada', 201);
     } catch (err) {
       next(err);
@@ -67,13 +68,13 @@ export class ActividadController {
       const user = req.user!;
       // Esta validación debería ser redundante porque el usuario solo debe acceder a actividades de niños asociados a su familiaç
       // Comentar en test para exportar pdfs 👇
-      // const isValidRequest = await actividadService.validateExportRequest(req.body.activityIds, user.id);
-      // if (!isValidRequest) {
-      //   throw new UnauthorizedError('No tienes permiso para exportar estas actividades', {
-      //     error: 'UNAUTHORIZED',
-      //     detalle: 'No tienes permiso para exportar estas actividades',
-      //   });
-      // }
+      const isValidRequest = await actividadService.validateExportRequest(req.body.activityIds, user.id);
+      if (!isValidRequest) {
+        throw new UnauthorizedError('No tienes permiso para exportar estas actividades', {
+          error: 'UNAUTHORIZED',
+          detalle: 'No tienes permiso para exportar estas actividades',
+        });
+      }
       // Comentar 👆
       const dto: ExportActivitiesDto = req.body;
       const doc:PDFKit.PDFDocument | null = await actividadService.exportActivitiesToPdf(dto);
@@ -104,6 +105,16 @@ export class ActividadController {
     try {
       const activityIds: number[] = req.body.activityIds;
       const actividades = await actividadService.getAllActivitiesFromArray(activityIds);
+      ApiCorrectResponse.genericSuccess(res, actividades, true, 'Actividades obtenidas', 200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getMyActivities(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const actividades = await actividadService.getAllActivitiesByUser(user.id);
       ApiCorrectResponse.genericSuccess(res, actividades, true, 'Actividades obtenidas', 200);
     } catch (err) {
       next(err);

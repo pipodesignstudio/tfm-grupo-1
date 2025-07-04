@@ -44,7 +44,7 @@ CREATE TABLE `familia` (
 CREATE TABLE `perfiles_aprendizaje` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `nombre` VARCHAR(100) NOT NULL,
-  `descripcion` TEXT DEFAULT NULL
+  `descripcion` VARCHAR(100) DEFAULT NULL
 );  
 
 CREATE TABLE `ninos` (

@@ -1,5 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import axios from 'axios';
+import { ObjetivoDto } from '../interfaces';
+import { TokenService } from '../../features/auth/services';
 
 export interface Activity {
   id: number;
@@ -32,6 +36,11 @@ export interface Objective {
   providedIn: 'root',
 })
 export class ObjectivesService {
+
+  private baseUrl = environment.backendUrl;
+  private tokenService = inject(TokenService)
+
+
   private objectivesSubject = new BehaviorSubject<Objective[]>([]);
   public objectives$: Observable<Objective[]> = this.objectivesSubject.asObservable();
 
@@ -134,4 +143,23 @@ export class ObjectivesService {
   private saveObjectivesToLocalStorage(objectives: Objective[]): void {
     localStorage.setItem('objectives', JSON.stringify(objectives));
   }
+
+  // API 
+
+  public async createObjective(dto: ObjetivoDto, idNino: number): Promise<number | null> {
+    try {
+      const response = await axios.post(`${this.baseUrl}/api/ninos/${idNino}/objetivos`, dto, {
+        headers: {
+          'Authorization': `Bearer ${this.tokenService.token()}`
+        }
+      });
+      return response.data.data.data.id;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+
+
 }

@@ -55,7 +55,7 @@ export class VerifyEmailPageComponent {
   }
 
   handleNewToken(token: string) {
-    this.tokenService.setToken(token);
+    this.tokenService.setSession({ token: token, expiresIn: 3600 });
     this.dialog.close;
     this.visible = false;
     this.needLogin.set(false);
@@ -82,7 +82,10 @@ export class VerifyEmailPageComponent {
       take(1),
       finalize(() => this.isLoading.set(false)),
       catchError(err => {
-        this.needLogin.set(true);
+        if (err?.code === '401' || err?.code === '403') {
+          this.tokenService.clear();
+          this.needLogin.set(true);
+        }
         return of(null);
       })
     ).subscribe(res => {

@@ -23,7 +23,7 @@ export class AuthService {
       
           if (!success) return { message };
       
-          this.tokenService.setToken(data.token.token);
+          this.tokenService.setSession({ token: data.token.token, expiresIn: data.token.expires_in });
           return { data, message };
         } catch (error: any) {
           if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -35,24 +35,24 @@ export class AuthService {
       }
       
 
-    public async login(email: string, password: string): Promise<{token?:string, message?: string} | null> {
+    public async login(email: string, password: string): Promise<{token?:string, expiresIn?:number, message?: string} | null> {
         try {
             const response = await axios.post<IAuthResponse>(`${this.apiUrl}/login`, { email, password });
             const { success, data, message } = response.data;
             if (!success) return {message};
-            return {token:data.token.token};
-        } catch (error) {
+            return {token:data.token.token, expiresIn:data.token.expires_in};
+        } catch (error: any) {
             if (axios.isAxiosError(error) && error.response?.data?.message) {
                 return { message: error.response.data.message };
               }
-          
-              return { message: 'Error inesperado al registrar.' };
+              console.error('Error logging in', error);
+              return { message: 'Error inesperado al iniciar sesión.' };
         }
     }
 
 
     public async logOut() {
-        this.tokenService.clearToken();
+        this.tokenService.clear();
         this.userService.clearUser();
         this.router.navigate(['auth/login']);
     }

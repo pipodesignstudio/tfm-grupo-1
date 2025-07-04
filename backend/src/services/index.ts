@@ -9,6 +9,7 @@ export * from './mongo-log.service';
 export * from './ninos.service';
 export * from './notes.service';
 export * from './objetivos.service';
+export * from './perfil-aprendizaje.service';
 export * from './printer.service';
 export * from './reminders.service';
 export * from './rutinas.service';

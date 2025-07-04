@@ -6,11 +6,8 @@ const ai = new IAService();
 
 export class SuggestionsService {
     async buildSuggestions(id:number) {
-        const activities:IActividad[] = await prisma.actividades.findMany({
-            where: {
-                usuario_responsable: id
-            }
-        });
+        const activities:IActividad[] = await prisma.actividades.findMany({take:5});
+
         const suggestions = await ai.generateAISuggestions(activities);
         return suggestions;
     }

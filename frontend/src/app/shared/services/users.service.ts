@@ -62,7 +62,7 @@ export class UsersService {
         const status = axiosErr.response?.status;
 
         if (status === 401 || status === 403) {
-          this.tokenService.clearToken();
+          this.tokenService.clear();
           this._user.set(null);
           await this.router.navigate(['/auth/login']);
           return { message: 'Sesión expirada, inicia sesión de nuevo.' };
