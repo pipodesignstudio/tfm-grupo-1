@@ -9,20 +9,14 @@ export class RoutineService {
   private readonly apiUrl = 'http://localhost:3000/api/ninos';
   private readonly tokenService = inject(TokenService);
 
-  // Estado reactivo de rutinas
   private rutinasSubject = new BehaviorSubject<IRoutine[]>([]);
   rutinas$ = this.rutinasSubject.asObservable();
 
-  /**
-   * Devuelve los headers con el token JWT para autenticación.
-   */
   private getAuthHeader() {
     const token = this.tokenService.getToken();
-
     if (!token) {
       console.warn('[RoutineService] No se encontró un token de autenticación');
     }
-
     return {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -32,87 +26,94 @@ export class RoutineService {
     };
   }
 
-  /**
-   * Extrae el dato útil de la respuesta, sea response.data o response.data.data
-   */
   private extractData(response: any) {
     return response?.data?.data !== undefined ? response.data.data : response.data;
   }
 
-  /**
-   * Obtiene todas las rutinas de un niño y actualiza el estado compartido.
-   */
   async getAllRoutines(idNino: number): Promise<IRoutine[]> {
-    const response = await axios.get<any>(
-      `${this.apiUrl}/${idNino}/rutinas`,
-      this.getAuthHeader()
-    );
+    try {
+      const response = await axios.get<any>(
+        `${this.apiUrl}/${idNino}/rutinas`,
+        this.getAuthHeader()
+      );
 
-    const data = Array.isArray(response.data)
-      ? response.data
-      : response.data?.data;
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data;
 
-    const rutinas = Array.isArray(data) ? data : [];
-    this.rutinasSubject.next(rutinas);
-    return rutinas;
+      const rutinas = Array.isArray(data) ? data : [];
+      this.rutinasSubject.next(rutinas);
+      return rutinas;
+    } catch (error) {
+      console.error('[getAllRoutines] Error:', error);
+      throw error;
+    }
   }
 
-  /**
-   * Obtiene una rutina específica.
-   */
   async getRoutine(idNino: number, idRutina: number): Promise<IRoutine> {
-    const response = await axios.get<any>(
-      `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
-      this.getAuthHeader()
-    );
-    return this.extractData(response);
+    try {
+      const response = await axios.get<any>(
+        `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
+        this.getAuthHeader()
+      );
+      return this.extractData(response);
+    } catch (error) {
+      console.error('[getRoutine] Error:', error);
+      throw error;
+    }
   }
 
-  /**
-   * Crea una nueva rutina y actualiza el estado compartido.
-   */
   async crearRutina(idNino: number, data: any): Promise<IRoutine> {
-    const response = await axios.post(
-      `${this.apiUrl}/${idNino}/rutinas`,
-      data,
-      this.getAuthHeader()
-    );
-    const nuevaRutina = this.extractData(response);
+    try {
+      const response = await axios.post(
+        `${this.apiUrl}/${idNino}/rutinas`,
+        data,
+        this.getAuthHeader()
+      );
+      const nuevaRutina = this.extractData(response);
 
-    const actuales = this.rutinasSubject.getValue();
-    this.rutinasSubject.next([...actuales, nuevaRutina]);
-    return nuevaRutina;
+      const actuales = this.rutinasSubject.getValue();
+      this.rutinasSubject.next([...actuales, nuevaRutina]);
+      return nuevaRutina;
+    } catch (error) {
+      console.error('[crearRutina] Error:', error);
+      throw error;
+    }
   }
 
-  /**
-   * Actualiza una rutina existente y actualiza el estado compartido.
-   */
   async updateRoutine(idNino: number, idRutina: number, data: any): Promise<IRoutine> {
-    const response = await axios.put(
-      `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
-      data,
-      this.getAuthHeader()
-    );
-    const rutinaActualizada = this.extractData(response);
+    try {
+      const response = await axios.put(
+        `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
+        data,
+        this.getAuthHeader()
+      );
+      const rutinaActualizada = this.extractData(response);
 
-    const actuales = this.rutinasSubject.getValue();
-    const nuevas = actuales.map(r => r.id === idRutina ? rutinaActualizada : r);
-    this.rutinasSubject.next(nuevas);
+      const actuales = this.rutinasSubject.getValue();
+      const nuevas = actuales.map(r => r.id === idRutina ? rutinaActualizada : r);
+      this.rutinasSubject.next(nuevas);
 
-    return rutinaActualizada;
+      return rutinaActualizada;
+    } catch (error) {
+      console.error('[updateRoutine] Error:', error);
+      throw error;
+    }
   }
 
-  /**
-   * Elimina una rutina y actualiza el estado compartido.
-   */
   async deleteRoutine(idNino: number, idRutina: number): Promise<any> {
-    const response = await axios.delete(
-      `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
-      this.getAuthHeader()
-    );
+    try {
+      const response = await axios.delete(
+        `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
+        this.getAuthHeader()
+      );
 
-    const actuales = this.rutinasSubject.getValue();
-    this.rutinasSubject.next(actuales.filter(r => r.id !== idRutina));
-    return this.extractData(response);
+      const actuales = this.rutinasSubject.getValue();
+      this.rutinasSubject.next(actuales.filter(r => r.id !== idRutina));
+      return this.extractData(response);
+    } catch (error) {
+      console.error('[deleteRoutine] Error:', error);
+      throw error;
+    }
   }
 }

@@ -17,7 +17,7 @@ import { DatePipe, NgClass } from '@angular/common';
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterModule, DatePipe, NgClass],
+  imports: [RouterModule, DatePipe],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
 })
