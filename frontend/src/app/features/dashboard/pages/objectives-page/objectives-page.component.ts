@@ -167,7 +167,14 @@ export class ObjectivesPageComponent {
   }
 
   onGuardarObjetivo({ idNino, data }: { idNino: number; data: any }): void {
-    this.objectivesService.createObjective(idNino, data).then(() => {
+    const ObjetivoConFechas: IObjetivo = {
+      ...data,
+      fecha_fin: new Date(data.fecha_fin!)
+    } as IObjetivo;
+
+    console.log(data);
+
+    this.objectivesService.createObjective(idNino, ObjetivoConFechas).then(() => {
       this.loadObjectives(idNino);
       this.closeForm();
     }).catch(() => {
