@@ -38,7 +38,7 @@ export class FamilyService {
     );
     return response.data.data;
   }
-}
+
 
   /**
    * Edit description of a family by its ID.
@@ -60,5 +60,6 @@ export class FamilyService {
     );
     return response.data.data;
   }
+
 
 }

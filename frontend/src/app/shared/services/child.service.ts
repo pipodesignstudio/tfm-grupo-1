@@ -14,7 +14,6 @@ export class ChildService {
   private readonly tokenService = inject(TokenService);
 
 
-    private readonly tokenService = inject(TokenService);
 
 
   /**
