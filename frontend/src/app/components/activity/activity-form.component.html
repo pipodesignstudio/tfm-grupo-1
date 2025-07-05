@@ -90,7 +90,7 @@
           ></p-datepicker>
         </div>
       </div>
-      @if(tipo === 'evento') {
+      
       <div class="flex justify-between align-middle">
         <span class="flex items-center justify-center">Hora de inicio:</span>
         <p-datepicker
@@ -100,7 +100,7 @@
           class="border-0 rounded-md"
         />
       </div>
-      
+     
       <div class="flex justify-between align-middle">
         <span class="flex items-center justify-center">Hora de fin:</span>
         <p-datepicker
@@ -110,7 +110,7 @@
           class="border-0 rounded-md"
         />
       </div>
-      }
+      
       @if(tipo === 'evento') {
       <p-select
         [options]="usuariosResponsables"

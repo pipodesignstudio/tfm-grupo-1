@@ -264,6 +264,8 @@ async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
     // 1. Creamos la actividad
     const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
 
+    console.log('actividadCreada:', actividadCreada);
+
     // 2. Asociamos la actividad al objetivo seleccionado
     await this.objectivesService.addActivityToObjective(
       this.objetivoParaNuevaActividad.id,

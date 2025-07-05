@@ -41,7 +41,6 @@ export class ActivityFormComponent implements OnInit {
   @Input() objetivoInfo: IObjetivo | null = null;
   @Input() selectedChild: IChild | null = null;
 
-
   @Output() editar = new EventEmitter<Partial<IActivity>>();
   @Output() cerrar = new EventEmitter<void>();
   @Output() guardar = new EventEmitter<Partial<IActivity>>();
@@ -75,14 +74,18 @@ export class ActivityFormComponent implements OnInit {
       this.form.get('ninos_id')?.disable();
 
       // Puedes añadir un campo ficticio para mostrar el objetivo
-      this.form.addControl('objetivo_id', this.fb.control({ value: this.objetivoInfo.nombre, disabled: true }));
+      this.form.addControl(
+        'objetivo_id',
+        this.fb.control({ value: this.objetivoInfo.nombre, disabled: true })
+      );
     }
 
     if (this.actividadInfo) {
       const data = { ...this.actividadInfo };
 
       // Transformar strings ISO en objetos Date si es necesario
-      if (data.fecha_realizacion) data.fecha_realizacion = new Date(data.fecha_realizacion);
+      if (data.fecha_realizacion)
+        data.fecha_realizacion = new Date(data.fecha_realizacion);
       if (data.hora_inicio) data.hora_inicio = new Date(data.hora_inicio);
       if (data.hora_fin) data.hora_fin = new Date(data.hora_fin);
 
@@ -111,6 +114,9 @@ export class ActivityFormComponent implements OnInit {
     };
 
     const objetivoExtras = {
+      hora_inicio: ['', Validators.required],
+      hora_fin: ['', Validators.required],
+
       fecha_realizacion: ['', Validators.required],
     };
 
@@ -192,5 +198,4 @@ export class ActivityFormComponent implements OnInit {
       this.form.markAllAsTouched();
     }
   }
-
 }
