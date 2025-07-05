@@ -1,3 +1,4 @@
+
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -56,10 +57,14 @@ export class RoutineFormPageComponent implements OnInit {
 
     if (this.editando && this.rutinaId) {
       this.cargando = true;
+
       this.cdr.detectChanges();
       try {
         const rutinas: IRoutine[] = await this.routineService.getAllRoutines(this.idNino);
+       
         const rutina = rutinas.find(r => Number(r.id) === Number(this.rutinaId));
+     
+
         if (!rutina) throw new Error('Rutina no encontrada');
 
         this.rutina.nombre = rutina.nombre;
@@ -83,9 +88,11 @@ export class RoutineFormPageComponent implements OnInit {
         }));
         this.actividadIdAuto = this.actividades.length + 1;
         this.cargando = false;
+      
         this.cdr.detectChanges();
       } catch (error) {
         this.cargando = false;
+      
         this.cdr.detectChanges();
         console.error('Error capturado al cargar rutina:', error);
         alert('No se pudo cargar la rutina para editar');

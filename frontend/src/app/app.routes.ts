@@ -160,6 +160,14 @@ export const routes: Routes = [
         component: RoutineListPageComponent,
       },
       {
+        path: 'routine-form',
+        component: RoutineFormPageComponent,
+      },
+      {
+        path: 'create-routine',
+        component: CreateRoutineComponent,
+      },
+      {
         path: 'notes',
         component: NotesPageComponent,
       },
