@@ -56,15 +56,10 @@ export class RoutineFormPageComponent implements OnInit {
 
     if (this.editando && this.rutinaId) {
       this.cargando = true;
-      this.cdr.detectChanges(); // <-- fuerza actualización
+      this.cdr.detectChanges();
       try {
         const rutinas: IRoutine[] = await this.routineService.getAllRoutines(this.idNino);
-        console.log('Rutinas obtenidas:', rutinas);
-        console.log('Tipo de rutinaId:', typeof this.rutinaId, this.rutinaId);
-        console.log('IDs de rutinas:', rutinas.map(r => r.id));
         const rutina = rutinas.find(r => Number(r.id) === Number(this.rutinaId));
-        console.log('Rutina encontrada:', rutina);
-
         if (!rutina) throw new Error('Rutina no encontrada');
 
         this.rutina.nombre = rutina.nombre;
@@ -88,10 +83,10 @@ export class RoutineFormPageComponent implements OnInit {
         }));
         this.actividadIdAuto = this.actividades.length + 1;
         this.cargando = false;
-        this.cdr.detectChanges(); // <-- fuerza actualización
+        this.cdr.detectChanges();
       } catch (error) {
         this.cargando = false;
-        this.cdr.detectChanges(); // <-- fuerza actualización
+        this.cdr.detectChanges();
         console.error('Error capturado al cargar rutina:', error);
         alert('No se pudo cargar la rutina para editar');
         this.router.navigate(['/dashboard/routine-list'], {

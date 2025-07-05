@@ -7,7 +7,6 @@
     <div class="text-center text-gray-500 mb-4">Cargando rutina...</div>
   } @else {
     <form (ngSubmit)="guardarRutina()">
-      <!-- Nombre de la rutina -->
       <label class="block font-semibold text-[#3A3A3A] mb-1">Nombre de la Rutina</label>
       <input
         type="text"
@@ -18,7 +17,6 @@
         required
       />
 
-      <!-- Descripción -->
       <label class="block font-semibold text-[#3A3A3A] mb-1">Descripción</label>
       <textarea
         class="w-full p-3 mb-4 rounded-lg bg-[#C8E6F0] border border-[#9ED2C5] text-[#3A3A3A]"
@@ -27,7 +25,6 @@
         name="descripcionRutina"
       ></textarea>
 
-      <!-- Días de la semana -->
       <label class="block font-semibold text-[#3A3A3A] mb-2">Días de la Semana</label>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
         @for (dia of diasSemana; track dia) {
@@ -38,7 +35,6 @@
         }
       </div>
 
-      <!-- Actividades dinámicas -->
       <label class="block font-semibold text-[#3A3A3A] mb-2">Actividades</label>
       <div class="space-y-3 mb-4">
         @if (actividades.length > 0) {
@@ -69,14 +65,12 @@
         }
       </div>
 
-      <!-- Botón para agregar actividad -->
       <div class="mb-6 flex gap-4">
         <button type="button" (click)="agregarActividad()" class="text-sm text-[#FF7F50] hover:underline font-semibold">
           + Añadir Actividad
         </button>
       </div>
 
-      <!-- Guardar y Cancelar -->
       <div class="flex flex-col sm:flex-row justify-center gap-4">
         <button type="submit" class="px-6 py-2 rounded-lg text-white bg-[#FF7F50] hover:opacity-90">Guardar</button>
         <button type="button" (click)="cancelar()" class="px-6 py-2 rounded-lg text-[#3A3A3A] bg-gray-200 hover:bg-gray-300">

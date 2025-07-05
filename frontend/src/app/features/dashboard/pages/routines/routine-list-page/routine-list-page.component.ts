@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IRoutine, IActivity, IChild } from '../../../../../shared/interfaces';
-import { RoutineService } from '../../../../../shared/services/routine.service'; 
+import { RoutineService } from '../../../../../shared/services/routine.service';
 import { ActivityService } from '../../../../../shared/services';
 import { ChildService } from '../../../../../shared/services/child.service';
 import { CommonModule } from '@angular/common';
@@ -26,35 +26,40 @@ export class RoutineListPageComponent implements OnInit {
     private route: ActivatedRoute,
     private routineService: RoutineService,
     private activityService: ActivityService,
-    private childService: ChildService
-  ) {
-    // Escucha cambios en los parámetros de la URL para recargar rutinas
-    this.route.queryParams.subscribe(async params => {
-      if (params['id_nino']) {
-        this.selectedChildId = Number(params['id_nino']);
-        await this.cargarRutinas();
-      }
-    });
-  }
+    private childService: ChildService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const id_familia = localStorage.getItem('familia_id') || '1';
+
     try {
+      // 1. Cargar niños
       this.children = await this.childService.getChildrenByFamily(id_familia);
+      console.log('Niños cargados:', this.children);
 
-      // Selecciona el niño por defecto si no hay uno seleccionado
-      const id_nino = Number(this.route.snapshot.queryParamMap.get('id_nino'));
-      if (id_nino && this.children.some(c => c.id === id_nino)) {
-        this.selectedChildId = id_nino;
-      } else if (this.children.length > 0) {
-        this.selectedChildId = this.children[0].id;
-      }
+      // 2. Suscribirse a los cambios en la URL
+      this.route.queryParams.subscribe(async params => {
+        const id_nino = Number(params['id_nino']);
 
-      // Si ya hay un id_nino, cargarRutinas se llamará por el subscribe de arriba
-      // Si no, la llamamos aquí para el caso inicial
-      if (this.selectedChildId) {
-        await this.cargarRutinas();
-      }
+        if (id_nino && this.children.some(c => c.id === id_nino)) {
+          this.selectedChildId = id_nino;
+        } else if (this.children.length > 0) {
+          this.selectedChildId = this.children[0].id;
+          this.router.navigate([], {
+            queryParams: { id_nino: this.selectedChildId },
+            queryParamsHandling: 'merge'
+          });
+        }
+
+        // 3. Cargar rutinas del niño seleccionado
+        if (this.selectedChildId) {
+          await this.cargarRutinas();
+        }
+      });
+
+      this.cdr.detectChanges();
+
     } catch (error) {
       console.error('Error al cargar niños o rutinas:', error);
     }
@@ -62,21 +67,26 @@ export class RoutineListPageComponent implements OnInit {
 
   async cargarRutinas(): Promise<void> {
     if (!this.selectedChildId) return;
-    console.log('Llamando a getAllRoutines con id:', this.selectedChildId);
+    console.log('Cargando rutinas para id_nino:', this.selectedChildId);
     try {
       const data: IRoutine[] = await this.routineService.getAllRoutines(this.selectedChildId);
-      console.log('Respuesta del backend:', data);
       this.rutinas = data.map((rutina) => ({
         ...rutina,
-        actividades: rutina.actividades || [],
+        actividades: (rutina.actividades || []).map((act: any) => ({
+          ...act,
+          titulo: act.titulo || act.nombre || 'Actividad sin título',
+          hora_inicio: act.hora_inicio || act.hora || null
+        })),
         fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
       }));
-      console.log('Rutinas cargadas:', this.rutinas);
+
+      console.log('Rutinas recibidas:', this.rutinas);
+      this.cdr.detectChanges(); // 👈 Forzar renderizado
+
     } catch (error) {
       console.error('Error cargando rutinas', error);
     }
   }
-  
 
   async onChildChange(event: any): Promise<void> {
     this.selectedChildId = event.value;
@@ -84,7 +94,7 @@ export class RoutineListPageComponent implements OnInit {
       queryParams: { id_nino: this.selectedChildId },
       queryParamsHandling: 'merge'
     });
-    // cargarRutinas se llamará automáticamente por el subscribe a queryParams
+    // Rutinas se cargarán desde el subscribe
   }
 
   nuevaRutina(): void {
@@ -106,6 +116,7 @@ export class RoutineListPageComponent implements OnInit {
       if (!this.selectedChildId) return;
       await this.routineService.deleteRoutine(this.selectedChildId, id);
       this.rutinas = this.rutinas.filter(r => r.id !== id);
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al eliminar la rutina', error);
     }
@@ -133,10 +144,8 @@ export class RoutineListPageComponent implements OnInit {
   getHoraInput(hora: string | Date): string {
     if (!hora) return '';
     if (typeof hora === 'string') {
-      // Si viene como "08:30:00" o "08:30"
       return hora.length >= 5 ? hora.slice(0, 5) : hora;
     }
-    // Si es un objeto Date
     const d = new Date(hora);
     return d.toISOString().slice(11, 16);
   }
