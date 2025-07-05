@@ -15,14 +15,10 @@ interface CreateActivityResponse {
   providedIn: 'root',
 })
 export class ActivityService {
-  private httpClient = inject(HttpClient)
-  private apiUrl: string  = 'http://localhost:3000/api';
+  private httpClient = inject(HttpClient);
+  private apiUrl: string = 'http://localhost:3000/api';
 
-    private readonly tokenService = inject(TokenService);
-
-  
-
-
+  private readonly tokenService = inject(TokenService);
 
   /**
    * Retrieves a list of activities associated with a specific family by its ID.
@@ -65,7 +61,7 @@ export class ActivityService {
           },
         }
       )
-    ).then((response) => response.data);
+    ).then((response) => response.data ?? []);
   }
 
   /**
@@ -124,21 +120,25 @@ export class ActivityService {
    * The `ninos_id` property is extracted from the `activity` object and used to associate the activity with the specific child.
    */
   async createActivity(activity: IActivity): Promise<IActivity> {
-    console.log("activity", activity);
+    console.log('activity', activity);
     let { ninos_id, ...activityBody } = activity;
     const response = await lastValueFrom(
       this.httpClient.post<CreateActivityResponse>(
         `${this.apiUrl}/actividades/ninos/${ninos_id}`,
-        activityBody, {
-        headers: {
-          Authorization: `Bearer ${this.tokenService.token()}`,
-        },
-      })
+        activityBody,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      )
     );
     return response.data;
   }
 
-  async buildActivitiesSuggestions():Promise<{titulo:string,descripcion:string, color:string}[]> {
+  async buildActivitiesSuggestions(): Promise<
+    { titulo: string; descripcion: string; color: string }[]
+  > {
     try {
       const response = await axios.get(`${this.apiUrl}/suggestions`, {
         headers: {
@@ -152,28 +152,37 @@ export class ActivityService {
     }
   }
 
-  async postMinimalActivity(activity: ActivityDto, nino_id: number): Promise<IActivity | null> {
+  async postMinimalActivity(
+    activity: ActivityDto,
+    nino_id: number
+  ): Promise<IActivity | null> {
     try {
-      const response = await axios.post(`${this.apiUrl}/actividades/ninos/${nino_id}`, activity, {
-        headers: {
-          Authorization: `Bearer ${this.tokenService.token()}`,
-        },
-      });
-      return response.data ;
+      const response = await axios.post(
+        `${this.apiUrl}/actividades/ninos/${nino_id}`,
+        activity,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      );
+      return response.data;
     } catch (error) {
       console.error(error);
       return null;
     }
-
   }
 
   async getMyActivities(): Promise<IActivity[]> {
     try {
-      const response = await axios.get(`${this.apiUrl}/actividades/my-activities`, {
-        headers: {
-          Authorization: `Bearer ${this.tokenService.token()}`,
-        },
-      });
+      const response = await axios.get(
+        `${this.apiUrl}/actividades/my-activities`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+        }
+      );
       return response.data.data;
     } catch (error) {
       console.error(error);
@@ -183,31 +192,33 @@ export class ActivityService {
 
   async downloadActivities(ids: number[]): Promise<boolean> {
     try {
-      const response = await axios.post(`${this.apiUrl}/actividades/export`, { activityIds: ids }, {
-        headers: {
-          Authorization: `Bearer ${this.tokenService.token()}`,
-        },
-        responseType: 'blob', 
-      });
-  
+      const response = await axios.post(
+        `${this.apiUrl}/actividades/export`,
+        { activityIds: ids },
+        {
+          headers: {
+            Authorization: `Bearer ${this.tokenService.token()}`,
+          },
+          responseType: 'blob',
+        }
+      );
+
       const file = new Blob([response.data], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
       const link = document.createElement('a');
       link.href = fileURL;
-      link.setAttribute('download', 'actividades.pdf'); 
-      document.body.appendChild(link); 
-      link.click(); 
-  
+      link.setAttribute('download', 'actividades.pdf');
+      document.body.appendChild(link);
+      link.click();
+
       document.body.removeChild(link);
       URL.revokeObjectURL(fileURL);
-  
     } catch (error) {
       console.error('Error downloading PDF:', error);
       return false;
     }
     return true;
   }
-
 
   getActivityById(id: number): Promise<IActivity> {
     return lastValueFrom(
@@ -236,7 +247,11 @@ export class ActivityService {
     ).then((response) => response.data);
   }
 
-  updateActivityCompleted(id: number, completado: boolean, ninoId: number): Promise<void> {
+  updateActivityCompleted(
+    id: number,
+    completado: boolean,
+    ninoId: number
+  ): Promise<void> {
     return lastValueFrom(
       this.httpClient.put(
         `${this.apiUrl}/actividades/ninos/${ninoId}/${id}`,
@@ -250,7 +265,4 @@ export class ActivityService {
       )
     ).then(() => {});
   }
-
 }
-
-

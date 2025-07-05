@@ -89,6 +89,11 @@ export class DashboardHomeComponent implements OnInit {
         this.activitiesCache[childId] = allActivities;
       }
 
+      if (!allActivities) {
+        allActivities = [];
+        this.activitiesCache[childId] = allActivities;
+      }
+
       this.activities = allActivities
         .filter(
           (a) =>
