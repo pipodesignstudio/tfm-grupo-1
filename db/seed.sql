@@ -11,7 +11,8 @@ INSERT INTO perfiles_aprendizaje (nombre, descripcion) VALUES
 INSERT INTO familia (descripcion) VALUES
 ('Familia Gómez'),
 ('Familia Pérez'),
-('Familia Bombo');
+('Familia Martinez'),
+('Familia López');
 
 -- Insertar usuarios
 INSERT INTO usuarios (nombre, apellido, nick, email, contrasena, primera_sesion, email_verificado) VALUES
@@ -96,7 +97,7 @@ INSERT INTO alergias (ninos_id, nombre) VALUES
 
 -- Usuarios
 INSERT INTO usuarios (id, nombre, apellido, nick, img_perfil, email, contrasena, primera_sesion, fecha_creacion, borrado, email_verificado) VALUES
-(3, 'Caridad', 'Araujo', 'caridad3', NULL, 'titocastell@gmail.com', '$2b$10$yOX5o4L.wK4Z7YfeCPpjIOEpdKiy1ZmBquWtsY/WJQCVMeia1PjDi', FALSE, NOW(), FALSE, TRUE),
+(3, 'Caridad', 'Araujo', 'caridad3', NULL, 'userdemo@gmail.com', '$2b$10$yOX5o4L.wK4Z7YfeCPpjIOEpdKiy1ZmBquWtsY/WJQCVMeia1PjDi', FALSE, NOW(), FALSE, TRUE),
 (4, 'Georgina', 'Ferrando', 'georgina4', NULL, 'leon14@yahoo.com', '$2b$10$yOX5o4L.wK4Z7YfeCPpjIOEpdKiy1ZmBquWtsY/WJQCVMeia1PjDi', FALSE, NOW(), FALSE, TRUE),
 (5, 'Griselda', 'Real', 'griselda5', NULL, 'jmarques@gmail.com', '$2b$10$yOX5o4L.wK4Z7YfeCPpjIOEpdKiy1ZmBquWtsY/WJQCVMeia1PjDi', FALSE, NOW(), FALSE, TRUE),
 (6, 'Rodrigo', 'Urrutia', 'rodrigo6', NULL, 'eusebioadan@gmail.com', '$2b$10$yOX5o4L.wK4Z7YfeCPpjIOEpdKiy1ZmBquWtsY/WJQCVMeia1PjDi', FALSE, NOW(), FALSE, TRUE),
@@ -127,7 +128,7 @@ INSERT INTO familia_usuarios (familia_id, usuarios_id, rol) VALUES
 (1, 8, 'admin'),
 (1, 9, 'admin'),
 (1, 10, 'admin'),
-(1, 3, 'cuidador'),
+(1, 3, 'admin'),
 (1, 11, 'cuidador'),
 (3, 12, 'admin'),
 (3, 13, 'cuidador'),
@@ -344,7 +345,11 @@ INSERT INTO invitacion_usuario_familia (id, familia_id, usuario_emisor, email_de
 (19, 1, 19, 'trujilloleticia@yahoo.com', 'cuidador', FALSE, FALSE, NOW()),
 (20, 3, 20, 'reigpaulino@hotmail.com', 'cuidador', FALSE, FALSE, NOW()),
 (21, 2, 21, 'lorena59@hotmail.com', 'cuidador', FALSE, FALSE, NOW()),
-(22, 1, 22, 'tquiroga@hotmail.com', 'cuidador', FALSE, FALSE, NOW());
+(22, 1, 22, 'tquiroga@hotmail.com', 'cuidador', FALSE, FALSE, NOW()),
+(23, 3, 3, 'joseperez@gmail.com', 'cuidador', TRUE, FALSE, NOW()),
+(24, 1, 3, 'maura39@gmail.com', 'admin', TRUE, TRUE, NOW()),
+(25, 3, 5, 'userdemo@gmail.com', 'cuidador', FALSE, FALSE, NOW()),
+(26, 4, 9, 'userdemo@gmail.com', 'cuidador', FALSE, FALSE, NOW());
 
 -- Alergias
 INSERT INTO alergias (id, ninos_id, nombre) VALUES
@@ -376,53 +381,79 @@ INSERT INTO actividades (
   hora_inicio, hora_fin, color, tipo, usuario_responsable, completado
 ) VALUES
 -- Niño 1
-(1, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-05', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 10, FALSE),
-(1, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-08', '09:30:00', '10:00:00', '#f39c12', 'Evento', 10, FALSE),
-(1, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-12', '15:00:00', '16:30:00', '#8e44ad', 'Evento', 10, FALSE),
-(1, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-16', '10:30:00', '12:00:00', '#27ae60', 'Evento', 10, FALSE),
-(1, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-24', '11:00:00', '12:00:00', '#3498db', 'Evento', 10, FALSE),
+(1, 'Cita con el pediatra', 'Control de salud mensual', '2025-07-05', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 10, FALSE),
+(1, 'Revisión dental', 'Chequeo dental de rutina', '2025-07-08', '09:30:00', '10:00:00', '#f39c12', 'Evento', 10, FALSE),
+(1, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-07-12', '15:00:00', '16:30:00', '#8e44ad', 'Evento', 10, FALSE),
+(1, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-07-16', '10:30:00', '12:00:00', '#27ae60', 'Evento', 10, FALSE),
+(1, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-07-24', '11:00:00', '12:00:00', '#3498db', 'Evento', 10, FALSE),
 
 -- Niño 2
-(2, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-03', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 11, FALSE),
-(2, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-06', '09:00:00', '09:30:00', '#f39c12', 'Evento', 11, FALSE),
-(2, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-10', '14:00:00', '15:00:00', '#8e44ad', 'Evento', 11, FALSE),
-(2, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-19', '11:00:00', '12:30:00', '#27ae60', 'Evento', 11, FALSE),
-(2, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-27', '13:00:00', '14:00:00', '#3498db', 'Evento', 11, FALSE),
+(2, 'Cita con el pediatra', 'Control de salud mensual', '2025-07-03', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 11, FALSE),
+(2, 'Revisión dental', 'Chequeo dental de rutina', '2025-07-06', '09:00:00', '09:30:00', '#f39c12', 'Evento', 11, FALSE),
+(2, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-07-10', '14:00:00', '15:00:00', '#8e44ad', 'Evento', 11, FALSE),
+(2, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-07-19', '11:00:00', '12:30:00', '#27ae60', 'Evento', 11, FALSE),
+(2, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-07-27', '13:00:00', '14:00:00', '#3498db', 'Evento', 11, FALSE),
 
 -- Niño 3
-(3, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-02', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 12, FALSE),
-(3, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-04', '09:00:00', '09:45:00', '#f39c12', 'Evento', 12, FALSE),
-(3, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-07', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 12, FALSE),
-(3, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-15', '10:30:00', '12:00:00', '#27ae60', 'Evento', 12, FALSE),
-(3, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-22', '11:00:00', '12:00:00', '#3498db', 'Evento', 12, FALSE),
+(3, 'Cita con el pediatra', 'Control de salud mensual', '2025-07-02', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 12, FALSE),
+(3, 'Revisión dental', 'Chequeo dental de rutina', '2025-07-04', '09:00:00', '09:45:00', '#f39c12', 'Evento', 12, FALSE),
+(3, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-07-07', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 12, FALSE),
+(3, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-07-15', '10:30:00', '12:00:00', '#27ae60', 'Evento', 12, FALSE),
+(3, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-07-22', '11:00:00', '12:00:00', '#3498db', 'Evento', 12, FALSE),
 
 -- Niño 4
 (4, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-01', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 13, FALSE),
-(4, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-09', '09:00:00', '09:30:00', '#f39c12', 'Evento', 13, FALSE),
-(4, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-14', '15:00:00', '16:30:00', '#8e44ad', 'Evento', 13, FALSE),
-(4, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-20', '10:30:00', '12:00:00', '#27ae60', 'Evento', 13, FALSE),
-(4, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-28', '11:00:00', '12:00:00', '#3498db', 'Evento', 13, FALSE),
+(4, 'Revisión dental', 'Chequeo dental de rutina', '2025-07-09', '09:00:00', '09:30:00', '#f39c12', 'Evento', 13, FALSE),
+(4, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-07-14', '15:00:00', '16:30:00', '#8e44ad', 'Evento', 13, FALSE),
+(4, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-07-20', '10:30:00', '12:00:00', '#27ae60', 'Evento', 13, FALSE),
+(4, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-07-28', '11:00:00', '12:00:00', '#3498db', 'Evento', 13, FALSE),
 
 -- Niño 5
-(5, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-04', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 14, FALSE),
-(5, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-06', '09:00:00', '09:30:00', '#f39c12', 'Evento', 14, FALSE),
-(5, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-11', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 14, FALSE),
-(5, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-17', '10:30:00', '12:00:00', '#27ae60', 'Evento', 14, FALSE),
-(5, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-26', '11:00:00', '12:00:00', '#3498db', 'Evento', 14, FALSE),
+(5, 'Cita con el pediatra', 'Control de salud mensual', '2025-07-04', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 14, FALSE),
+(5, 'Revisión dental', 'Chequeo dental de rutina', '2025-07-06', '09:00:00', '09:30:00', '#f39c12', 'Evento', 14, FALSE),
+(5, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-07-11', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 14, FALSE),
+(5, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-07-17', '10:30:00', '12:00:00', '#27ae60', 'Evento', 14, FALSE),
+(5, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-07-26', '11:00:00', '12:00:00', '#3498db', 'Evento', 14, FALSE),
 
 -- Niño 6
-(6, 'Cita con el pediatra', 'Control de salud mensual', '2025-06-03', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 15, FALSE),
-(6, 'Revisión dental', 'Chequeo dental de rutina', '2025-06-08', '09:00:00', '09:30:00', '#f39c12', 'Evento', 15, FALSE),
-(6, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-06-13', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 15, FALSE),
-(6, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-06-21', '10:30:00', '12:00:00', '#27ae60', 'Evento', 15, FALSE),
-(6, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-06-30', '11:00:00', '12:00:00', '#3498db', 'Evento', 15, FALSE);
+(6, 'Cita con el pediatra', 'Control de salud mensual', '2025-07-03', '10:00:00', '11:00:00', '#e74c3c', 'Evento', 15, FALSE),
+(6, 'Revisión dental', 'Chequeo dental de rutina', '2025-07-08', '09:00:00', '09:30:00', '#f39c12', 'Evento', 15, FALSE),
+(6, 'Taller de arte', 'Actividad de creatividad en grupo', '2025-07-13', '15:00:00', '16:00:00', '#8e44ad', 'Evento', 15, FALSE),
+(6, 'Salida al parque', 'Jugar y explorar la naturaleza', '2025-07-21', '10:30:00', '12:00:00', '#27ae60', 'Evento', 15, FALSE),
+(6, 'Charla educativa', 'Actividad en la biblioteca infantil', '2025-07-30', '11:00:00', '12:00:00', '#3498db', 'Evento', 15, FALSE);
 
 INSERT INTO vacunas (id,ninos_id,nombre,fecha) VALUES
   (1,1,'Viruela','2023-05-15 00:00:00'),
-  (2,2,'Sarampión','2024-01-20 00:00:00');
+  (2,2,'Sarampión','2024-01-20 00:00:00'),
+  (3,3,'Rubéola','2024-03-10 00:00:00'),
+  (4,4,'Tétanos','2024-05-05 00:00:00'),
+  (5,5,'Hepatitis B','2024-07-15 00:00:00'),
+  (6,6,'Polio','2024-09-01 00:00:00'),
+  (7,7,'Difteria','2024-11-20 00:00:00'),
+  (8,8,'Meningitis','2025-01-10 00:00:00'),
+  (9,9,'Gripe','2025-03-15 00:00:00'),
+  (10,10,'COVID-19','2025-05-01 00:00:00');
 
 INSERT INTO enfermedades (id,ninos_id,nombre,doctor)
-VALUES (1,2,'Otitis','Dr. Ruiz');
+VALUES (1,2,'Otitis','Dr. Ruiz'),
+(2,3,'Asma','Dra. Pérez'),
+(3,4,'Alergia al polen','Dr. Gómez'),
+(4,5,'Eczema','Dra. Fernández'),
+(5,6,'Reflujo gastroesofágico','Dr. López'),
+(6,7,'Infección urinaria','Dra. Martínez'),
+(7,8,'Bronquitis','Dr. Sánchez'),
+(8,9,'Fiebre reumática','Dra. Torres'),
+(9,10,'Anemia','Dr. Ramírez'),
+(10,11,'Diabetes tipo 1','Dra. Herrera'),
+(11,12,'Hiperactividad','Dr. Castro'),
+(12,13,'Trastorno del espectro autista','Dra. Morales'),
+(13,14,'Dislexia','Dr. Ortega'),
+(14,15,'TDAH','Dra. Delgado'),
+(15,16,'Epilepsia','Dr. Jiménez'),
+(16,17,'Síndrome de Down','Dra. Ruiz'),
+(17,18,'Parálisis cerebral','Dr. González'),
+(18,19,'Fibrosis quística','Dra. López'),
+(19,20,'Esclerosis múltiple infantil','Dr. Fernández');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

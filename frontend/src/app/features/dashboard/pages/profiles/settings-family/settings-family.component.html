@@ -32,8 +32,7 @@
         >
           Editar
         </button>
-        }
-        @if (familia.id !== familiaActual?.id) {
+        } @if (familia.id !== familiaActual?.id) {
         <button
           (click)="cambiarAFamilia(familia.id)"
           class="text-blue-500 text-xs"
@@ -48,8 +47,6 @@
         >
           Salir
         </button>
-
-        
       </div>
     </div>
     } }
@@ -134,12 +131,9 @@
   </div>
   @if(messageModalVisible) {
   <app-message-modal
-    [message]="
-      '¿Estás seguro de que deseas salir de la familia ' +
-      (familiaASalirDescripcion || '') +
-      '?'
-    "
+    [message]="salirFamiliaMsg"
     [buttonText]="'Salir'"
+    [showButton]="showBotonSalirFamilia"
     (cerrar)="closeMessageModal()"
     (button)="salirDeFamilia(familiaASalir || 0)"
   ></app-message-modal>
@@ -184,17 +178,10 @@
         />
       </div>
       <div class="flex justify-end space-x-2">
-      <button (click)="closeFamiliaEditarModal()">
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        class=""
-      >
-        Guardar
-      </button>
+        <button (click)="closeFamiliaEditarModal()">Cancelar</button>
+        <button type="submit" class="">Guardar</button>
       </div>
-    </form> 
+    </form>
   </div>
 </div>
-  }
+}

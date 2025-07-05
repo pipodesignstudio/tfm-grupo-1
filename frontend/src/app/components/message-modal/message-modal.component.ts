@@ -27,6 +27,7 @@ export class MessageModalComponent {
 
   @Input() message: string = '';
   @Input() buttonText: string = '';
+  @Input() showButton: boolean = true;
 
   @Output() button = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
