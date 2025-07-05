@@ -131,6 +131,7 @@ export const routes: Routes = [
         path: 'child-profile',
         component: ChildProfileComponent,
       },
+      { path: 'child-profile/:id', component: ChildProfileComponent },
       {
         path: 'settings',
         component: SettingsComponent,

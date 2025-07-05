@@ -41,14 +41,18 @@
     <div class="flex-1">
       @if (children.length > 0) {
       <div class="mb-8">
-        <img
-          [src]="
-            children[activeChild].img_perfil ||
-            'https://api.dicebear.com/9.x/dylan/svg?seed=Aidan&backgroundColor=ffd700&mood=happy&skinColor=c26450&scale=90'
-          "
-          [alt]="children[activeChild].nombre + ' photo'"
-          class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto"
-        />
+        <a
+          [routerLink]="['/dashboard/child-profile', children[activeChild].id]"
+        >
+          <img
+            [src]="
+              children[activeChild].img_perfil ||
+              'https://api.dicebear.com/9.x/dylan/svg?seed=Aidan&backgroundColor=ffd700&mood=happy&skinColor=c26450&scale=90'
+            "
+            [alt]="children[activeChild].nombre + ' photo'"
+            class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto cursor-pointer"
+          />
+        </a>
         <h2 class="text-xl font-semibold mb-6 text-center">
           El día de {{ children[activeChild].nombre }}
         </h2>
