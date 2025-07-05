@@ -52,10 +52,9 @@ export class ObjectivesPageComponent {
   showDeleteConfirm = false;
 
   // Modal añadir actividad
-    mostrarActivityModal = false;
-    actividadInfo: IActivity | null = null;
-    objetivoParaNuevaActividad: IObjetivo | null = null;
-
+  mostrarActivityModal = false;
+  actividadInfo: IActivity | null = null;
+  objetivoParaNuevaActividad: IObjetivo | null = null;
 
   constructor() {
     effect(() => {
@@ -64,7 +63,6 @@ export class ObjectivesPageComponent {
 
       this.childService.getChildrenByFamily(String(familia.id)).then((children) => {
         this.children = children;
-
         this.childrenOptions = children.map((child) => ({
           label: child.nombre,
           value: Number(child.id),
@@ -161,103 +159,42 @@ export class ObjectivesPageComponent {
     this.cdr.detectChanges();
   }
 
+  onCerrarFormulario(idNino?: number) {
+    if (typeof idNino === 'number') {
+      this.selectedChildId = idNino;
+      this.loadObjectives(idNino);
+    }
+    this.closeForm();
+  }
+
   closeForm(): void {
     this.showForm = false;
     this.objectiveToEdit = null;
   }
 
-  onGuardarObjetivo({ idNino, data }: { idNino: number; data: any }): void {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   /*  const ObjetivoConFechas: IObjetivo = {
-      ...data,
-      fecha_fin: new Date(data.fecha_fin!)
-    } as IObjetivo;
-
-    console.log(data);
-
-    this.objectivesService.createObjective(idNino, ObjetivoConFechas).then(() => {
-      this.loadObjectives(idNino);
-      this.closeForm();
-    }).catch(() => {
-      console.error('Error al guardar el objetivo');
-    }); */
+  async onGuardarObjetivo({ idNino, data }: { idNino: number; data: any }): Promise<void> {
+    try {
+      const dataConTipoCorrecto = { ...data, tipo: 'Objetivo' };
+      const idObjetivo = await this.objectivesService.createObjective(dataConTipoCorrecto, idNino);
+      if (idObjetivo) {
+        // No necesitas llamar a loadObjectives aquí, ya se hace en el servicio
+        // La sincronización del selector se hace en onCerrarFormulario
+      } else {
+        console.error('Error: No se pudo crear el objetivo');
+      }
+    } catch (error) {
+      console.error('Error al guardar el objetivo', error);
+    }
   }
 
-  onEditarObjetivo({ idNino, idObjetivo, data }: { idNino: number; idObjetivo: number; data: any }): void {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   /*  this.objectivesService.updateObjective(idNino, idObjetivo, data).then(() => {
+  async onEditarObjetivo({ idNino, idObjetivo, data }: { idNino: number; idObjetivo: number; data: any }): Promise<void> {
+    try {
+      await this.objectivesService.updateObjective(idNino, idObjetivo, data);
       this.loadObjectives(idNino);
       this.closeForm();
-    }).catch(() => {
-      console.error('Error al editar el objetivo');
-    }); */
+    } catch (error) {
+      console.error('Error al editar el objetivo', error);
+    }
   }
 
   // ========================
@@ -276,41 +213,7 @@ export class ObjectivesPageComponent {
   }
 
   async deleteObjectiveConfirmed(): Promise<void> {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-   /*  if (!this.objectiveToDelete) return;
+    if (!this.objectiveToDelete) return;
     const idNino = this.selectedChildId!;
     const idObjetivo = this.objectiveToDelete.id;
     try {
@@ -320,11 +223,11 @@ export class ObjectivesPageComponent {
       this.objectiveToDelete = null;
     } catch (error) {
       console.error('Error al borrar el objetivo:', error);
-    } */
+    }
   }
 
   // ========================
-  // AÑADIR ACTIVIDAD (Pendiente implementar)
+  // AÑADIR ACTIVIDAD
   // ========================
 
   onAddActivity(obj: IObjetivo): void {
@@ -339,74 +242,32 @@ export class ObjectivesPageComponent {
     this.objetivoParaNuevaActividad = null;
   }
 
-async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
-  if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
+  async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+    if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
 
-  try {
-    // Construye el objeto de tipo IActivity SIN id
-    const actividadAEnviar: IActivity = {
-      ...nuevaActividad,
-      tipo: 'Tarea',
-      ninos_id: this.selectedChildId,
-      // No incluyas 'id'
-    } as IActivity;
+    try {
+      // Construye el objeto de tipo IActivity SIN id
+      const actividadAEnviar: IActivity = {
+        ...nuevaActividad,
+        tipo: 'Objetivo',
+        ninos_id: this.selectedChildId,
+      } as IActivity;
 
-    // Crea la actividad
-    const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
+      // Crea la actividad
+      const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
 
-    // Asocia la actividad al objetivo (esto ya lo tienes en tu ObjectivesService)
+      // Asocia la actividad al objetivo
+      await this.objectivesService.addActivityToObjective(
+        this.objetivoParaNuevaActividad.id,
+        actividadCreada.id
+      );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   /*  await this.objectivesService.addActivityToObjective(
-      this.objetivoParaNuevaActividad.id,
-      actividadCreada.id
-    ); */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Refresca la lista de objetivos
-    this.loadObjectives(this.selectedChildId);
-  } catch (error) {
-    console.error('Error al crear y asociar la actividad:', error);
-  } finally {
-    this.cerrarActivityModal();
+      // Refresca la lista de objetivos
+      this.loadObjectives(this.selectedChildId);
+    } catch (error) {
+      console.error('Error al crear y asociar la actividad:', error);
+    } finally {
+      this.cerrarActivityModal();
+    }
   }
-}
-
-
-
-
 }
