@@ -14,9 +14,6 @@ export class ChildService {
   private readonly tokenService = inject(TokenService);
   private token = computed(() => this.tokenService.token());
 
-
-
-
   /**
    * Retrieves a list of children associated with a specific family by its ID.
    *
@@ -73,7 +70,7 @@ export class ChildService {
     }
     return response.data.data;
   }
-  
+
   /**
    * Deletes a specific child by their ID.
    *
@@ -119,13 +116,17 @@ export class ChildService {
     }
   }
 
-  private async createPerfilAprendizaje(nombre:string, apellido:string):Promise<number | null> {
+  private async createPerfilAprendizaje(
+    nombre: string,
+    apellido: string
+  ): Promise<number | null> {
     try {
       const response = await axios.post<{ data: number }>(
         `${this.apiUrl}/perfil-aprendizaje`,
-        { nombre: `Perfil de ${nombre} ${apellido}`,
-        descripcion: `Perfil de aprendizaje de ${nombre} ${apellido}`,
-      },
+        {
+          nombre: `Perfil de ${nombre} ${apellido}`,
+          descripcion: `Perfil de aprendizaje de ${nombre} ${apellido}`,
+        },
         {
           headers: { Authorization: `Bearer ${this.tokenService.token()}` },
         }
@@ -137,9 +138,14 @@ export class ChildService {
     }
   }
 
-  async createChild(childData: Omit<CreateNinoDto, 'perfiles_aprendizaje_id'>): Promise<IChild | null> {
+  async createChild(
+    childData: Omit<CreateNinoDto, 'perfiles_aprendizaje_id'>
+  ): Promise<IChild | null> {
     try {
-      const perfiles_aprendizaje_id = await this.createPerfilAprendizaje(childData.nombre, childData.apellido);
+      const perfiles_aprendizaje_id = await this.createPerfilAprendizaje(
+        childData.nombre,
+        childData.apellido
+      );
       const ninoDto = {
         ...childData,
         perfiles_aprendizaje_id: perfiles_aprendizaje_id,
@@ -160,7 +166,16 @@ export class ChildService {
       console.error('Error al crear perfil de aprendizaje:', error);
       return null;
     }
-
   }
 
+  async updateChild(id: number, data: Partial<IChild>): Promise<IChild> {
+    const response = await axios.put<{ data: IChild }>(
+      `${this.apiUrl}/ninos/${id}`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      }
+    );
+    return response.data.data;
+  }
 }
