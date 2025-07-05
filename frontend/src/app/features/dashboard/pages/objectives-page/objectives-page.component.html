@@ -240,11 +240,15 @@
     </div>
   </div>
 }
+
+
 @if (mostrarActivityModal) {
   <app-activity-form
     [actividadInfo]="actividadInfo"
     [children]="children"
     [tipo]="'objetivo'"
+    [objetivoInfo]="objetivoParaNuevaActividad"
+    [selectedChild]="selectedChildObj"
     (guardar)="guardarNuevaActividad($event)"
     (cerrar)="cerrarActivityModal()"
   />

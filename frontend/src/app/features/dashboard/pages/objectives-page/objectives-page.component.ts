@@ -230,44 +230,53 @@ export class ObjectivesPageComponent {
   // AÑADIR ACTIVIDAD
   // ========================
 
-  onAddActivity(obj: IObjetivo): void {
-    this.actividadInfo = null; // Nueva actividad
-    this.objetivoParaNuevaActividad = obj; // Guardamos el objetivo
-    this.mostrarActivityModal = true;
-  }
-
   cerrarActivityModal(): void {
     this.mostrarActivityModal = false;
     this.actividadInfo = null;
     this.objetivoParaNuevaActividad = null;
   }
 
-  async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
-    if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
+  // Al pulsar el botón "+" en un objetivo
+  onAddActivity(obj: IObjetivo): void {
+  this.actividadInfo = null; // Nueva actividad
+  this.objetivoParaNuevaActividad = obj; // Guardamos el objetivo seleccionado
+  this.mostrarActivityModal = true;
+}
 
-    try {
-      // Construye el objeto de tipo IActivity SIN id
-      const actividadAEnviar: IActivity = {
-        ...nuevaActividad,
-        tipo: 'Objetivo',
-        ninos_id: this.selectedChildId,
-      } as IActivity;
-
-      // Crea la actividad
-      const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
-
-      // Asocia la actividad al objetivo
-      await this.objectivesService.addActivityToObjective(
-        this.objetivoParaNuevaActividad.id,
-        actividadCreada.id
-      );
-
-      // Refresca la lista de objetivos
-      this.loadObjectives(this.selectedChildId);
-    } catch (error) {
-      console.error('Error al crear y asociar la actividad:', error);
-    } finally {
-      this.cerrarActivityModal();
+  // objectives-page.component.ts
+    get selectedChildObj(): IChild | null {
+      return this.children.find(c => c.id === this.selectedChildId) || null;
     }
+
+
+// Handler para guardar la nueva actividad
+async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+  if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
+
+  try {
+    // Preparamos el objeto de actividad
+    const actividadAEnviar: IActivity = {
+      ...nuevaActividad,
+      tipo: 'Objetivo',
+      ninos_id: this.selectedChildId,
+    } as IActivity;
+
+    // 1. Creamos la actividad
+    const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
+
+    // 2. Asociamos la actividad al objetivo seleccionado
+    await this.objectivesService.addActivityToObjective(
+      this.objetivoParaNuevaActividad.id,
+      actividadCreada.id
+    );
+
+    // 3. Refrescamos la lista de objetivos
+    this.loadObjectives(this.selectedChildId);
+  } catch (error) {
+    console.error('Error al crear y asociar la actividad:', error);
+  } finally {
+    this.cerrarActivityModal();
   }
+}
+
 }
