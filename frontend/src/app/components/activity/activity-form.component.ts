@@ -112,7 +112,6 @@ export class ActivityFormComponent implements OnInit {
 
     const objetivoExtras = {
       fecha_realizacion: ['', Validators.required],
-      hora_inicio: ['', Validators.required],
     };
 
     const rutinaExtras = {
