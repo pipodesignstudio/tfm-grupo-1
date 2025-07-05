@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IRoutine } from '../interfaces';
 import { TokenService } from '../../features/auth/services';
+import axios from 'axios';
 
 @Injectable({ providedIn: 'root' })
 export class RoutineService {
@@ -24,35 +25,31 @@ export class RoutineService {
     };
   }
 
-  // Maneja la respuesta de la API y lanza errores si es necesario
-  private async handleResponse(response: Response) {
-    let data: any;
-    try {
-      data = await response.json();
-    } catch {
-      data = {};
+  // Extrae el array de rutinas de la respuesta, adaptándose a diferentes estructuras
+  private extractRoutinesFromResponse(data: any): IRoutine[] {
+    if (Array.isArray(data?.data?.data)) {
+      return data.data.data;
+    } else if (Array.isArray(data?.data)) {
+      return data.data;
+    } else if (Array.isArray(data)) {
+      return data;
+    } else {
+      return [];
     }
-    if (!response.ok) {
-      const msg = data?.message || data?.error || 'Error en la petición';
-      console.error('[RoutineService] API error:', msg);
-      throw new Error(msg);
-    }
-    return data;
   }
 
-  // Obtiene todas las rutinas de un niño
+  // Obtiene todas las rutinas de un niño usando axios
   async getAllRoutines(idNino: number): Promise<IRoutine[]> {
     console.log('[RoutineService] getAllRoutines llamada');
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `${this.apiUrl}/${idNino}/rutinas`,
-        {
-          method: 'GET',
-          headers: this.getAuthHeader(),
-        }
+        { headers: this.getAuthHeader() }
       );
-      const data = await this.handleResponse(response);
-      const rutinas = Array.isArray(data.data) ? data.data : [];
+      console.log('AXIOS response.data:', response.data);
+
+      const data: any = response.data;
+      const rutinas = this.extractRoutinesFromResponse(data);
       this.rutinasSubject.next(rutinas);
       return rutinas;
     } catch (error) {
@@ -65,83 +62,88 @@ export class RoutineService {
   async getRoutine(idNino: number, idRutina: number): Promise<IRoutine> {
     console.log('[RoutineService] getRoutine llamada');
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
-        {
-          method: 'GET',
-          headers: this.getAuthHeader(),
-        }
+        { headers: this.getAuthHeader() }
       );
-      const data = await this.handleResponse(response);
-      return data.data !== undefined ? data.data : data;
+      console.log('AXIOS getRoutine response.data:', response.data);
+
+      const data: any = response.data;
+      if (data && data.data !== undefined) {
+        return data.data;
+      }
+      return data;
     } catch (error) {
       console.error('[getRoutine] Error:', error);
       throw error;
     }
   }
 
-  // Crea una nueva rutina
+  // Crea una nueva rutina y recarga la lista
   async crearRutina(idNino: number, data: any): Promise<IRoutine> {
     console.log('[RoutineService] crearRutina llamada', data);
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${this.apiUrl}/${idNino}/rutinas`,
-        {
-          method: 'POST',
-          headers: this.getAuthHeader(),
-          body: JSON.stringify(data),
-        }
+        data,
+        { headers: this.getAuthHeader() }
       );
-      const result = await this.handleResponse(response);
-      const nuevaRutina = result.data !== undefined ? result.data : result;
-      const actuales = this.rutinasSubject.getValue();
-      this.rutinasSubject.next([...actuales, nuevaRutina]);
-      return nuevaRutina;
+      console.log('AXIOS crearRutina response.data:', response.data);
+
+      await this.getAllRoutines(idNino);
+
+      const respData: any = response.data;
+      if (respData && respData.data !== undefined) {
+        return respData.data;
+      }
+      return respData;
     } catch (error) {
       console.error('[crearRutina] Error:', error);
       throw error;
     }
   }
 
-  // Actualiza una rutina existente
+  // Actualiza una rutina existente y recarga la lista
   async updateRoutine(idNino: number, idRutina: number, data: any): Promise<IRoutine> {
     console.log('[RoutineService] updateRoutine llamada', data);
     try {
-      const response = await fetch(
+      const response = await axios.put(
         `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
-        {
-          method: 'PUT',
-          headers: this.getAuthHeader(),
-          body: JSON.stringify(data),
-        }
+        data,
+        { headers: this.getAuthHeader() }
       );
-      const result = await this.handleResponse(response);
-      const rutinaActualizada = result.data !== undefined ? result.data : result;
-      const actuales = this.rutinasSubject.getValue();
-      const nuevas = actuales.map(r => r.id === idRutina ? rutinaActualizada : r);
-      this.rutinasSubject.next(nuevas);
-      return rutinaActualizada;
+      console.log('AXIOS updateRoutine response.data:', response.data);
+
+      await this.getAllRoutines(idNino);
+
+      const respData: any = response.data;
+      if (respData && respData.data !== undefined) {
+        return respData.data;
+      }
+      return respData;
     } catch (error) {
       console.error('[updateRoutine] Error:', error);
       throw error;
     }
   }
 
-  // Elimina una rutina
+  // Elimina una rutina y recarga la lista
   async deleteRoutine(idNino: number, idRutina: number): Promise<any> {
     console.log('[RoutineService] deleteRoutine llamada', idRutina);
     try {
-      const response = await fetch(
+      const response = await axios.delete(
         `${this.apiUrl}/${idNino}/rutinas/${idRutina}`,
-        {
-          method: 'DELETE',
-          headers: this.getAuthHeader(),
-        }
+        { headers: this.getAuthHeader() }
       );
-      const result = await this.handleResponse(response);
-      const actuales = this.rutinasSubject.getValue();
-      this.rutinasSubject.next(actuales.filter(r => r.id !== idRutina));
-      return result.data !== undefined ? result.data : result;
+      console.log('AXIOS deleteRoutine response.data:', response.data);
+
+      await this.getAllRoutines(idNino);
+
+      const respData: any = response.data;
+      if (respData && respData.data !== undefined) {
+        return respData.data;
+      }
+      return respData;
     } catch (error) {
       console.error('[deleteRoutine] Error:', error);
       throw error;

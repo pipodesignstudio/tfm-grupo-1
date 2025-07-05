@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RoutineService } from '../../../../../shared/services/routine.service';
+import { IRoutine, IActivity } from '../../../../../shared/interfaces';
 
 @Component({
   selector: 'app-routine-form-page',
@@ -11,6 +12,7 @@ import { RoutineService } from '../../../../../shared/services/routine.service';
 })
 export class RoutineFormPageComponent implements OnInit {
   private routineService = inject(RoutineService);
+  private cdr = inject(ChangeDetectorRef);
 
   rutina: any = {
     nombre: '',
@@ -34,10 +36,11 @@ export class RoutineFormPageComponent implements OnInit {
   idNino = 0;
   rutinaId: number | null = null;
   editando = false;
+  cargando = false;
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const paramIdNino = this.route.snapshot.queryParamMap.get('id_nino');
     const paramRutinaId = this.route.snapshot.queryParamMap.get('id');
 
@@ -50,6 +53,52 @@ export class RoutineFormPageComponent implements OnInit {
     this.idNino = Number(paramIdNino);
     this.rutinaId = paramRutinaId ? Number(paramRutinaId) : null;
     this.editando = !!this.rutinaId;
+
+    if (this.editando && this.rutinaId) {
+      this.cargando = true;
+      this.cdr.detectChanges(); // <-- fuerza actualización
+      try {
+        const rutinas: IRoutine[] = await this.routineService.getAllRoutines(this.idNino);
+        console.log('Rutinas obtenidas:', rutinas);
+        console.log('Tipo de rutinaId:', typeof this.rutinaId, this.rutinaId);
+        console.log('IDs de rutinas:', rutinas.map(r => r.id));
+        const rutina = rutinas.find(r => Number(r.id) === Number(this.rutinaId));
+        console.log('Rutina encontrada:', rutina);
+
+        if (!rutina) throw new Error('Rutina no encontrada');
+
+        this.rutina.nombre = rutina.nombre;
+        this.rutina.descripcion = rutina.descripcion;
+        this.rutina.frecuencia = {
+          lunes: !!rutina.frecuencia?.lunes,
+          martes: !!rutina.frecuencia?.martes,
+          miercoles: !!rutina.frecuencia?.miercoles,
+          jueves: !!rutina.frecuencia?.jueves,
+          viernes: !!rutina.frecuencia?.viernes,
+          sabado: !!rutina.frecuencia?.sabado,
+          domingo: !!rutina.frecuencia?.domingo,
+        };
+
+        this.actividades = (rutina.actividades || []).map((act: IActivity, idx: number) => ({
+          id: idx + 1,
+          nombre: act.titulo,
+          hora: act.hora_inicio
+            ? new Date(act.hora_inicio).toISOString().slice(11, 16)
+            : '08:00',
+        }));
+        this.actividadIdAuto = this.actividades.length + 1;
+        this.cargando = false;
+        this.cdr.detectChanges(); // <-- fuerza actualización
+      } catch (error) {
+        this.cargando = false;
+        this.cdr.detectChanges(); // <-- fuerza actualización
+        console.error('Error capturado al cargar rutina:', error);
+        alert('No se pudo cargar la rutina para editar');
+        this.router.navigate(['/dashboard/routine-list'], {
+          queryParams: { id_nino: this.idNino },
+        });
+      }
+    }
   }
 
   agregarActividad(): void {
@@ -74,7 +123,11 @@ export class RoutineFormPageComponent implements OnInit {
     };
 
     try {
-      await this.routineService.crearRutina(this.idNino, payload);
+      if (this.editando && this.rutinaId) {
+        await this.routineService.updateRoutine(this.idNino, this.rutinaId, payload);
+      } else {
+        await this.routineService.crearRutina(this.idNino, payload);
+      }
       this.router.navigate(['/dashboard/routine-list'], {
         queryParams: { id_nino: this.idNino },
       });

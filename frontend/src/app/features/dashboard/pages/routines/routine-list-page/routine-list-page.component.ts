@@ -129,6 +129,17 @@ export class RoutineListPageComponent implements OnInit {
   getSelectedChild(): IChild | undefined {
     return this.children.find(c => c.id === this.selectedChildId);
   }
+
+  getHoraInput(hora: string | Date): string {
+    if (!hora) return '';
+    if (typeof hora === 'string') {
+      // Si viene como "08:30:00" o "08:30"
+      return hora.length >= 5 ? hora.slice(0, 5) : hora;
+    }
+    // Si es un objeto Date
+    const d = new Date(hora);
+    return d.toISOString().slice(11, 16);
+  }
 }
 
 interface IRoutineConActividades extends IRoutine {
