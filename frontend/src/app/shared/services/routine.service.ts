@@ -14,7 +14,7 @@ export class RoutineService {
 
   // Obtiene los headers de autorización
   private getAuthHeader() {
-    const token = this.tokenService.getToken();
+    const token = this.tokenService.token();
     if (!token) {
       console.warn('[RoutineService] No se encontró un token de autenticación');
     }
