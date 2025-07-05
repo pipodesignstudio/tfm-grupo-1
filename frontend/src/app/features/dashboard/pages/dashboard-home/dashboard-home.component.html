@@ -18,11 +18,9 @@
       ¡Hola
       <span
         class="relative inline-block text-black dark:text-white underline-animate"
-        [class.underline-in]="underlineIn"
-      >
-        {{ userName }}
-      </span>
-      !
+        [class.underline-in]="underlineIn()"
+        >{{ userName }}</span
+      >!
     </h1>
   </div>
   }

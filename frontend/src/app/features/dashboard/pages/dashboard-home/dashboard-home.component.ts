@@ -31,6 +31,7 @@ export class DashboardHomeComponent implements OnInit {
   activeChild = 0;
   activities: IActivity[] = [];
   loading = signal(true);
+  underlineIn = signal(false);
 
   private activitiesCache: { [childId: string]: IActivity[] } = {};
 
@@ -41,13 +42,15 @@ export class DashboardHomeComponent implements OnInit {
     { url: '/dashboard/notes', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
-  underlineIn = false;
-
   ngOnInit() {
-    setTimeout(() => (this.underlineIn = true), 0);
-    // Carga familias y, cuando termine, inicializa el dashboard
+    this.underlineIn.set(false);
+
     this.familiesStore.loadFamilias().then(() => {
-      this.initDashboard();
+      this.initDashboard().then(() => {
+        setTimeout(() => {
+          this.underlineIn.set(true);
+        }, 100);
+      });
     });
   }
 
@@ -66,7 +69,6 @@ export class DashboardHomeComponent implements OnInit {
       this.children = await this.childService.getChildrenByFamily(
         String(familia.id)
       );
-
       this.activeChild = 0;
       await this.loadActivitiesForActiveChild();
 
@@ -84,6 +86,11 @@ export class DashboardHomeComponent implements OnInit {
       let allActivities = this.activitiesCache[childId];
       if (!allActivities) {
         allActivities = await this.activityService.getActivitiesNino(childId);
+        this.activitiesCache[childId] = allActivities;
+      }
+
+      if (!allActivities) {
+        allActivities = [];
         this.activitiesCache[childId] = allActivities;
       }
 
