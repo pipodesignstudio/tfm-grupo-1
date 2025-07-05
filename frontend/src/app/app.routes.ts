@@ -131,6 +131,7 @@ export const routes: Routes = [
         path: 'child-profile',
         component: ChildProfileComponent,
       },
+      { path: 'child-profile/:id', component: ChildProfileComponent },
       {
         path: 'settings',
         component: SettingsComponent,
@@ -158,6 +159,14 @@ export const routes: Routes = [
       {
         path: 'routine-list',
         component: RoutineListPageComponent,
+      },
+      {
+        path: 'routine-form',
+        component: RoutineFormPageComponent,
+      },
+      {
+        path: 'create-routine',
+        component: CreateRoutineComponent,
       },
       {
         path: 'notes',

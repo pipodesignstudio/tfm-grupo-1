@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IRoutine, IChild } from '../../../../../shared/interfaces';
+import { IRoutine, IActivity, IChild } from '../../../../../shared/interfaces';
 import { RoutineService } from '../../../../../shared/services/routine.service';
 import { ActivityService } from '../../../../../shared/services';
 import { ChildService } from '../../../../../shared/services/child.service';
@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
-import { IActivity } from '../../../../../shared/interfaces';
 
 @Component({
   selector: 'app-routine-list-page',
@@ -36,7 +35,6 @@ export class RoutineListPageComponent implements OnInit {
 
     try {
       this.children = await this.childService.getChildrenByFamily(id_familia);
-      console.log('Niños cargados:', this.children);
 
       this.route.queryParams.subscribe(async params => {
         const id_nino = Number(params['id_nino']);
@@ -64,29 +62,27 @@ export class RoutineListPageComponent implements OnInit {
 
   async cargarRutinas(): Promise<void> {
     if (!this.selectedChildId) return;
-    console.log('Cargando rutinas para id_nino:', this.selectedChildId);
 
     try {
       const data: IRoutine[] = await this.routineService.getAllRoutines(this.selectedChildId);
-
       this.rutinas = data.map((rutina) => ({
         ...rutina,
-        actividades: (rutina.actividades || []).map((act) => ({
-          id: act.id,
-          titulo: act.titulo || 'Sin título',
+        actividades: (rutina.actividades || []).map((act: IActivity) => ({
+          titulo: act.titulo || act.descripcion || 'Actividad sin título',
           hora_inicio: act.hora_inicio
+            ? new Date(act.hora_inicio).toISOString().slice(11, 16)
+            : '08:00',
         })),
-        fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
+        fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString(),
       }));
 
-      console.log('Rutinas recibidas:', this.rutinas);
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error cargando rutinas', error);
     }
   }
 
-  onChildChange(event: any): void {
+  async onChildChange(event: any): Promise<void> {
     this.selectedChildId = event.value;
     this.router.navigate([], {
       queryParams: { id_nino: this.selectedChildId },
@@ -95,6 +91,7 @@ export class RoutineListPageComponent implements OnInit {
   }
 
   nuevaRutina(): void {
+    if (!this.selectedChildId) return;
     this.router.navigate(['/dashboard/routine-form'], {
       queryParams: { id_nino: this.selectedChildId }
     });
@@ -118,13 +115,6 @@ export class RoutineListPageComponent implements OnInit {
     }
   }
 
-  getHora(fecha: Date | string): string {
-    if (!fecha) return '';
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return '';
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
   formatearFrecuencia(frec: any): string {
     if (!frec || typeof frec !== 'object') return '';
     return Object.entries(frec)
@@ -137,27 +127,18 @@ export class RoutineListPageComponent implements OnInit {
     return this.children.find(c => c.id === this.selectedChildId);
   }
 
-  getHoraInput(hora: string | Date): string {
-    if (!hora) return '';
-    if (typeof hora === 'string') {
-      return hora.length >= 5 ? hora.slice(0, 5) : hora;
-    }
-    const d = new Date(hora);
-    return d.toISOString().slice(11, 16);
-  }
+  // ⛔ Este método ya no se usa si usamos el string directo
+  // getHora(hora: string): string {
+  //   return hora?.length >= 5 ? hora.slice(0, 5) : '00:00';
+  // }
 }
 
-interface IRoutineConActividades {
-  id: number;
-  nombre: string;
-  descripcion?: string;
-  frecuencia?: any;
-  fecha_creacion?: string;
-  fecha_fin?: string;
-  ninos_id: number;
-  actividades: {
-    id: number;
-    titulo: string;
-    hora_inicio: string | Date;
-  }[];
+// ✅ Interfaces auxiliares
+interface IActividadVista {
+  titulo: string;
+  hora_inicio: string;
+}
+
+interface IRoutineConActividades extends Omit<IRoutine, 'actividades'> {
+  actividades: IActividadVista[];
 }

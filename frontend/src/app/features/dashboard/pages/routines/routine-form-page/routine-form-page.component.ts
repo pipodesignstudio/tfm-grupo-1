@@ -77,11 +77,10 @@ export class RoutineFormPageComponent implements OnInit {
         this.actividades = (rutina.actividades || []).map((act: IActivity, idx: number) => ({
           id: idx + 1,
           nombre: act.titulo,
-          hora: act.hora_inicio
-            ? new Date(act.hora_inicio).toISOString().slice(11, 16)
-            : '08:00',
+          hora: act.hora_inicio ? new Date(act.hora_inicio).toISOString().slice(11, 16) : '08:00',
         }));
         this.actividadIdAuto = this.actividades.length + 1;
+
         this.cargando = false;
         this.cdr.detectChanges();
       } catch (error) {
@@ -123,8 +122,12 @@ export class RoutineFormPageComponent implements OnInit {
       } else {
         await this.routineService.crearRutina(this.idNino, payload);
       }
-      this.router.navigate(['/dashboard/routine-list'], {
-        queryParams: { id_nino: this.idNino },
+
+      // 🔁 Forzar recarga del componente
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/dashboard/routine-list'], {
+          queryParams: { id_nino: this.idNino },
+        });
       });
     } catch (error) {
       console.error('Error al guardar la rutina:', error);
@@ -133,8 +136,11 @@ export class RoutineFormPageComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/dashboard/routine-list'], {
-      queryParams: { id_nino: this.idNino },
+    // 🔁 Forzar recarga del componente
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/routine-list'], {
+        queryParams: { id_nino: this.idNino },
+      });
     });
   }
 }

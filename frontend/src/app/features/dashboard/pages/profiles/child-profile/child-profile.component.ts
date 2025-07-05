@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -6,12 +6,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
-
-interface Vacuna {
-  id: number;
-  nombre: string;
-  fecha: string;
-}
+import { ActivatedRoute } from '@angular/router';
+import { ChildService } from '../../../../../shared/services/child.service';
+import { IChild } from '../../../../../shared/interfaces';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-child-profile',
@@ -24,6 +24,8 @@ interface Vacuna {
     InputNumberModule,
     CalendarModule,
     DropdownModule,
+    DatePickerModule,
+    SelectModule,
   ],
   templateUrl: './child-profile.component.html',
   styleUrls: ['./child-profile.component.css'],
@@ -31,7 +33,6 @@ interface Vacuna {
 export class ChildProfileComponent implements OnInit {
   today: Date = new Date();
 
-  // Estados de edición por card
   editProfile = false;
   editDescription = false;
   editHealth = false;
@@ -40,40 +41,40 @@ export class ChildProfileComponent implements OnInit {
     { label: 'Femenino', value: 'Femenino' },
   ];
 
-  // 🔍 Referencia a todos los calendarios (usado para toggle desde icono)
-  @ViewChildren('calendarRefs') calendarRefs!: QueryList<any>;
-
-  // Datos del niño
-  child = {
-    id: 1,
-    perfilesAprendizajeId: 100,
-    nombre: 'Max',
-    apellido: 'Gómez',
-    fechaNacimiento: '2022-10-17',
-    descripcion: 'Le encanta jugar al aire libre y explorar cosas nuevas.',
-    genero: 'Masculino',
-    peso: 12.5,
-    altura: 90,
-    imgPerfil: 'https://picsum.photos/150',
-  };
-
-  // Datos de salud
-  salud = {
-    alergias: 'Ninguna',
-    enfermedades: 'Asma',
-    pediatra: 'Dra. López',
-  };
-
-  // Vacunas
-  vacunas: Vacuna[] = [
-    { id: 1, nombre: 'Triple Viral', fecha: '2023-01-15' },
-    { id: 2, nombre: 'Polio', fecha: '2023-06-10' },
-  ];
-
+  child: IChild | null = null;
   edadCalculada = '';
+  loading = true;
+  error = '';
+  saving = false;
 
-  ngOnInit(): void {
-    this.edadCalculada = this.calcularEdad(this.child.fechaNacimiento);
+  constructor(
+    private childService: ChildService,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  async ngOnInit() {
+    try {
+      const idParam = this.route.snapshot.paramMap.get('id');
+      const id = Number(idParam);
+
+      if (!idParam || isNaN(id) || id <= 0) {
+        this.error = 'ID de niño inválido.';
+        this.loading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      this.child = await this.childService.getChildById(id);
+      this.edadCalculada = this.calcularEdad(this.child.fecha_nacimiento);
+
+      this.loading = false;
+      this.cdr.detectChanges();
+    } catch (e) {
+      this.error = 'No se pudo cargar el perfil del niño.';
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   calcularEdad(fecha: string): string {
@@ -88,17 +89,53 @@ export class ChildProfileComponent implements OnInit {
     return `${edad} años`;
   }
 
-  saveProfile(): void {
-    this.edadCalculada = this.calcularEdad(this.child.fechaNacimiento);
-    this.editProfile = false;
+  async saveProfile(): Promise<void> {
+    if (!this.child) return;
+    this.saving = true;
+    try {
+      const updated = await this.childService.updateChild(this.child.id, {
+        ...this.child,
+        fecha_nacimiento: this.child.fecha_nacimiento,
+        peso: this.child.peso,
+        altura: this.child.altura,
+        genero: this.child.genero,
+        img_perfil: this.child.img_perfil,
+      });
+
+      if (updated && updated.fecha_nacimiento) {
+        this.child = updated;
+        this.edadCalculada = this.calcularEdad(this.child.fecha_nacimiento);
+        this.editProfile = false;
+        this.error = '';
+      } else {
+        // Recarga el niño desde la API si la respuesta no es válida. Solucionar en el backend.
+        this.child = await this.childService.getChildById(this.child.id);
+        if (this.child && this.child.fecha_nacimiento) {
+          this.edadCalculada = this.calcularEdad(this.child.fecha_nacimiento);
+          this.editProfile = false;
+          this.error = '';
+        } else {
+          this.error = 'No se pudo obtener el perfil actualizado.';
+        }
+      }
+    } catch (e) {
+      this.error = 'No se pudo guardar el perfil.';
+    } finally {
+      this.saving = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  saveDescription(): void {
-    this.editDescription = false;
-  }
-
-  saveHealth(): void {
-    this.editHealth = false;
+  async saveDescription(): Promise<void> {
+    if (!this.child) return;
+    try {
+      this.child = await this.childService.updateChild(this.child.id, {
+        descripcion: this.child.descripcion,
+      });
+      this.editDescription = false;
+    } catch (e) {
+      this.error = 'No se pudo guardar la descripción.';
+    }
   }
 
   onFileSelected(event: any): void {
@@ -106,21 +143,11 @@ export class ChildProfileComponent implements OnInit {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.child.imgPerfil = reader.result as string;
+        if (this.child) {
+          this.child.img_perfil = reader.result as string;
+        }
       };
       reader.readAsDataURL(file);
     }
-  }
-
-  agregarVacuna(): void {
-    const newId =
-      this.vacunas.length > 0
-        ? Math.max(...this.vacunas.map((v) => v.id)) + 1
-        : 1;
-    this.vacunas.push({ id: newId, nombre: '', fecha: '' });
-  }
-
-  eliminarVacuna(index: number): void {
-    this.vacunas.splice(index, 1);
   }
 }
