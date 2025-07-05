@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -57,14 +56,10 @@ export class RoutineFormPageComponent implements OnInit {
 
     if (this.editando && this.rutinaId) {
       this.cargando = true;
-
       this.cdr.detectChanges();
       try {
         const rutinas: IRoutine[] = await this.routineService.getAllRoutines(this.idNino);
-       
         const rutina = rutinas.find(r => Number(r.id) === Number(this.rutinaId));
-     
-
         if (!rutina) throw new Error('Rutina no encontrada');
 
         this.rutina.nombre = rutina.nombre;
@@ -82,17 +77,14 @@ export class RoutineFormPageComponent implements OnInit {
         this.actividades = (rutina.actividades || []).map((act: IActivity, idx: number) => ({
           id: idx + 1,
           nombre: act.titulo,
-          hora: act.hora_inicio
-            ? new Date(act.hora_inicio).toISOString().slice(11, 16)
-            : '08:00',
+          hora: act.hora_inicio ? new Date(act.hora_inicio).toISOString().slice(11, 16) : '08:00',
         }));
         this.actividadIdAuto = this.actividades.length + 1;
+
         this.cargando = false;
-      
         this.cdr.detectChanges();
       } catch (error) {
         this.cargando = false;
-      
         this.cdr.detectChanges();
         console.error('Error capturado al cargar rutina:', error);
         alert('No se pudo cargar la rutina para editar');
@@ -130,8 +122,12 @@ export class RoutineFormPageComponent implements OnInit {
       } else {
         await this.routineService.crearRutina(this.idNino, payload);
       }
-      this.router.navigate(['/dashboard/routine-list'], {
-        queryParams: { id_nino: this.idNino },
+
+      // 🔁 Forzar recarga del componente
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/dashboard/routine-list'], {
+          queryParams: { id_nino: this.idNino },
+        });
       });
     } catch (error) {
       console.error('Error al guardar la rutina:', error);
@@ -140,8 +136,11 @@ export class RoutineFormPageComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/dashboard/routine-list'], {
-      queryParams: { id_nino: this.idNino },
+    // 🔁 Forzar recarga del componente
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/routine-list'], {
+        queryParams: { id_nino: this.idNino },
+      });
     });
   }
 }

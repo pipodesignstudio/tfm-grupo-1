@@ -1,5 +1,3 @@
-
-
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IRoutine, IActivity, IChild } from '../../../../../shared/interfaces';
@@ -36,11 +34,8 @@ export class RoutineListPageComponent implements OnInit {
     const id_familia = localStorage.getItem('familia_id') || '1';
 
     try {
-      // 1. Cargar niños
       this.children = await this.childService.getChildrenByFamily(id_familia);
-      console.log('Niños cargados:', this.children);
 
-      // 2. Suscribirse a los cambios en la URL
       this.route.queryParams.subscribe(async params => {
         const id_nino = Number(params['id_nino']);
 
@@ -54,15 +49,12 @@ export class RoutineListPageComponent implements OnInit {
           });
         }
 
-        // 3. Cargar rutinas del niño seleccionado
         if (this.selectedChildId) {
           await this.cargarRutinas();
         }
       });
 
       this.cdr.detectChanges();
-
-     
     } catch (error) {
       console.error('Error al cargar niños o rutinas:', error);
     }
@@ -71,27 +63,24 @@ export class RoutineListPageComponent implements OnInit {
   async cargarRutinas(): Promise<void> {
     if (!this.selectedChildId) return;
 
-    console.log('Cargando rutinas para id_nino:', this.selectedChildId);
     try {
       const data: IRoutine[] = await this.routineService.getAllRoutines(this.selectedChildId);
       this.rutinas = data.map((rutina) => ({
         ...rutina,
-        actividades: (rutina.actividades || []).map((act: any) => ({
-          ...act,
-          titulo: act.titulo || act.nombre || 'Actividad sin título',
-          hora_inicio: act.hora_inicio || act.hora || null
+        actividades: (rutina.actividades || []).map((act: IActivity) => ({
+          titulo: act.titulo || act.descripcion || 'Actividad sin título',
+          hora_inicio: act.hora_inicio
+            ? new Date(act.hora_inicio).toISOString().slice(11, 16)
+            : '08:00',
         })),
-        fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
+        fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString(),
       }));
 
-      console.log('Rutinas recibidas:', this.rutinas);
-      this.cdr.detectChanges(); // 👈 Forzar renderizado
-
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error cargando rutinas', error);
     }
   }
-  
 
   async onChildChange(event: any): Promise<void> {
     this.selectedChildId = event.value;
@@ -99,8 +88,6 @@ export class RoutineListPageComponent implements OnInit {
       queryParams: { id_nino: this.selectedChildId },
       queryParamsHandling: 'merge'
     });
-  
-    // Rutinas se cargarán desde el subscribe
   }
 
   nuevaRutina(): void {
@@ -128,13 +115,6 @@ export class RoutineListPageComponent implements OnInit {
     }
   }
 
-  getHora(fecha: Date | string): string {
-    if (!fecha) return '';
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return '';
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
   formatearFrecuencia(frec: any): string {
     if (!frec || typeof frec !== 'object') return '';
     return Object.entries(frec)
@@ -147,16 +127,18 @@ export class RoutineListPageComponent implements OnInit {
     return this.children.find(c => c.id === this.selectedChildId);
   }
 
-  getHoraInput(hora: string | Date): string {
-    if (!hora) return '';
-    if (typeof hora === 'string') {
-      return hora.length >= 5 ? hora.slice(0, 5) : hora;
-    }
-    const d = new Date(hora);
-    return d.toISOString().slice(11, 16);
-  }
+  // ⛔ Este método ya no se usa si usamos el string directo
+  // getHora(hora: string): string {
+  //   return hora?.length >= 5 ? hora.slice(0, 5) : '00:00';
+  // }
 }
 
-interface IRoutineConActividades extends IRoutine {
-  actividades: IActivity[];
+// ✅ Interfaces auxiliares
+interface IActividadVista {
+  titulo: string;
+  hora_inicio: string;
+}
+
+interface IRoutineConActividades extends Omit<IRoutine, 'actividades'> {
+  actividades: IActividadVista[];
 }

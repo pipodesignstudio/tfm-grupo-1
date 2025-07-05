@@ -47,12 +47,12 @@
 
       <!-- Lista de actividades -->
       <ul class="space-y-3 mt-3">
-        @if (rutina.actividades.length > 0) {
+        @if (rutina.actividades && rutina.actividades.length > 0) {
           @for (actividad of rutina.actividades; track $index) {
             <li class="flex justify-between items-center bg-[#E6F7F9] p-3 rounded-xl">
               <span class="text-[#3A3A3A]">{{ actividad.titulo }}</span>
               <span class="text-[#9ED2C5] font-semibold text-sm">
-                {{ getHora(actividad.hora_inicio) }}
+                {{ actividad.hora_inicio }}
               </span>
             </li>
           }
@@ -62,5 +62,7 @@
       </ul>
     </div>
   }
+ <!-- DEBUG -->
+<pre class="text-xs text-red-500">{{ rutinas | json }}</pre>
 
 </div>
