@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IRoutine, IActivity, IChild } from '../../../../../shared/interfaces';
+import { IRoutine, IChild } from '../../../../../shared/interfaces';
 import { RoutineService } from '../../../../../shared/services/routine.service';
 import { ActivityService } from '../../../../../shared/services';
 import { ChildService } from '../../../../../shared/services/child.service';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import { IActivity } from '../../../../../shared/interfaces';
 
 @Component({
   selector: 'app-routine-list-page',
@@ -34,11 +35,9 @@ export class RoutineListPageComponent implements OnInit {
     const id_familia = localStorage.getItem('familia_id') || '1';
 
     try {
-      // 1. Cargar niños
       this.children = await this.childService.getChildrenByFamily(id_familia);
       console.log('Niños cargados:', this.children);
 
-      // 2. Suscribirse a los cambios en la URL
       this.route.queryParams.subscribe(async params => {
         const id_nino = Number(params['id_nino']);
 
@@ -52,14 +51,12 @@ export class RoutineListPageComponent implements OnInit {
           });
         }
 
-        // 3. Cargar rutinas del niño seleccionado
         if (this.selectedChildId) {
           await this.cargarRutinas();
         }
       });
 
       this.cdr.detectChanges();
-
     } catch (error) {
       console.error('Error al cargar niños o rutinas:', error);
     }
@@ -68,37 +65,36 @@ export class RoutineListPageComponent implements OnInit {
   async cargarRutinas(): Promise<void> {
     if (!this.selectedChildId) return;
     console.log('Cargando rutinas para id_nino:', this.selectedChildId);
+
     try {
       const data: IRoutine[] = await this.routineService.getAllRoutines(this.selectedChildId);
+
       this.rutinas = data.map((rutina) => ({
         ...rutina,
-        actividades: (rutina.actividades || []).map((act: any) => ({
-          ...act,
-          titulo: act.titulo || act.nombre || 'Actividad sin título',
-          hora_inicio: act.hora_inicio || act.hora || null
+        actividades: (rutina.actividades || []).map((act) => ({
+          id: act.id,
+          titulo: act.titulo || 'Sin título',
+          hora_inicio: act.hora_inicio
         })),
         fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
       }));
 
       console.log('Rutinas recibidas:', this.rutinas);
-      this.cdr.detectChanges(); // 👈 Forzar renderizado
-
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error cargando rutinas', error);
     }
   }
 
-  async onChildChange(event: any): Promise<void> {
+  onChildChange(event: any): void {
     this.selectedChildId = event.value;
     this.router.navigate([], {
       queryParams: { id_nino: this.selectedChildId },
       queryParamsHandling: 'merge'
     });
-    // Rutinas se cargarán desde el subscribe
   }
 
   nuevaRutina(): void {
-    if (!this.selectedChildId) return;
     this.router.navigate(['/dashboard/routine-form'], {
       queryParams: { id_nino: this.selectedChildId }
     });
@@ -151,6 +147,17 @@ export class RoutineListPageComponent implements OnInit {
   }
 }
 
-interface IRoutineConActividades extends IRoutine {
-  actividades: IActivity[];
+interface IRoutineConActividades {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+  frecuencia?: any;
+  fecha_creacion?: string;
+  fecha_fin?: string;
+  ninos_id: number;
+  actividades: {
+    id: number;
+    titulo: string;
+    hora_inicio: string | Date;
+  }[];
 }
