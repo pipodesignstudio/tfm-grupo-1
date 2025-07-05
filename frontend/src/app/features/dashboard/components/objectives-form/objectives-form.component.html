@@ -14,6 +14,17 @@
       (ngSubmit)="onSubmit()"
       class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible dark:text-white"
     >
+      <!-- Niño -->
+      <p-select
+        [options]="children"
+        formControlName="ninos_id"
+        optionLabel="label"
+        [optionValue]="'value'"
+        placeholder="Selecciona Niño"
+        [appendTo]="'body'"
+        class="w-full"
+      ></p-select>
+      
       <!-- Título -->
       <input
         type="text"
@@ -24,13 +35,18 @@
       />
 
       <!-- Tipo -->
-      <input
-        type="text"
-        pInputText
-        placeholder="Tipo"
-        formControlName="tipo"
-        class="p-3 rounded-md"
-      />
+      <div class="flex flex-col gap-2">
+        <label>Tipo</label>
+        <p-select
+          [options]="tipos"
+          formControlName="tipo"
+          optionLabel="label"
+          [optionValue]="'value'"
+          placeholder="Selecciona"
+          [appendTo]="'body'"
+          class="w-full"
+        ></p-select>
+      </div>
 
       <!-- Fecha de fin -->
       <div class="flex items-center gap-4">
@@ -42,6 +58,7 @@
             [iconDisplay]="'input'"
             [appendTo]="'body'"
             [showIcon]="true"
+            [minDate]="minDate"
           ></p-datepicker>
         </div>
       </div>
@@ -57,17 +74,6 @@
           class="w-full h-12 border-0 rounded-md p-1"
         ></p-colorPicker>
       </div>
-
-      <!-- Niño -->
-      <p-select
-        [options]="children"
-        formControlName="ninos_id"
-        optionLabel="label"
-        [optionValue]="'value'"
-        placeholder="Selecciona Niño"
-        [appendTo]="'body'"
-        class="w-full"
-      ></p-select>
 
       <!-- Acciones -->
       <div class="flex justify-end gap-2 mt-4 shrink-0">

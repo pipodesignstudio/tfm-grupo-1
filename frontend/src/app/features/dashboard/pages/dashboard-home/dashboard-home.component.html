@@ -5,6 +5,10 @@
     <i class="pi pi-spin pi-spinner text-3xl"></i>
     <p>Cargando datos...</p>
   </div>
+  } @if (!loading() && children.length === 0) {
+  <div class="text-center text-gray-500 mt-4">
+    No hay datos para mostrar. Selecciona una familia o añade niños.
+  </div>
   }
 
   <!-- Saludo -->
@@ -66,7 +70,9 @@
               {{ activity.titulo }}
             </span>
 
-            <span class="font-mono text-sm text-gray-700 w-24 text-right ml-3">
+            <span
+              class="font-mono text-sm text-gray-700 w-24 text-right ml-3 dark:text-white"
+            >
               {{ activity.hora_inicio | date : "HH:mm" : "UTC" }}
             </span>
           </li>

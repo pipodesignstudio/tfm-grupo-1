@@ -4,7 +4,7 @@ export interface IObjetivo {
   ninos_id: number;
   color?: string | null;
   tipo?: string | null;
-  fecha_fin?: string | null; // puede venir como string de la API
+  fecha_fin?: string | null; 
   objetivos_has_actividades?: {
     actividad_id: number;
   }[];
