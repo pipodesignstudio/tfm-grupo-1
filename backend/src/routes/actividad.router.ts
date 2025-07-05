@@ -11,7 +11,7 @@ const router = Router({ mergeParams: true });
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/actividades:
+ * /api/actividades/ninos/{id_nino}:
  *   post:
  *     summary: Crea una actividad
  *     tags:
@@ -44,7 +44,7 @@ router.post(
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/actividades:
+ * /api/actividades/ninos/{id_nino}:
  *   get:
  *     summary: Lista todas las actividades del niño
  *     tags:
@@ -69,7 +69,7 @@ router.get(
 
 /**
  * @openapi
- * /api/familias/{id_familia}/actividades:
+ * /api/actividades/familias/{id_familia}:
  *   get:
  *     summary: Lista todas las actividades de la familia
  *     tags:
@@ -96,7 +96,7 @@ router.get(
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/actividades/{id}:
+ * /api/actividades/ninos/{id_nino}/{id}:
  *   put:
  *     summary: Actualiza una actividad
  *     tags:
@@ -133,7 +133,7 @@ router.put(
 
 /**
  * @openapi
- * /api/ninos/{id_nino}/actividades/{id}:
+ * /api/actividades/ninos/{id_nino}/{id}:
  *   delete:
  *     summary: Elimina una actividad
  *     tags:
