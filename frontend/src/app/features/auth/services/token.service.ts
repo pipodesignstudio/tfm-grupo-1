@@ -42,6 +42,7 @@ export class TokenService {
     localStorage.removeItem(TokenService.TOKEN_KEY);
     localStorage.removeItem(TokenService.EXP_KEY);
     this._token.set(null);
+
     this._expMs.set(null);
   }
 }
