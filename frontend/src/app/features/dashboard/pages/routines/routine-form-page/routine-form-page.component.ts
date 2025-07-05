@@ -1,19 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RoutineService } from '../../../../../shared/services/routine.service';
-import { ActivityService } from '../../../../../shared/services/activity.service';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { IActivity, IRoutine } from '../../../../../shared/interfaces';
+import { RoutineService } from '../../../../../shared/services/routine.service';
+import { IRoutine, IActivity } from '../../../../../shared/interfaces';
 
 @Component({
   selector: 'app-routine-form-page',
   standalone: true,
   templateUrl: './routine-form-page.component.html',
-  imports: [FormsModule, HttpClientModule],
+  imports: [FormsModule],
 })
 export class RoutineFormPageComponent implements OnInit {
-  rutina: Partial<IRoutine> = {
+  private routineService = inject(RoutineService);
+  private cdr = inject(ChangeDetectorRef);
+
+  rutina: any = {
     nombre: '',
     descripcion: '',
     frecuencia: {
@@ -25,123 +26,109 @@ export class RoutineFormPageComponent implements OnInit {
       sabado: false,
       domingo: false,
     },
-    actividades: [],
   };
 
   diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
 
-  actividadesDisponibles: IActivity[] = [];
-  actividadesSeleccionadas: number[] = [];
-  horasActividades: { [id: number]: string } = {};
+  actividades: { id: number; nombre: string; hora: string }[] = [];
+  actividadIdAuto = 1;
 
   idNino = 0;
   rutinaId: number | null = null;
   editando = false;
+  cargando = false;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private routineService: RoutineService,
-    private activityService: ActivityService
-  ) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const paramIdNino = this.route.snapshot.queryParamMap.get('id_nino');
     const paramRutinaId = this.route.snapshot.queryParamMap.get('id');
 
     if (!paramIdNino) {
-      console.error('ID del niño faltante');
+      alert('Falta el parámetro id_nino en la URL. Ejemplo: ?id_nino=123');
+      this.router.navigate(['/dashboard/routine-list']);
       return;
     }
+
     this.idNino = Number(paramIdNino);
-    ;
     this.rutinaId = paramRutinaId ? Number(paramRutinaId) : null;
     this.editando = !!this.rutinaId;
 
-    this.cargarActividades().then(() => {
-      if (this.editando) {
-        this.routineService.getRoutine(this.idNino, this.rutinaId!).subscribe({
-          next: (res) => {
-            const rutinaData = res.data as IRoutine;
-            this.rutina = {
-              ...rutinaData,
-              frecuencia: rutinaData.frecuencia ?? {},
-              actividades: rutinaData.actividades ?? [],
-            };
+    if (this.editando && this.rutinaId) {
+      this.cargando = true;
+      this.cdr.detectChanges();
+      try {
+        const rutinas: IRoutine[] = await this.routineService.getAllRoutines(this.idNino);
+        const rutina = rutinas.find(r => Number(r.id) === Number(this.rutinaId));
+        if (!rutina) throw new Error('Rutina no encontrada');
 
-            this.actividadesSeleccionadas = [];
-            this.horasActividades = {};
+        this.rutina.nombre = rutina.nombre;
+        this.rutina.descripcion = rutina.descripcion;
+        this.rutina.frecuencia = {
+          lunes: !!rutina.frecuencia?.lunes,
+          martes: !!rutina.frecuencia?.martes,
+          miercoles: !!rutina.frecuencia?.miercoles,
+          jueves: !!rutina.frecuencia?.jueves,
+          viernes: !!rutina.frecuencia?.viernes,
+          sabado: !!rutina.frecuencia?.sabado,
+          domingo: !!rutina.frecuencia?.domingo,
+        };
 
-            rutinaData.actividades?.forEach((act) => {
-              this.actividadesSeleccionadas.push(act.id);
-
-              let hora = '08:00';
-              try {
-                const fecha = new Date(act.hora_inicio);
-                if (!isNaN(fecha.getTime())) {
-                  hora = fecha.toISOString().slice(11, 16);
-                }
-              } catch {
-                console.warn(`Hora inválida para actividad ID ${act.id}`);
-              }
-
-              this.horasActividades[act.id] = hora;
-            });
-          },
-          error: (err) => console.error('Error cargando rutina', err),
+        this.actividades = (rutina.actividades || []).map((act: IActivity, idx: number) => ({
+          id: idx + 1,
+          nombre: act.titulo,
+          hora: act.hora_inicio
+            ? new Date(act.hora_inicio).toISOString().slice(11, 16)
+            : '08:00',
+        }));
+        this.actividadIdAuto = this.actividades.length + 1;
+        this.cargando = false;
+        this.cdr.detectChanges();
+      } catch (error) {
+        this.cargando = false;
+        this.cdr.detectChanges();
+        console.error('Error capturado al cargar rutina:', error);
+        alert('No se pudo cargar la rutina para editar');
+        this.router.navigate(['/dashboard/routine-list'], {
+          queryParams: { id_nino: this.idNino },
         });
       }
-    });
-  }
-
-  async cargarActividades(): Promise<void> {
-    try {
-      this.actividadesDisponibles = await this.activityService.getActivitiesNino(String(this.idNino));
-    } catch (error) {
-      console.error('Error cargando actividades', error);
     }
   }
 
   agregarActividad(): void {
-    const nueva = this.actividadesDisponibles.find(
-      act => !this.actividadesSeleccionadas.includes(act.id)
-    );
-    if (nueva) {
-      this.actividadesSeleccionadas.push(nueva.id);
-      this.horasActividades[nueva.id] = '08:00';
-    }
+    this.actividades.push({
+      id: this.actividadIdAuto++,
+      nombre: '',
+      hora: '08:00',
+    });
   }
 
   eliminarActividad(id: number): void {
-    this.actividadesSeleccionadas = this.actividadesSeleccionadas.filter(actId => actId !== id);
-    delete this.horasActividades[id];
+    this.actividades = this.actividades.filter((act) => act.id !== id);
   }
 
-  guardarRutina(): void {
+  async guardarRutina(): Promise<void> {
     const payload = {
-      nombre: this.rutina.nombre,
-      descripcion: this.rutina.descripcion,
-      frecuencia: this.rutina.frecuencia,
-      fecha_fin: this.rutina.fecha_fin,
-      actividades_ids: this.actividadesSeleccionadas, // Solo IDs, como espera el backend
+      ...this.rutina,
+      actividades: this.actividades.map((a) => ({
+        titulo: a.nombre,
+        hora_inicio: a.hora,
+      })),
     };
 
-    const callback = () => {
+    try {
+      if (this.editando && this.rutinaId) {
+        await this.routineService.updateRoutine(this.idNino, this.rutinaId, payload);
+      } else {
+        await this.routineService.crearRutina(this.idNino, payload);
+      }
       this.router.navigate(['/dashboard/routine-list'], {
         queryParams: { id_nino: this.idNino },
       });
-    };
-
-    if (this.editando) {
-      this.routineService.updateRoutine(this.idNino, this.rutinaId!, payload).subscribe({
-        next: callback,
-        error: (err) => console.error('Error al actualizar rutina', err),
-      });
-    } else {
-      this.routineService.crearRutina(this.idNino, payload).subscribe({
-        next: callback,
-        error: (err) => console.error('Error al crear rutina', err),
-      });
+    } catch (error) {
+      console.error('Error al guardar la rutina:', error);
+      alert('Hubo un error al guardar la rutina');
     }
   }
 
@@ -149,16 +136,5 @@ export class RoutineFormPageComponent implements OnInit {
     this.router.navigate(['/dashboard/routine-list'], {
       queryParams: { id_nino: this.idNino },
     });
-  }
-
-  getActividadById(id: number): IActivity | undefined {
-    return this.actividadesDisponibles.find(a => a.id === id);
-  }
-
-  // Propiedad computada para evitar errores en el template
-  get actividadesSeleccionadasConDatos(): IActivity[] {
-    return this.actividadesSeleccionadas
-      .map(id => this.getActividadById(id))
-      .filter((act): act is IActivity => !!act);
   }
 }

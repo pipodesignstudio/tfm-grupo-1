@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IRoutine, IActivity } from '../../../../../shared/interfaces';
-import { RoutineService } from '../../../../../shared/services/routine.service'; 
+import { IRoutine, IChild } from '../../../../../shared/interfaces';
+import { RoutineService } from '../../../../../shared/services/routine.service';
 import { ActivityService } from '../../../../../shared/services';
+import { ChildService } from '../../../../../shared/services/child.service';
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import { IActivity } from '../../../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-routine-list-page',
@@ -16,131 +19,112 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, DropdownModule, ButtonModule, FormsModule]
 })
 export class RoutineListPageComponent implements OnInit {
-  rutinas: IRoutineConActividades[] = [
-    {
-      id: 1,
-      nombre: '',
-      descripcion: '',
-      frecuencia: {},
-      fecha_creacion: new Date().toISOString(),
-      fecha_fin: '',
-      ninosId: 1,
-      actividades: [
-        { id: 1, id_rutina: null, ninos_id: 1, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 2, id_rutina: null, ninos_id: 1, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 3, id_rutina: null, ninos_id: 1, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false }
-      ]
-    },
-    {
-      id: 2,
-      nombre: '',
-      descripcion: '',
-      frecuencia: {},
-      fecha_creacion: new Date().toISOString(),
-      fecha_fin: '',
-      ninosId: 2,
-      actividades: [
-        { id: 4, id_rutina: null, ninos_id: 2, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 5, id_rutina: null, ninos_id: 2, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-        { id: 6, id_rutina: null, ninos_id: 2, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false }
-      ]
-    }
-  ];
-
-  allRutinas: IRoutineConActividades[] = [];
-  selectedChild: { id: number; nombre: string } = { id: 1, nombre: 'Max' };
-
-  children = [
-    { id: 1, nombre: 'Max' },
-    { id: 2, nombre: 'Luna' }
-  ];
+  children: IChild[] = [];
+  selectedChildId: number | null = null;
+  rutinas: IRoutineConActividades[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private routineService: RoutineService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private childService: ChildService,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
-    const id_nino = Number(this.route.snapshot.queryParamMap.get('id_nino'));
-    if (id_nino) {
-      const found = this.children.find(c => c.id === id_nino);
-      if (found) this.selectedChild = found;
+  async ngOnInit(): Promise<void> {
+    const id_familia = localStorage.getItem('familia_id') || '1';
+
+    try {
+      this.children = await this.childService.getChildrenByFamily(id_familia);
+      console.log('Niños cargados:', this.children);
+
+      this.route.queryParams.subscribe(async params => {
+        const id_nino = Number(params['id_nino']);
+
+        if (id_nino && this.children.some(c => c.id === id_nino)) {
+          this.selectedChildId = id_nino;
+        } else if (this.children.length > 0) {
+          this.selectedChildId = this.children[0].id;
+          this.router.navigate([], {
+            queryParams: { id_nino: this.selectedChildId },
+            queryParamsHandling: 'merge'
+          });
+        }
+
+        if (this.selectedChildId) {
+          await this.cargarRutinas();
+        }
+      });
+
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error al cargar niños o rutinas:', error);
     }
-    this.cargarRutinas();
   }
 
-  cargarRutinas() {
-    if (!this.selectedChild) return;
+  async cargarRutinas(): Promise<void> {
+    if (!this.selectedChildId) return;
+    console.log('Cargando rutinas para id_nino:', this.selectedChildId);
 
-    this.routineService.getAllRoutines(this.selectedChild.id).subscribe({
-      next: (data: IRoutine[]) => {
-        this.allRutinas = data.map((rutina: IRoutine) => ({
-          ...rutina,
-          actividades: rutina.actividades || [],
-          fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
-        }));
+    try {
+      const data: IRoutine[] = await this.routineService.getAllRoutines(this.selectedChildId);
 
-        this.filtrarRutinasPorNino();
-      },
-      error: (error) => {
-        console.error('Error cargando rutinas', error);
-      }
+      this.rutinas = data.map((rutina) => ({
+        ...rutina,
+        actividades: (rutina.actividades || []).map((act) => ({
+          id: act.id,
+          titulo: act.titulo || 'Sin título',
+          hora_inicio: act.hora_inicio
+        })),
+        fecha_creacion: rutina.fecha_creacion ?? new Date().toISOString()
+      }));
+
+      console.log('Rutinas recibidas:', this.rutinas);
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error cargando rutinas', error);
+    }
+  }
+
+  async onChildChange(event: any): Promise<void> {
+    this.selectedChildId = event.value;
+    this.router.navigate([], {
+      queryParams: { id_nino: this.selectedChildId },
+      queryParamsHandling: 'merge'
     });
   }
 
-  filtrarRutinasPorNino() {
-    this.rutinas = this.allRutinas.filter(r => r.ninosId === this.selectedChild.id);
-
-    // Garantizamos que haya al menos 2 rutinas con 3 actividades cada una
-    while (this.rutinas.length < 2) {
-      this.rutinas.push({
-        id: 0,
-        nombre: '',
-        descripcion: '',
-        frecuencia: {},
-        fecha_creacion: new Date().toISOString(),
-        fecha_fin: '',
-        ninosId: this.selectedChild.id,
-        actividades: [
-          { id: 0, id_rutina: null, ninos_id: this.selectedChild.id, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-          { id: 0, id_rutina: null, ninos_id: this.selectedChild.id, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false },
-          { id: 0, id_rutina: null, ninos_id: this.selectedChild.id, titulo: '', descripcion: '', fecha_realizacion: new Date(), hora_inicio: new Date(), hora_fin: new Date(), color: '', tipo: 'Tarea', ubicacion: null, usuario_responsable: 0, completado: false }
-        ]
-      });
-    }
+  nuevaRutina(): void {
+    if (!this.selectedChildId) return;
+    this.router.navigate(['/dashboard/routine-form'], {
+      queryParams: { id_nino: this.selectedChildId }
+    });
   }
 
-  cargarRutinasPorNino() {
-    this.filtrarRutinasPorNino();
+  editarRutina(id: number): void {
+    if (!this.selectedChildId) return;
+    this.router.navigate(['/dashboard/routine-form'], {
+      queryParams: { id: id, id_nino: this.selectedChildId }
+    });
   }
 
-  nuevaRutina() {
-    this.router.navigate(['/dashboard/routine-form'], { queryParams: { id_nino: this.selectedChild.id } });
-  }
-
-  editarRutina(id: number) {
-    this.router.navigate(['/dashboard/routine-form'], { queryParams: { id } });
-  }
-
-  async eliminarRutina(id: number) {
+  async eliminarRutina(id: number): Promise<void> {
     try {
-      const ninoId = this.selectedChild.id;
-      if (!ninoId) return;
-      await this.routineService.deleteRoutine(ninoId, id);
-      this.allRutinas = this.allRutinas.filter(r => r.id !== id);
-      this.filtrarRutinasPorNino();
+      if (!this.selectedChildId) return;
+      await this.routineService.deleteRoutine(this.selectedChildId, id);
+      this.rutinas = this.rutinas.filter(r => r.id !== id);
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al eliminar la rutina', error);
     }
   }
 
-  getHora(fecha: Date): string {
+  getHora(fecha: Date | string): string {
+    if (!fecha) return '';
     const d = new Date(fecha);
-    const horas = d.getHours().toString().padStart(2, '0');
-    const minutos = d.getMinutes().toString().padStart(2, '0');
-    return `${horas}:${minutos}`;
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   formatearFrecuencia(frec: any): string {
@@ -150,8 +134,34 @@ export class RoutineListPageComponent implements OnInit {
       .map(([dia]) => dia.charAt(0).toUpperCase() + dia.slice(1))
       .join(', ');
   }
+
+  getSelectedChild(): IChild | undefined {
+    return this.children.find(c => c.id === this.selectedChildId);
+  }
+
+  getHoraInput(hora: string | Date): string {
+    if (!hora) return '';
+    if (typeof hora === 'string') {
+      return hora.length >= 5 ? hora.slice(0, 5) : hora;
+    }
+    const d = new Date(hora);
+    return d.toISOString().slice(11, 16);
+  }
 }
 
-interface IRoutineConActividades extends IRoutine {
-  actividades: IActivity[];
+interface IRoutineConActividades {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+  frecuencia?: any;
+  fecha_creacion?: string;
+  fecha_fin?: string;
+  ninos_id: number;
+  actividades: {
+    id: number;
+    titulo: string;
+    hora_inicio: string | Date;
+  }[];
 }
+
+

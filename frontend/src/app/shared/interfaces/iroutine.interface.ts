@@ -8,5 +8,5 @@ export interface IRoutine {
   fecha_creacion?: string;
   fecha_fin?: string;
   actividades?: IActivity[];
-  ninosId?: number;
+  ninos_id: number;
 }
