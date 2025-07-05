@@ -9,6 +9,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
+import { IObjetivo } from '../../shared/interfaces/iobjective.interface';
 
 import { UbicacionComponent } from '../ubicacion/ubicacion.component';
 import { IChild } from '../../shared/interfaces';
@@ -37,6 +38,9 @@ export class ActivityFormComponent implements OnInit {
   @Input() tipo: 'evento' | 'objetivo' | 'rutina' | null = null;
   @Input() children: IChild[] = [];
   @Input() usersFamily: IFamiliaUsuario[] = [];
+  @Input() objetivoInfo: IObjetivo | null = null;
+  @Input() selectedChild: IChild | null = null;
+
 
   @Output() editar = new EventEmitter<Partial<IActivity>>();
   @Output() cerrar = new EventEmitter<void>();
@@ -64,6 +68,15 @@ export class ActivityFormComponent implements OnInit {
       label: user.usuarios.nick,
       value: Number(user.usuarios.id),
     }));
+
+    // Si es actividad de objetivo, deshabilita y setea los campos
+    if (this.tipo === 'objetivo' && this.selectedChild && this.objetivoInfo) {
+      this.form.get('ninos_id')?.setValue(this.selectedChild.id);
+      this.form.get('ninos_id')?.disable();
+
+      // Puedes añadir un campo ficticio para mostrar el objetivo
+      this.form.addControl('objetivo_id', this.fb.control({ value: this.objetivoInfo.nombre, disabled: true }));
+    }
 
     if (this.actividadInfo) {
       const data = { ...this.actividadInfo };
@@ -174,10 +187,11 @@ export class ActivityFormComponent implements OnInit {
     if (this.form.valid) {
       this.guardar.emit({
         ...this.form.value,
-        tipo: 'Evento',
+        tipo: this.tipo === 'objetivo' ? 'Objetivo' : 'Evento',
       });
     } else {
       this.form.markAllAsTouched();
     }
   }
+
 }
