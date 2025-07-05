@@ -27,6 +27,30 @@
       (ngSubmit)="onSubmit()"
       class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible dark:text-white"
     >
+
+    <!-- Mostrar NIÑO y OBJETIVO en la cabecera del formulario solo si es tipo objetivo -->
+    @if (tipo === 'objetivo' && selectedChild && objetivoInfo) {
+      <div class="mb-4">
+        <div class="mb-2">
+          <label class="font-semibold text-gray-700">Niño:</label>
+          <input
+            type="text"
+            [value]="selectedChild.nombre"
+            class="p-2 rounded bg-gray-100 w-full"
+            disabled
+          />
+        </div>
+        <div>
+          <label class="font-semibold text-gray-700">Objetivo:</label>
+          <input
+            type="text"
+            [value]="objetivoInfo.nombre"
+            class="p-2 rounded bg-gray-100 w-full"
+            disabled
+          />
+        </div>
+      </div>
+    }
       <input
         type="text"
         placeholder="Título"
@@ -44,7 +68,7 @@
         ></textarea>
       </div>
       }
-
+      @if (tipo !== 'objetivo') {
       <p-select
         [options]="filtroOpciones"
         formControlName="ninos_id"
@@ -52,6 +76,8 @@
         optionLabel="label"
         placeholder="Selecciona Niño"
       ></p-select>
+      }
+
       <div class="flex items-center gap-4">
         <span class="min-w-max text-gray-700">Fecha de realización:</span>
         <div class="flex-1 flex justify-end">
