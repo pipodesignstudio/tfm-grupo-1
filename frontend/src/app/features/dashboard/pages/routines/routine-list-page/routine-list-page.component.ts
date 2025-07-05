@@ -10,7 +10,6 @@ import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { IActivity } from '../../../../../shared/interfaces';
 
-
 @Component({
   selector: 'app-routine-list-page',
   standalone: true,
@@ -87,7 +86,7 @@ export class RoutineListPageComponent implements OnInit {
     }
   }
 
-  async onChildChange(event: any): Promise<void> {
+  onChildChange(event: any): void {
     this.selectedChildId = event.value;
     this.router.navigate([], {
       queryParams: { id_nino: this.selectedChildId },
@@ -96,7 +95,6 @@ export class RoutineListPageComponent implements OnInit {
   }
 
   nuevaRutina(): void {
-    if (!this.selectedChildId) return;
     this.router.navigate(['/dashboard/routine-form'], {
       queryParams: { id_nino: this.selectedChildId }
     });
@@ -163,5 +161,3 @@ interface IRoutineConActividades {
     hora_inicio: string | Date;
   }[];
 }
-
-
