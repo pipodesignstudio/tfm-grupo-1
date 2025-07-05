@@ -6,8 +6,22 @@ import { UsersService } from './users.service';
 export class FamiliesStore {
   private readonly _familias = signal<IUsersFamilies[] | null>(null);
   private readonly _familiaSeleccionada = signal<IUsersFamilies | null>(null);
+  private readonly _currentKidId = signal<number | null>(
+    this.readNumber('currentKidId')
+  );  
+  private readonly _currentKidName = signal<string | null>(
+    localStorage.getItem('currentKidName')
+  );
   public readonly familias = computed(() => this._familias());
   public readonly familiaSeleccionada = computed(() => this._familiaSeleccionada());
+  public readonly currentKidId = computed(() => this._currentKidId());
+  public readonly currentKidName = computed(() => this._currentKidName());
+  public readonly currentObjetivoId = computed(() => this._currentObjetivoId());
+  private readonly _currentObjetivoId = signal<number | null>(
+    this.readNumber('currentObjetivoId')
+  );
+  private _currentFamilyId = signal<number | null>(null);
+  public readonly currentFamilyId = computed(() => this._currentFamilyId());
 
   constructor(private usersService: UsersService) {}
 
@@ -44,6 +58,15 @@ export class FamiliesStore {
   }
 }
 
+public setFamilyFirstTime(id:number): void {
+  localStorage.setItem('familiaSeleccionadaId', String(id));
+  this._currentFamilyId.set(id);
+}
+
+public getFamilyFirstTime(): number | null {
+  return Number(localStorage.getItem('familiaSeleccionadaId'));
+}
+
 public eliminarFamilia(id: number): void {
   const familiasActuales = this._familias();
   if (familiasActuales) {
@@ -56,4 +79,48 @@ public eliminarFamilia(id: number): void {
   }
 
 }
+
+public seleccionarNiño(id: number | null): void {
+  this._currentKidId.set(id);
+  localStorage.setItem('currentKidId', JSON.stringify(id));
+}
+
+public eliminarNiño(_id: number): void {
+  this._currentKidId.set(null);
+  localStorage.setItem('currentKidId', 'null');
+}
+
+public setCurrentKidName(name: string): void {
+  this._currentKidName.set(name);
+  localStorage.setItem('currentKidName', name);
+}
+
+public getCurrentKidName(): string | null {
+  return this._currentKidName();
+}
+
+public setCurrentObjetivoId(id: number): void {
+  this._currentObjetivoId.set(id);
+  localStorage.setItem('currentObjetivoId', JSON.stringify(id));
+}
+
+public getCurrentObjetivoId(): number | null {
+  return this._currentObjetivoId();
+}
+
+private readNumber(key: string): number | null {
+  const value = localStorage.getItem(key);
+  const parsed = Number(value);
+  return isNaN(parsed) ? null : parsed;
+}
+
+private storeNumber(key: string, value: number | null): void {
+  if (value === null) {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, String(value));
+  }
+}
+
+
 }

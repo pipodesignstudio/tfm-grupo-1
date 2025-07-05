@@ -4,7 +4,7 @@ export const primengTranslation = {
     dayNamesMin: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
     monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
     monthNamesShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-    dateFormat: "dd/mm/yyyy",
+    dateFormat: "dd/mm/yy",
     firstDayOfWeek: 1,
     today: "Hoy",
     clear: "Limpiar",

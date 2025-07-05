@@ -20,11 +20,7 @@ export interface IActividad {
 export interface IActividadSuggestion {
   titulo: string;
   descripcion: string | null;
-  fecha_realizacion: Date | null;
-  hora_inicio: Date | null;
-  hora_fin: Date | null;
   color: string | null;
-  tipo: 'Objetivo' | 'Rutina' | 'Evento';
 }
 
 export interface IActividadPdf {
@@ -34,6 +30,7 @@ export interface IActividadPdf {
   description:string;
   responsable:string;
   fecha_realizacion:Date | null;
+  completado:boolean | null;
   hora_inicio:Date | null;
   hora_fin:Date | null;
   color:string;

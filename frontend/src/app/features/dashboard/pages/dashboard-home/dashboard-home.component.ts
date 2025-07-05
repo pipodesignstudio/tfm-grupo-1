@@ -1,10 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../../../shared/services/users.service';
 import { FamiliesStore } from '../../../../shared/services/familiesStore.service';
@@ -12,7 +6,7 @@ import { ChildService } from '../../../../shared/services/child.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { IChild } from '../../../../shared/interfaces';
 import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -21,16 +15,15 @@ import { DatePipe, NgClass } from '@angular/common';
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
 })
-export class DashboardHomeComponent {
+export class DashboardHomeComponent implements OnInit {
   // INYECCIONES
   private familiesStore = inject(FamiliesStore);
   private usersService = inject(UsersService);
   private childService = inject(ChildService);
   private activityService = inject(ActivityService);
-  private changeDetector = inject(ChangeDetectorRef);
 
   // PROPIEDADES
-  user = this.usersService.user; // signal reactiva
+  user = this.usersService.user;
   userName = '';
   date = new Date();
 
@@ -39,77 +32,73 @@ export class DashboardHomeComponent {
   activities: IActivity[] = [];
   loading = signal(true);
 
+  private activitiesCache: { [childId: string]: IActivity[] } = {};
+
   links = [
     { url: '/dashboard/routine-list', icon: 'pi pi-list', label: 'Rutinas' },
     { url: '/dashboard/objectives', icon: 'pi pi-star', label: 'Objetivos' },
     { url: '/dashboard/calendar', icon: 'pi pi-calendar', label: 'Calendario' },
-    { url: '/dashboard', icon: 'pi pi-pencil', label: 'Notas' },
+    { url: '/dashboard/notes', icon: 'pi pi-pencil', label: 'Notas' },
   ];
 
   underlineIn = false;
 
-  constructor() {
-    effect(async () => {
-      try {
-        const familia = this.familiesStore.familiaSeleccionada();
-        if (!familia) return;
-
-        this.loading.set(true);
-
-        this.userName = this.user()?.nombre || this.user()?.nick || 'usuario';
-
-        this.children = await this.childService.getChildrenByFamily(
-          String(familia.id)
-        );
-
-        this.activeChild = 0;
-        await this.loadActivitiesForActiveChild();
-
-        this.loading.set(false);
-        this.changeDetector.detectChanges();
-      } catch (e) {
-        console.error('Error en efecto dashboard:', e);
-        this.loading.set(false);
-      }
+  ngOnInit() {
+    setTimeout(() => (this.underlineIn = true), 0);
+    // Carga familias y, cuando termine, inicializa el dashboard
+    this.familiesStore.loadFamilias().then(() => {
+      this.initDashboard();
     });
   }
 
-  // NO BORRAR DE MOMENTO
-  // Carga las actividades del niño activo filtrando por tipo "Evento" y ordenando por hora_inicio
-  //
-  // async loadActivitiesForActiveChild() {
-  //   if (this.children.length > 0) {
-  //     const childId = this.children[this.activeChild].id;
-  //     const allActivities = await this.activityService.getActivitiesNino(
-  //       childId.toString()
-  //     );
-  //     // Filtra solo las de tipo "Evento"
-  //     this.activities = allActivities.filter(
-  //       (a) => a.tipo && a.tipo.toLowerCase() === 'evento'
-  //     );
-  //   } else {
-  //     this.activities = [];
-  //   }
-  // }
+  async initDashboard() {
+    try {
+      const familia = this.familiesStore.familiaSeleccionada();
+      if (!familia) {
+        this.loading.set(false);
+        return;
+      }
 
-  //  Filtra las actividades del día actual y ordena por hora_inicio
+      this.loading.set(true);
+
+      this.userName = this.user()?.nombre || this.user()?.nick || 'usuario';
+
+      this.children = await this.childService.getChildrenByFamily(
+        String(familia.id)
+      );
+
+      this.activeChild = 0;
+      await this.loadActivitiesForActiveChild();
+
+      this.loading.set(false);
+    } catch (e) {
+      console.error('Error en dashboard:', e);
+      this.loading.set(false);
+    }
+  }
 
   async loadActivitiesForActiveChild() {
     if (this.children.length > 0) {
-      const childId = this.children[this.activeChild].id;
-      const allActivities = await this.activityService.getActivitiesNino(
-        childId.toString()
-      );
-      const today = new Date();
-      // Filtra solo "Evento" del día actual y ordena por hora_inicio
+      const childId = this.children[this.activeChild].id.toString();
+
+      let allActivities = this.activitiesCache[childId];
+      if (!allActivities) {
+        allActivities = await this.activityService.getActivitiesNino(childId);
+        this.activitiesCache[childId] = allActivities;
+      }
+
       this.activities = allActivities
         .filter(
           (a) =>
             a.tipo &&
             a.tipo.toLowerCase() === 'evento' &&
             a.fecha_realizacion &&
-            new Date(a.fecha_realizacion).toDateString() ===
-              today.toDateString()
+            this.isSameUTCDate(
+              typeof a.fecha_realizacion === 'string'
+                ? a.fecha_realizacion
+                : a.fecha_realizacion.toISOString(),
+              new Date()
+            )
         )
         .sort(
           (a, b) =>
@@ -125,7 +114,6 @@ export class DashboardHomeComponent {
     if (this.children.length > 1) {
       this.activeChild = (this.activeChild + 1) % this.children.length;
       await this.loadActivitiesForActiveChild();
-      this.changeDetector.detectChanges();
     }
   }
 
@@ -134,12 +122,10 @@ export class DashboardHomeComponent {
       this.activeChild =
         (this.activeChild - 1 + this.children.length) % this.children.length;
       await this.loadActivitiesForActiveChild();
-      this.changeDetector.detectChanges();
     }
   }
 
   getTaskColorClass(tipo: string): string {
-    // Puedes personalizar colores según el tipo de evento
     switch ((tipo || '').toLowerCase()) {
       case 'evento':
         return 'border-blue-400';
@@ -150,7 +136,12 @@ export class DashboardHomeComponent {
     }
   }
 
-  ngOnInit() {
-    setTimeout(() => (this.underlineIn = true), 100);
+  isSameUTCDate(dateA: string, dateB: Date): boolean {
+    const dA = new Date(dateA);
+    return (
+      dA.getUTCFullYear() === dateB.getUTCFullYear() &&
+      dA.getUTCMonth() === dateB.getUTCMonth() &&
+      dA.getUTCDate() === dateB.getUTCDate()
+    );
   }
 }

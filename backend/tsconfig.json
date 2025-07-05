@@ -14,7 +14,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",                                   
+    "src/**/*.d.ts", "../frontend/src/app/shared/utils/decode-prisma-buffer.util.ts",                                   
   ],
   "exclude": ["node_modules"]
 }

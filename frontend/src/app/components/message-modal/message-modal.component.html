@@ -5,8 +5,10 @@
       <p-button class="  rounded-lg dark:border-1 dark:border-gray-300" (click)="cerrarModal()">
         Cancelar
       </p-button>
+      @if(showButton) {
       <p-button class=" rounded-lg dark:border-1 dark:border-gray-300" (click)="submitButton()">
         {{ buttonText }}
       </p-button>
+      }
   </div>
 </div>

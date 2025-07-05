@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IActivity } from '../../shared/interfaces/iactivity.interface';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
+import { IObjetivo } from '../../shared/interfaces/iobjective.interface';
 
 import { UbicacionComponent } from '../ubicacion/ubicacion.component';
 import { IChild } from '../../shared/interfaces';
@@ -32,11 +33,14 @@ import { IFamiliaUsuario } from '../../shared/interfaces/ifamily-users.interface
   templateUrl: './activity-form.component.html',
   styleUrl: './activity-form.component.css',
 })
-export class ActivityFormComponent {
+export class ActivityFormComponent implements OnInit {
   @Input() actividadInfo: IActivity | null = null;
   @Input() tipo: 'evento' | 'objetivo' | 'rutina' | null = null;
   @Input() children: IChild[] = [];
   @Input() usersFamily: IFamiliaUsuario[] = [];
+  @Input() objetivoInfo: IObjetivo | null = null;
+  @Input() selectedChild: IChild | null = null;
+
 
   @Output() editar = new EventEmitter<Partial<IActivity>>();
   @Output() cerrar = new EventEmitter<void>();
@@ -47,32 +51,14 @@ export class ActivityFormComponent {
   editMode = false;
 
   filtroOpciones: { label: string; value: number | null }[] = [];
-
   usuariosResponsables: { label: string; value: number | null }[] = [];
 
-  form: FormGroup;
+  form!: FormGroup;
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group(
-      {
-        titulo: ['', Validators.required],
-        descripcion: [''],
-        ninos_id: [null, Validators.required],
-        fecha_realizacion: ['', Validators.required],
-        hora_inicio: ['', Validators.required],
-        hora_fin: ['', Validators.required],
-        usuario_responsable: [null, Validators.required],
-        color: ['#7c3aed'],
-        tipo: [this.tipo],
-        ubicacion: [null],
-      },
-      {
-        validators: this.validarHoras,
-      }
-    );
-  }
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
+    this.createForm();
     this.filtroOpciones = this.children.map((child) => ({
       label: child.nombre,
       value: Number(child.id),
@@ -83,20 +69,79 @@ export class ActivityFormComponent {
       value: Number(user.usuarios.id),
     }));
 
+    // Si es actividad de objetivo, deshabilita y setea los campos
+    if (this.tipo === 'objetivo' && this.selectedChild && this.objetivoInfo) {
+      this.form.get('ninos_id')?.setValue(this.selectedChild.id);
+      this.form.get('ninos_id')?.disable();
+
+      // Puedes añadir un campo ficticio para mostrar el objetivo
+      this.form.addControl('objetivo_id', this.fb.control({ value: this.objetivoInfo.nombre, disabled: true }));
+    }
+
     if (this.actividadInfo) {
       const data = { ...this.actividadInfo };
 
-      // Transformar strings ISO en objetos Date
-      data.fecha_realizacion = new Date(data.fecha_realizacion);
-      data.hora_inicio = new Date(data.hora_inicio);
-      data.hora_fin = new Date(data.hora_fin);
+      // Transformar strings ISO en objetos Date si es necesario
+      if (data.fecha_realizacion) data.fecha_realizacion = new Date(data.fecha_realizacion);
+      if (data.hora_inicio) data.hora_inicio = new Date(data.hora_inicio);
+      if (data.hora_fin) data.hora_fin = new Date(data.hora_fin);
 
       this.form.get('ninos_id')?.disable();
 
       this.form.patchValue(data);
       this.editMode = true;
-      console.log('values form', this.form.value);
     }
+  }
+
+  private createForm(): void {
+    const base = {
+      titulo: ['', Validators.required],
+      descripcion: [''],
+      ninos_id: [null, Validators.required],
+      tipo: [this.tipo],
+    };
+
+    const eventoExtras = {
+      fecha_realizacion: ['', Validators.required],
+      usuario_responsable: [null, Validators.required],
+      color: ['#7c3aed'],
+      hora_inicio: ['', Validators.required],
+      hora_fin: ['', Validators.required],
+      ubicacion: [null],
+    };
+
+    const objetivoExtras = {
+      fecha_realizacion: ['', Validators.required],
+      hora_inicio: ['', Validators.required],
+    };
+
+    const rutinaExtras = {
+      hora_inicio: ['', Validators.required],
+      hora_fin: ['', Validators.required],
+    };
+
+    let groupConfig: any = base;
+    let groupValidators = null;
+
+    switch (this.tipo) {
+      case 'evento':
+        groupConfig = { ...base, ...eventoExtras };
+        groupValidators = this.validarHoras;
+        break;
+      case 'objetivo':
+        groupConfig = { ...base, ...objetivoExtras };
+        break;
+      case 'rutina':
+        groupConfig = { ...base, ...rutinaExtras };
+        groupValidators = this.validarHoras;
+        break;
+      default:
+        groupConfig = base;
+    }
+
+    this.form = this.fb.group(groupConfig, {
+      validators: groupValidators,
+    });
   }
 
   onSubmit() {
@@ -121,9 +166,7 @@ export class ActivityFormComponent {
   }
 
   editarActividad() {
-    console.log(this.actividadInfo);
     if (this.form.valid) {
-      console.log('Editar actividad:', this.form.value);
       this.editar.emit({
         ...this.form.value,
         id: this.actividadInfo ? this.actividadInfo.id : undefined,
@@ -144,10 +187,11 @@ export class ActivityFormComponent {
     if (this.form.valid) {
       this.guardar.emit({
         ...this.form.value,
-        tipo: 'Evento',
+        tipo: this.tipo === 'objetivo' ? 'Objetivo' : 'Evento',
       });
     } else {
       this.form.markAllAsTouched();
     }
   }
+
 }

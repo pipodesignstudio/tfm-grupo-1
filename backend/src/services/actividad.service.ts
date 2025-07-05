@@ -19,7 +19,7 @@ export class ActividadService {
     this.printerService = new PdfGeneratorService();
   }
 
-  public async createActividad(id_nino: number, dto: CreateActividadDto) {
+  public async createActividad(id_nino: number, dto: CreateActividadDto, usuario_responsable: number) {
     try {
       const data: any = {
         tipo: dto.tipo,
@@ -31,7 +31,7 @@ export class ActividadService {
         hora_fin: dto.hora_fin ?? undefined,
         color: dto.color ?? undefined,
         ubicacion: dto.ubicacion ?? undefined,
-        usuario_responsable: dto.usuario_responsable ?? undefined,
+        usuario_responsable: usuario_responsable,
         completado: dto.completado ?? false,
       };
 
@@ -39,7 +39,19 @@ export class ActividadService {
         data.rutina_id = dto.rutina_id;
       }
 
-      return await prisma.actividades.create({ data });
+      // Hot fix tabla intermedia
+      
+      const ac = await prisma.actividades.create({ data });
+      if (dto.objetivo_id) {
+        await prisma.objetivos_has_actividades.create({
+          data: {
+            actividad_id: ac.id,
+            objetivo_id: dto.objetivo_id,
+          },
+        });
+      }
+      return ac;
+
     } catch (error) {
       throw new InternalServerError('Error interno al crear el evento', {
         error: 'INTERNAL_SERVER_ERROR',
@@ -111,6 +123,21 @@ export class ActividadService {
     return;
   }
 
+
+  public async getAllActivitiesByUser(id_user: number) {
+    try {
+      return await prisma.actividades.findMany({
+        where: { usuario_responsable: id_user }
+      });
+    } catch (error) {
+      throw new InternalServerError('Error al obtener actividades', {
+        error: 'INTERNAL_SERVER_ERROR',
+        detalle: error,
+      });
+    }
+  }
+
+
   public async exportActivitiesToPdf(
     dto: ExportActivitiesDto,
   ): Promise<PDFKit.PDFDocument> {
@@ -133,10 +160,10 @@ export class ActividadService {
     ];
     const responsables = await prisma.usuarios.findMany({
       where: { id: { in: responsableIds } },
-      select: { id: true, nombre: true },
+      select: { id: true, nombre: true, nick: true },
     });
     const responsablesMap = new Map(
-      responsables.map(r => [r.id, r.nombre ?? '']),
+      responsables.map(r => [r.id, r.nick ?? '']),
     );
   
     const actividadesPdf: IActividadPdf[] = actividades.map(a => ({
@@ -146,6 +173,7 @@ export class ActividadService {
       title:             a.titulo ?? '',
       description:       a.descripcion ?? '',
       fecha_realizacion: a.fecha_realizacion,
+      completado:        a.completado,
       hora_inicio:       a.hora_inicio,
       hora_fin:          a.hora_fin,
       color:             a.color ?? '',

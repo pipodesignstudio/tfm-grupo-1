@@ -15,6 +15,8 @@ import { MessageModalComponent } from '../../../../../components/message-modal/m
 
 import { FamilyFormComponent } from '../../../../../components/family/family-form/family-form.component';
 import { FamiliaUsuariosService } from '../../../../../shared/services/familia-usuarios.service';
+import { FormsModule } from '@angular/forms';
+import { FamilyService } from '../../../../../shared/services/family.service';
 
 @Component({
   selector: 'app-settings-family',
@@ -25,6 +27,7 @@ import { FamiliaUsuariosService } from '../../../../../shared/services/familia-u
     ButtonModule,
     MessageModalComponent,
     FamilyFormComponent,
+    FormsModule,
   ],
 })
 export class SettingsFamilyComponent {
@@ -33,6 +36,7 @@ export class SettingsFamilyComponent {
   private familiesStore = inject(FamiliesStore);
   private invitationsService = inject(InvitationsService);
   private familiaUsuariosService = inject(FamiliaUsuariosService);
+  private familyService = inject(FamilyService);
 
   showInvitacionModal = false;
 
@@ -70,6 +74,47 @@ export class SettingsFamilyComponent {
     }
   }
 
+  showEditarFamiliaModal = false;
+  familiaEditar: IUsersFamilies | null = null;
+  familiaDescripcion: string | null = null;
+
+  showFamiliaEditarModal(familia: IUsersFamilies | null) {
+    if (!familia) {
+      console.error('Familia no puede ser nula al abrir el modal de edición');
+      return;
+    }
+    this.familiaEditar = familia;
+    this.familiaDescripcion = familia.descripcion || '';
+    this.showEditarFamiliaModal = true;
+  }
+
+  closeFamiliaEditarModal() {
+    this.showEditarFamiliaModal = false;
+    this.changeDetector.detectChanges();
+    this.familiaEditar = null;
+    this.familiaDescripcion = null;
+  }
+
+  editarFamilia() {
+    console.log('Editar familia', this.familiaEditar);
+
+    if (!this.familiaEditar || !this.familiaDescripcion) {
+      console.error('Familia o descripción no pueden ser nulos al editar');
+      return;
+    }
+    this.familyService
+      .editFamilyDescription(this.familiaEditar.id, this.familiaDescripcion)
+      .then((updatedFamily) => {
+        console.log('Familia editada con éxito:', updatedFamily);
+        // Actualizar la familia en el store
+        this.familiaEffect;
+        this.closeFamiliaEditarModal();
+      })
+      .catch((error) => {
+        console.error('Error al editar familia:', error);
+      });
+  }
+
   openInvitacionModal() {
     this.showInvitacionModal = true;
   }
@@ -80,16 +125,16 @@ export class SettingsFamilyComponent {
 
   aceptarInvitacion(id: number) {
     console.log('Aceptar invitación', id);
-    // Lógica real aquí
     this.invitationsService.respondInvitation(id, true).then(() => {
+      this.familiesStore.loadFamilias();
       this.loadInvitacionesAsync();
     });
   }
 
   rechazarInvitacion(id: number) {
     console.log('Rechazar invitación', id);
-    // Lógica real aquí
     this.invitationsService.respondInvitation(id, false).then(() => {
+      this.familiesStore.loadFamilias();
       this.loadInvitacionesAsync();
     });
   }
@@ -102,7 +147,12 @@ export class SettingsFamilyComponent {
   }
 
   salirDeFamilia(familiaId: number) {
-    console.log('Salir de familia', familiaId, this.familiaActual);
+    console.log(
+      'Salir de familia',
+      familiaId,
+      this.familiaActual,
+      this.familiasUsuario
+    );
 
     this.familiaUsuariosService.salirDeFamilia(familiaId).then(() => {
       // Lógica adicional después de eliminar la familia
@@ -115,12 +165,10 @@ export class SettingsFamilyComponent {
       }
       this.familiasUsuario = this.familiesStore.familias();
 
-
       console.log(this.familiaActual, this.familiasUsuario);
 
       this.messageModalVisible = false;
       this.familiaASalir = null; // Resetea la familia a salir
-      this.familiaASalirDescripcion = null; // Resetea la descripción de la familia a salir
 
       this.changeDetector.detectChanges();
     });
@@ -128,11 +176,19 @@ export class SettingsFamilyComponent {
 
   messageModalVisible = false;
   familiaASalir: number | null = null;
-  familiaASalirDescripcion: string | null = null;
-
+  salirFamiliaMsg: string | '' = '';
+  showBotonSalirFamilia = true; // Controla la visibilidad del botón de salir
   showMessageModal(familia: IUsersFamilies | null) {
-    this.familiaASalir = familia?.id || null;
-    this.familiaASalirDescripcion = familia?.descripcion || null;
+    if (this.familiasUsuario?.length === 1) {
+      this.salirFamiliaMsg =
+        'No puedes salir de la familia, debes tener al menos una familia asociada.';
+      this.showBotonSalirFamilia = false; // No mostrar botón de salir
+    } else {
+      this.salirFamiliaMsg = `¿Estás seguro de que quieres salir de la familia ${familia?.descripcion}?`;
+      this.showBotonSalirFamilia = true; // Mostrar botón de salir
+      this.familiaASalir = familia?.id || null;
+    }
+
     this.messageModalVisible = true;
   }
 
@@ -167,7 +223,7 @@ export class SettingsFamilyComponent {
       .then(() => {
         console.log('Invitación enviada correctamente');
         //actualizar la lista de invitaciones
-        this.loadInvitacionesAsync();
+        this.familiaEffect;
         this.closeInvitacionModal();
         this.changeDetector.detectChanges();
       })

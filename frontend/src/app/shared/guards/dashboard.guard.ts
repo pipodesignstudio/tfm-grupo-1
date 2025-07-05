@@ -19,6 +19,6 @@ export const dashboardGuard: CanActivateFn = async () => {
   }
 
   // Onboarding pendiente
-  await router.navigate(['/onboarding/complete']);
+  await router.navigate(['/onboarding']);
   return false;
 };

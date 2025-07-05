@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
   FormBuilder,
@@ -12,10 +12,12 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
-import { AutoFocusModule } from 'primeng/autofocus';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ChildService } from '../../../../shared/services/child.service';
+import { FamilyService } from '../../../../shared/services/family.service';
+import { AutoFocusModule } from 'primeng/autofocus';
+import { UsersService } from '../../../../shared/services';
 
 @Component({
   selector: 'app-create-family',
@@ -35,82 +37,29 @@ import { ChildService } from '../../../../shared/services/child.service';
   ],
   templateUrl: './create-family.component.html',
 })
-export class CreateFamilyComponent implements OnInit {
-  childProfileForm!: FormGroup;
-  errorMessage = '';
+export class CreateFamilyComponent {
+  private familyService = inject(FamilyService);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+    private readonly usersService = inject(UsersService);
+
+  public currentUser$ = computed(() => this.usersService.user());
+
+  familyForm = this.fb.group({
+    description: ['', [Validators.required, Validators.minLength(3)]],
+    
+  })
+
   isLoading = false;
 
-  perfiles_aprendizaje_id!: number;
-  familia_id!: number;
-
-  maxDate: Date = new Date();
-
-  genderOptions = [
-    { label: 'Masculino', value: 'masculino' },
-    { label: 'Femenino', value: 'femenino' },
-  ];
-
-  constructor(
-    private fb: FormBuilder,
-    private childService: ChildService,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {
-    this.familia_id = Number(localStorage.getItem('familia_id'));
-
-    this.childProfileForm = this.fb.group({
-      name: ['', Validators.required],
-      apellido: ['', Validators.required],
-      dob: [null, Validators.required],
-      gender: [null],
-      heightCm: [null, [Validators.min(1), Validators.max(300)]],
-      weightKg: [null, [Validators.min(0.1), Validators.max(200)]],
-    });
-  }
-
-  get f() {
-    return this.childProfileForm.controls;
-  }
-
   async onSubmit() {
-    this.errorMessage = '';
     this.isLoading = true;
-
-    if (this.childProfileForm.invalid) {
-      this.childProfileForm.markAllAsTouched();
-      this.errorMessage = 'Por favor, rellena los campos obligatorios.';
-      this.isLoading = false;
-      return;
+    const { description } = this.familyForm.value;
+    const response = await this.familyService.createFamily(description!);
+    if (response?.data) {
+      this.router.navigate(['onboarding', 'create-nino']);
+    }
+    this.isLoading = false;
     }
 
-    const formValue = this.childProfileForm.value;
-
-    const payload = {
-      perfiles_aprendizaje_id: 1,
-      familia_id: this.familia_id,
-      nombre: formValue.name,
-      apellido: formValue.apellido,
-      fecha_nacimiento: this.formatDate(formValue.dob),
-      genero: formValue.gender || null,
-      altura: formValue.heightCm ? Number(formValue.heightCm) : null,
-      peso: formValue.weightKg ? Number(formValue.weightKg) : null,
-      img_perfil: null,
-      descripcion: '',
-    };
-
-    try {
-      await this.childService.addChild(payload);
-      this.isLoading = false;
-      this.router.navigate(['/onboarding/my-family']);
-    } catch (err: any) {
-      this.isLoading = false;
-      this.errorMessage =
-        err?.response?.data?.message || 'Error al crear el niño';
-    }
-  }
-
-  private formatDate(date: Date): string {
-    return date ? formatDate(date, 'yyyy-MM-dd', 'en-US') : '';
-  }
 }

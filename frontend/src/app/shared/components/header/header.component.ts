@@ -36,6 +36,8 @@ export class HeaderComponent {
     '/dashboard/settings/edit-profile': 'Editar perfil',
     '/dashboard/about-us': 'Sobre nosotros',
     '/dashboard/notes': 'Notas',
+    '/dashboard/objectives': 'Objetivos',
+    '/dashboard/downloads': 'Descargas',
   };
 
   currentPath: string = '';
@@ -77,6 +79,9 @@ export class HeaderComponent {
 
   goToAboutUs() {
   this.router.navigate(['/dashboard/about-us']);
+ }
+ goToDownloads() {
+  this.router.navigate(['/dashboard/downloads']);
  }
 
 }

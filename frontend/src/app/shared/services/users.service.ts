@@ -62,7 +62,7 @@ export class UsersService {
         const status = axiosErr.response?.status;
 
         if (status === 401 || status === 403) {
-          this.tokenService.clearToken();
+          this.tokenService.clear();
           this._user.set(null);
           await this.router.navigate(['/auth/login']);
           return { message: 'Sesión expirada, inicia sesión de nuevo.' };
@@ -158,6 +158,15 @@ export class UsersService {
   }
 
 
+/**
+ * Retrieves the list of user families from the backend API.
+ *
+ * Sends a GET request to the `/api/users/familias` endpoint, including the user's authentication token
+ * in the request headers. If the request is successful, returns an array of `IUsersFamilies` objects.
+ * If an error occurs during the request, logs the error and returns `null`.
+ *
+ * @returns {Promise<IUsersFamilies[] | null>} A promise that resolves to an array of user families or `null` if an error occurs.
+ */
 public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
   try {
     const response = await axios.get<FamiliaApiResponse>(`${environment.backendUrl}/api/users/familias`, {
@@ -173,6 +182,16 @@ public async getUserFamilias(): Promise<IUsersFamilies[] | null> {
   }
 }
 
+/**
+ * Updates the user information by sending a PATCH request to the backend API.
+ * 
+ * @param userData - A partial object containing the user fields to update.
+ * @returns A promise that resolves to an object indicating the success status and a message.
+ * 
+ * If the update is successful, the local user state is updated with the new user data.
+ * If the update fails, the local user state is cleared and refreshed.
+ * Handles and logs any errors that occur during the request.
+ */
 public async editUser(userData: Partial<IUser>) {
   try {
     const response = await axios.patch<UserApiResponse>(`${this.apiUrl}/update`, userData, {

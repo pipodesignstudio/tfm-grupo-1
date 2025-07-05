@@ -5,6 +5,10 @@
     <i class="pi pi-spin pi-spinner text-3xl"></i>
     <p>Cargando datos...</p>
   </div>
+  } @if (!loading() && children.length === 0) {
+  <div class="text-center text-gray-500 mt-4">
+    No hay datos para mostrar. Selecciona una familia o añade niños.
+  </div>
   }
 
   <!-- Saludo -->
@@ -23,7 +27,7 @@
   </div>
   }
 
-  <!-- Actividades tipo Evento -->
+  <!-- El día del niño -->
   @if (!loading()) {
   <div class="relative flex items-center md:justify-center">
     <!-- Flecha izquierda -->
@@ -55,7 +59,6 @@
           <li
             class="flex items-center px-3 py-2 rounded-lg shadow-sm transition-all duration-300 group bg-white dark:bg-gray-700"
           >
-            <!-- Puedes mostrar un icono si quieres, aquí solo color -->
             <span
               class="w-12 h-12 mr-3 rounded-full flex items-center justify-center bg-white border-4 dark:bg-gray-400"
               [style.border-color]="activity.color || '#cccccc'"
@@ -63,14 +66,14 @@
               <span class="text-2xl">📌</span>
             </span>
 
-            <!-- Nombre de la actividad -->
             <span class="flex-1 text-gray-900 dark:text-white">
               {{ activity.titulo }}
             </span>
 
-            <!-- Hora de inicio -->
-            <span class="font-mono text-sm text-gray-700 w-24 text-right ml-3">
-              {{ activity.hora_inicio | date : "HH:mm" }}
+            <span
+              class="font-mono text-sm text-gray-700 w-24 text-right ml-3 dark:text-white"
+            >
+              {{ activity.hora_inicio | date : "HH:mm" : "UTC" }}
             </span>
           </li>
           }

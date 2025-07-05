@@ -1,144 +1,40 @@
-<h1 class="text-2xl font-semibold mb-3">Datos del niño 👶🏻</h1>
+<div class="mb-5 flex justify-end">
+  ⌛ 5 min
+</div>
 
+
+<h1>Empecemos con algo fácil, vamos a crear tu familia</h1>
 <form
-  [formGroup]="childProfileForm"
-  (ngSubmit)="onSubmit()"
-  class="flex flex-col gap-3"
+[formGroup]="familyForm"
+(ngSubmit)="onSubmit()"
+class="flex flex-col gap-5"
 >
-  <!-- Nombre -->
-  <div class="flex flex-col gap-2">
-    <label for="name">Nombre <span class="required-asterisk">*</span></label>
-    <input
-      type="text"
-      id="name"
-      pInputText
-      formControlName="name"
-      placeholder="Nombre del niño/a"
-      [ngClass]="{
-        'ng-invalid ng-dirty': f['name'].invalid && f['name'].touched
-      }"
-      [pAutoFocus]="true"
-    />
-    @if (f['name'].invalid && f['name'].dirty) {
+<div class="flex flex-col gap-2 mt-5">
+  <label for="description">Nombre de la familia</label>
+  <input 
+  [placeholder]="`Familia de ${currentUser$()?.nick}`"
+  type="text" id="description" formControlName="description" pInputText >
+  @if (familyForm.get('description')?.hasError('required') && !familyForm.get('description')?.pristine) {
+    <p-message 
+    severity="error">
+  Necesitamos un nombre para la familia
+  </p-message>
+  } @if (familyForm.get('description')?.hasError('minlength')) {
     <p-message severity="error">
-      @if (f['name'].errors?.['required']) { El nombre es obligatorio. }
+    El nombre debe tener al menos 3 caracteres
     </p-message>
-    }
-  </div>
-
-  <!-- Apellido -->
-  <div class="flex flex-col gap-2">
-    <label for="apellido"
-      >Apellido <span class="required-asterisk">*</span></label
-    >
-    <input
-      type="text"
-      id="apellido"
-      pInputText
-      formControlName="apellido"
-      placeholder="Apellido del niño/a"
-      [ngClass]="{
-        'ng-invalid ng-dirty': f['apellido'].invalid && f['apellido'].touched
-      }"
-    />
-    @if (f['apellido'].invalid && f['apellido'].dirty) {
-    <p-message severity="error">
-      @if (f['apellido'].errors?.['required']) { El apellido es obligatorio. }
-    </p-message>
-    }
-  </div>
-
-  <!-- Fecha de nacimiento -->
-  <div class="flex flex-col gap-2">
-    <label for="dob">
-      Fecha de Nacimiento <span class="required-asterisk">*</span>
-    </label>
-    <p-calendar
-      inputId="dob"
-      formControlName="dob"
-      [maxDate]="maxDate"
-      [readonlyInput]="true"
-      [showIcon]="true"
-      fluid
-      [iconDisplay]="'input'"
-      [ngClass]="{
-        'ng-invalid ng-dirty': f['dob'].invalid && f['dob'].touched
-      }"
-    ></p-calendar>
-    @if (f['dob'].invalid && f['dob'].dirty) {
-    <p-message severity="error">
-      @if (f['dob'].errors?.['required']) { La fecha de nacimiento es
-      obligatoria. }
-    </p-message>
-    }
-  </div>
-
-  <!-- Género -->
-  <div class="flex flex-col gap-2">
-    <label for="gender">Género (Opcional)</label>
-    <p-dropdown
-      inputId="gender"
-      formControlName="gender"
-      [options]="genderOptions"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Selecciona el género"
-      [showClear]="true"
-    ></p-dropdown>
-  </div>
-
-  <!-- Altura -->
-  <div class="flex flex-col gap-2">
-    <label for="heightCm">Altura (cm - Opcional)</label>
-    <input
-      type="number"
-      id="heightCm"
-      pInputText
-      formControlName="heightCm"
-      placeholder="Ej: 90"
-      [ngClass]="{
-        'ng-invalid ng-dirty': f['heightCm'].invalid && f['heightCm'].touched
-      }"
-    />
-    @if (f['heightCm'].invalid && f['heightCm'].dirty) {
-    <p-message severity="error">
-      @if (f['heightCm'].errors?.['min'] || f['heightCm'].errors?.['max']) {
-      Introduce una altura válida (1-300 cm). }
-    </p-message>
-    }
-  </div>
-
-  <!-- Peso -->
-  <div class="flex flex-col gap-2">
-    <label for="weightKg">Peso (kg - Opcional)</label>
-    <input
-      type="number"
-      step="0.1"
-      id="weightKg"
-      pInputText
-      formControlName="weightKg"
-      placeholder="Ej: 15.5"
-      [ngClass]="{
-        'ng-invalid ng-dirty': f['weightKg'].invalid && f['weightKg'].touched
-      }"
-    />
-    @if (f['weightKg'].invalid && f['weightKg'].dirty) {
-    <p-message severity="error">
-      @if (f['weightKg'].errors?.['min'] || f['weightKg'].errors?.['max']) {
-      Introduce un peso válido (0.1-200 kg). }
-    </p-message>
-    }
-  </div>
-
-  <!-- Mensaje de error general -->
-  @if (errorMessage) {
-  <p-message severity="error">{{ errorMessage }}</p-message>
   }
+</div>
+<div class="flex flex-row justify-end">
+  <p-button label="Continuar" (click)="onSubmit()" [disabled]="familyForm.invalid" [loading]="isLoading" styleClass="w-full" icon="pi pi-arrow-right" iconPos="right" />
 
-  <p-button
-    type="submit"
-    label="Guardar perfil"
-    styleClass="mt-5 w-full"
-    [disabled]="childProfileForm.invalid"
-  />
+</div>
 </form>
+
+<div class="my-5 flex flex-row gap-2 items-center justify-center">
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-primary"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+</div>

@@ -12,7 +12,7 @@
     <div class="text-sm text-gray-500 dark:text-gray-300">
       No perteneces a ninguna familia.
     </div>
-    } @else { @for (familia of familiasUsuario; track familia) {
+    } @else {@for (familia of familiasUsuario; track familia) {
     <div
       class="flex justify-between items-center text-sm text-gray-800 dark:text-white mb-2"
       [class.font-bold]="familia.id === familiaActual?.id"
@@ -23,8 +23,16 @@
         <span class="text-xs text-green-500 ml-1">(actual)</span>
         }
       </span>
+
       <div class="space-x-2">
-        @if (familia.id !== familiaActual?.id) {
+        @if (familia.rol === 'admin') {
+        <button
+          (click)="showFamiliaEditarModal(familia)"
+          class="text-yellow-500 text-xs"
+        >
+          Editar
+        </button>
+        } @if (familia.id !== familiaActual?.id) {
         <button
           (click)="cambiarAFamilia(familia.id)"
           class="text-blue-500 text-xs"
@@ -32,6 +40,7 @@
           Entrar
         </button>
         }
+
         <button
           (click)="showMessageModal(familia)"
           class="text-red-500 text-xs"
@@ -75,7 +84,11 @@
         </button>
       </div>
       } @else {
-      <span class="text-xs text-green-500 dark:text-green-400">
+      <span
+        class="text-xs {{
+          invitacion.accepted ? 'text-green-500' : 'text-red-500'
+        }}"
+      >
         {{ invitacion.accepted ? "Aceptada" : "Rechazada" }}
       </span>
       }
@@ -118,14 +131,13 @@
   </div>
   @if(messageModalVisible) {
   <app-message-modal
-    [message]="'¿Estás seguro de que deseas salir de la familia ' + (familiaASalirDescripcion || '') + '?'"
+    [message]="salirFamiliaMsg"
     [buttonText]="'Salir'"
+    [showButton]="showBotonSalirFamilia"
     (cerrar)="closeMessageModal()"
     (button)="salirDeFamilia(familiaASalir || 0)"
   ></app-message-modal>
-  }
-
-  @if (showInvitacionModal) {
+  } @if (showInvitacionModal) {
   <app-family-form
     (cerrar)="closeInvitacionModal()"
     (guardar)="enviarInvitacion($event)"
@@ -133,3 +145,43 @@
 
   }
 </div>
+
+@if(showEditarFamiliaModal) {
+
+<div
+  class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
+  >
+    <h2
+      class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+    >
+      Editar Familia
+    </h2>
+
+    <form (ngSubmit)="editarFamilia()">
+      <div class="mb-4">
+        <label
+          for="descripcion"
+          class="block text-sm font-medium text-gray-700 dark:text-white"
+        >
+          Descripción de la familia
+        </label>
+        <input
+          id="descripcion"
+          [(ngModel)]="familiaDescripcion"
+          name="descripcion"
+          type="text"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-600 dark:text-white dark:border-gray-500"
+          required
+        />
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button (click)="closeFamiliaEditarModal()">Cancelar</button>
+        <button type="submit" class="">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+}

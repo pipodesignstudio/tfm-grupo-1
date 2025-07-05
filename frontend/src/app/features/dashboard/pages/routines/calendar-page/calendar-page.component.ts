@@ -82,6 +82,13 @@ export class CalendarPageComponent {
 
   clickedDate: string = new Date().toISOString().slice(0, 10);
 
+  ngOnInit() {
+    // Inicializar el calendario y cargar la familia seleccionada
+    this.familiaEffect;
+    this.changeDetector.detectChanges();
+  }
+
+
   private familiaEffect = effect(async () => {
     this.userFamilia = this.familiesStore.familiaSeleccionada();
     if (this.userFamilia == null || !this.calendarComponent) return;
@@ -203,13 +210,15 @@ export class CalendarPageComponent {
       title: activity.titulo,
       start: format(new Date(activity.fecha_realizacion), 'yyyy-MM-dd'), // asegúrate que `fecha` sea en formato ISO o YYYY-MM-DD
       allDay: true,
-      color: activity.color ?? undefined, // evita pasar null
-      actividadInfo: activity, // Puedes agregar información adicional si es necesario
+      color: activity.color ?? undefined,
+      actividadInfo: activity, 
     }));
   }
 
+  actividadTipo: 'evento' | 'objetivo' | 'rutina' | null = "evento"; // Por defecto, el tipo de actividad es 'evento'
   abrirActivityModal(actividad: IActivity | null = null) {
     this.actividadInfo = actividad || null;
+    this.actividadTipo = actividad ? actividad.tipo?.toLowerCase() as 'evento' | 'objetivo' | 'rutina' : 'evento';
     this.mostrarActivityModal = true;
     // Si no se pasa actividad, se inicializa como null
   }
@@ -276,42 +285,6 @@ export class CalendarPageComponent {
     this.editarActividad(event['actividadInfo']);
   }
 
-  /*   formato JsonValuecolor
-{
-    "titulo": "aaaa",
-    "descripcion": "aaa",
-    "ninos_id": 2,
-    "fecha_realizacion": "2025-06-22T22:00:00.000Z",
-    "hora_inicio": "2025-06-26T14:13:09.264Z",
-    "hora_fin": "2025-06-26T14:15:10.259Z",
-    "usuario_responsable": 2,
-    "color": "#eb1cad",
-    "tipo": "Evento",
-    "ubicacion": {
-        "address": "Paseo República de Cuba, Jerónimos, Retiro, Madrid, Community of Madrid, 28009, Spain",
-        "lat": 40.41291402150223,
-        "lon": -3.6823940277099614
-    }
-}
-{
-    "id": 89,
-    "rutina_id": null,
-    "ninos_id": 5,
-    "titulo": "Charla educativa",
-    "descripcion": "Actividad en la biblioteca infantil",
-    "fecha_creacion": "2025-06-26T12:11:54.000Z",
-    "fecha_realizacion": "2025-06-26T00:00:00.000Z",
-    "hora_inicio": "1970-01-01T11:00:00.000Z",
-    "hora_fin": "1970-01-01T12:00:00.000Z",
-    "color": "#3498db",
-    "tipo": "Evento",
-    "ubicacion": null,
-    "usuario_responsable": 14,
-    "completado": true
-}
-
-
- */
   editarActividad(actividad: Partial<IActivity>) {
     console.log('Editar actividad con ID:', actividad);
     this.activityService
