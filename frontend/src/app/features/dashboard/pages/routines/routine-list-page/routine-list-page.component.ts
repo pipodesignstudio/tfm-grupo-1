@@ -1,25 +1,36 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Response } from 'express';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  effect,
+  inject,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IRoutine, IActivity, IChild } from '../../../../../shared/interfaces';
 import { RoutineService } from '../../../../../shared/services/routine.service';
-import { ActivityService } from '../../../../../shared/services';
+import { ActivityService, FamiliesStore } from '../../../../../shared/services';
 import { ChildService } from '../../../../../shared/services/child.service';
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import { IUsersFamilies } from '../../../../../shared/interfaces/iusers-families.interface';
 
 @Component({
   selector: 'app-routine-list-page',
   standalone: true,
   templateUrl: './routine-list-page.component.html',
   styleUrls: ['./routine-list-page.component.css'],
-  imports: [CommonModule, DropdownModule, ButtonModule, FormsModule]
+  imports: [CommonModule, DropdownModule, ButtonModule, FormsModule],
 })
-export class RoutineListPageComponent implements OnInit {
+export class RoutineListPageComponent {
   children: IChild[] = [];
   selectedChildId: number | null = null;
   rutinas: IRoutineConActividades[] = [];
+
+  familiesStore = inject(FamiliesStore);
+  userFamilia: IUsersFamilies | null = null;
 
   constructor(
     private router: Router,
@@ -30,41 +41,58 @@ export class RoutineListPageComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    const id_familia = localStorage.getItem('familia_id') || '1';
+  private familiaEffect = effect(async () => {
+    this.userFamilia = this.familiesStore.familiaSeleccionada();
+    if (this.userFamilia == null) return;
+    console.log(this.userFamilia);
 
     try {
-      this.children = await this.childService.getChildrenByFamily(id_familia);
+      // Cargar los niños de la familia seleccionada
+      this.children = await this.childService.getChildrenByFamily(
+        String(this.userFamilia.id)
+      );
 
-      this.route.queryParams.subscribe(async params => {
+      this.route.queryParams.subscribe(async (params) => {
         const id_nino = Number(params['id_nino']);
 
-        if (id_nino && this.children.some(c => c.id === id_nino)) {
+        if (id_nino && this.children.some((c) => c.id === id_nino)) {
           this.selectedChildId = id_nino;
         } else if (this.children.length > 0) {
           this.selectedChildId = this.children[0].id;
           this.router.navigate([], {
             queryParams: { id_nino: this.selectedChildId },
-            queryParamsHandling: 'merge'
+            queryParamsHandling: 'merge',
           });
         }
 
         if (this.selectedChildId) {
           await this.cargarRutinas();
         }
-      });
 
+        this.cdr.detectChanges();
+      });
+    } catch (error) {
+      console.error('Error al cargar los eventos:', error);
+    }
+  });
+
+  /*   async ngOnInit(): Promise<void> {
+    const id_familia = localStorage.getItem('familia_id') || '1';
+
+    try {
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al cargar niños o rutinas:', error);
     }
-  }
+  } */
 
   async cargarRutinas(): Promise<void> {
     if (!this.selectedChildId) return;
 
     try {
-      const data: IRoutine[] = await this.routineService.getAllRoutines(this.selectedChildId);
+      const data: IRoutine[] = await this.routineService.getAllRoutines(
+        this.selectedChildId
+      );
       this.rutinas = data.map((rutina) => ({
         ...rutina,
         actividades: (rutina.actividades || []).map((act: IActivity) => ({
@@ -86,21 +114,40 @@ export class RoutineListPageComponent implements OnInit {
     this.selectedChildId = event.value;
     this.router.navigate([], {
       queryParams: { id_nino: this.selectedChildId },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
   }
 
   nuevaRutina(): void {
     if (!this.selectedChildId) return;
-    this.router.navigate(['/dashboard/routine-form'], {
-      queryParams: { id_nino: this.selectedChildId }
-    });
+
+    //Crear una nueva rutina
+    this.routineService
+      .crearRutina(this.selectedChildId, {
+        nombre: '',
+        descripcion: '',
+        frecuencia: {
+          lunes: false,
+          martes: false,
+          miercoles: false,
+          jueves: false,
+          viernes: false,
+          sabado: false,
+          domingo: false,
+        },
+      })
+      .then((response) => {
+        console.log('Nueva rutina creada', response);
+        this.router.navigate(['/dashboard/routine-form'], {
+          queryParams: { id: response.id, id_nino: this.selectedChildId },
+        });
+      });
   }
 
   editarRutina(id: number): void {
     if (!this.selectedChildId) return;
     this.router.navigate(['/dashboard/routine-form'], {
-      queryParams: { id: id, id_nino: this.selectedChildId }
+      queryParams: { id: id, id_nino: this.selectedChildId },
     });
   }
 
@@ -108,7 +155,7 @@ export class RoutineListPageComponent implements OnInit {
     try {
       if (!this.selectedChildId) return;
       await this.routineService.deleteRoutine(this.selectedChildId, id);
-      this.rutinas = this.rutinas.filter(r => r.id !== id);
+      this.rutinas = this.rutinas.filter((r) => r.id !== id);
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al eliminar la rutina', error);
@@ -124,7 +171,7 @@ export class RoutineListPageComponent implements OnInit {
   }
 
   getSelectedChild(): IChild | undefined {
-    return this.children.find(c => c.id === this.selectedChildId);
+    return this.children.find((c) => c.id === this.selectedChildId);
   }
 
   // ⛔ Este método ya no se usa si usamos el string directo

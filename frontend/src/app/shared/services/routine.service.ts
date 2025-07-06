@@ -94,9 +94,9 @@ export class RoutineService {
 
       const respData: any = response.data;
       if (respData && respData.data !== undefined) {
-        return respData.data;
+        return respData.data.data;
       }
-      return respData;
+      return respData.data.data;
     } catch (error) {
       console.error('[crearRutina] Error:', error);
       throw error;

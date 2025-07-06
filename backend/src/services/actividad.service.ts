@@ -34,7 +34,7 @@ export class ActividadService {
         usuario_responsable: usuario_responsable,
         completado: dto.completado ?? false,
       };
-
+      
       if (dto.rutina_id != null) {
         data.rutina_id = dto.rutina_id;
       }

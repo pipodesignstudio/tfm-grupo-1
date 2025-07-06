@@ -11,6 +11,10 @@ export class ActividadController {
       const user = req.user!;
       const id_nino = Number(req.params.id_nino);
       const dto = req.body;
+
+
+      console.log("rutina_idaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", dto.rutina_id, dto);
+
       const nueva = await actividadService.createActividad(id_nino, dto, user.id);
       ApiCorrectResponse.genericSuccess(res, nueva, true, 'Actividad creada', 201);
     } catch (err) {
