@@ -326,7 +326,7 @@ router.post('/vacunas', asyncMiddlewareWrapper(authMiddleware), validationMiddle
  *       '200':
  *         description: Vacuna actualizada exitosamente
  */
-router.patch('/vacunas/:id', asyncMiddlewareWrapper(authMiddleware), validationMiddleware(UpdateVacunaDto, true), controller.actualizarVacuna)
+router.patch('/vacunas/:id', asyncMiddlewareWrapper(authMiddleware), validationMiddleware(UpdateVacunaDto), controller.actualizarVacuna)
 
 /**
  * @openapi

@@ -15,6 +15,7 @@ export class SaludService {
         data: { nombre: dto.nombre, ninos_id: id_nino }
       });
     } catch (error) {
+      console.error(error);
       throw new InternalServerError(
         'Error interno al crear la alergia',
         { error: 'INTERNAL_SERVER_ERROR' }
@@ -140,6 +141,7 @@ export class SaludService {
       });
       return vacuna;
     } catch (error) {
+      console.error(error);
       throw new InternalServerError(
         'Error interno al crear la vacuna',
         { error: 'INTERNAL_SERVER_ERROR' }

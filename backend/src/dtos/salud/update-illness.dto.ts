@@ -1,11 +1,13 @@
-import { IsString, MaxLength } from "class-validator";
+import { IsOptional, IsString, MaxLength } from "class-validator";
 
 export class UpdateEnfermedadDto {
     @IsString()
     @MaxLength(100)
-    nombre!: string;
+    @IsOptional()
+    nombre?: string;
     
     @IsString()
     @MaxLength(100)
-    doctor!: string;
+    @IsOptional()
+    doctor?: string;
 }
