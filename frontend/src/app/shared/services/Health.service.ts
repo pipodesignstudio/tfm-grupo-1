@@ -19,9 +19,7 @@ export interface Vacuna {
   fecha: string | Date;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class HealthService {
   private apiUrl = 'http://localhost:3000/api';
   private readonly tokenService = inject(TokenService);
@@ -34,7 +32,8 @@ export class HealthService {
     };
   }
 
-  // ✅ Alergias
+  // ---------- Alergias ----------
+
   async getAlergias(id_nino: number): Promise<Alergia[]> {
     const res = await axios.get<{ data: Alergia[] }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/alergias`,
@@ -46,7 +45,7 @@ export class HealthService {
   async addAlergia(id_nino: number, alergia: Alergia): Promise<Alergia> {
     const res = await axios.post<{ data: Alergia }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/alergias`,
-      alergia,
+      { nombre: alergia.nombre },
       this.authHeaders()
     );
     return res.data.data;
@@ -55,20 +54,18 @@ export class HealthService {
   async updateAlergia(id_nino: number, alergia: Alergia): Promise<Alergia> {
     const res = await axios.put<{ data: Alergia }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/alergias/${alergia.id}`,
-      alergia,
+      { nombre: alergia.nombre },
       this.authHeaders()
     );
     return res.data.data;
   }
 
   async deleteAlergia(id: number): Promise<void> {
-    await axios.delete(
-      `${this.apiUrl}/ninos/salud/alergias/${id}`,
-      this.authHeaders()
-    );
+    await axios.delete(`${this.apiUrl}/ninos/salud/alergias/${id}`, this.authHeaders());
   }
 
-  // ✅ Enfermedades
+  // ---------- Enfermedades ----------
+
   async getEnfermedades(id_nino: number): Promise<Enfermedad[]> {
     const res = await axios.get<{ data: Enfermedad[] }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/enfermedades`,
@@ -80,7 +77,7 @@ export class HealthService {
   async addEnfermedad(id_nino: number, enfermedad: Enfermedad): Promise<Enfermedad> {
     const res = await axios.post<{ data: Enfermedad }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/enfermedades`,
-      enfermedad,
+      { nombre: enfermedad.nombre, doctor: enfermedad.doctor },
       this.authHeaders()
     );
     return res.data.data;
@@ -89,20 +86,18 @@ export class HealthService {
   async updateEnfermedad(id_nino: number, enfermedad: Enfermedad): Promise<Enfermedad> {
     const res = await axios.patch<{ data: Enfermedad }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/enfermedades/${enfermedad.id}`,
-      enfermedad,
+      { nombre: enfermedad.nombre, doctor: enfermedad.doctor },
       this.authHeaders()
     );
     return res.data.data;
   }
 
   async deleteEnfermedad(id: number): Promise<void> {
-    await axios.delete(
-      `${this.apiUrl}/ninos/salud/enfermedades/${id}`,
-      this.authHeaders()
-    );
+    await axios.delete(`${this.apiUrl}/ninos/salud/enfermedades/${id}`, this.authHeaders());
   }
 
-  // ✅ Vacunas
+  // ---------- Vacunas ----------
+
   async getVacunas(id_nino: number): Promise<Vacuna[]> {
     const res = await axios.get<{ data: Vacuna[] }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/vacunas`,
@@ -112,44 +107,41 @@ export class HealthService {
   }
 
   async addVacuna(id_nino: number, vacuna: Vacuna): Promise<Vacuna> {
-    vacuna.fecha = this.formatFecha(vacuna.fecha);
+    const fecha = this.formatFecha(vacuna.fecha);
     const res = await axios.post<{ data: Vacuna }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/vacunas`,
-      vacuna,
+      { nombre: vacuna.nombre, fecha },
       this.authHeaders()
     );
     return res.data.data;
   }
 
   async updateVacuna(id_nino: number, id: number, vacuna: Vacuna): Promise<Vacuna> {
-    vacuna.fecha = this.formatFecha(vacuna.fecha);
+    const fecha = this.formatFecha(vacuna.fecha);
     const res = await axios.patch<{ data: Vacuna }>(
       `${this.apiUrl}/ninos/${id_nino}/salud/vacunas/${id}`,
-      vacuna,
+      { nombre: vacuna.nombre, fecha },
       this.authHeaders()
     );
     return res.data.data;
   }
 
-  // 🛠️ Convertir a Date válido (no string)
-  private formatFecha(fecha: string | Date): Date {
+  async deleteVacuna(id_nino: number, id: number): Promise<void> {
+    await axios.delete(`${this.apiUrl}/ninos/${id_nino}/salud/vacunas/${id}`, this.authHeaders());
+  }
+
+  // Utilidad: asegurar formato fecha ISO
+  private formatFecha(fecha: string | Date): string {
     if (fecha instanceof Date && !isNaN(fecha.getTime())) {
-      return fecha;
+      return fecha.toISOString();
     }
     if (typeof fecha === 'string') {
       const parsed = new Date(fecha);
       if (!isNaN(parsed.getTime())) {
-        return parsed;
+        return parsed.toISOString();
       }
     }
-    console.warn('⚠️ Fecha inválida en vacuna:', fecha);
-    return new Date(); // Fallback
-  }
-
-  async deleteVacuna(id_nino: number, id: number): Promise<void> {
-    await axios.delete(
-      `${this.apiUrl}/ninos/${id_nino}/salud/vacunas/${id}`,
-      this.authHeaders()
-    );
+    console.warn('⚠️ Fecha inválida:', fecha);
+    return new Date().toISOString(); // fallback
   }
 }
