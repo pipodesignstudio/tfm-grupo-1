@@ -107,7 +107,8 @@ export class SettingsFamilyComponent {
       .then((updatedFamily) => {
         console.log('Familia editada con éxito:', updatedFamily);
         // Actualizar la familia en el store
-        this.familiaEffect;
+        this.familiesStore.loadFamilias();
+        this.loadInvitacionesAsync();
         this.closeFamiliaEditarModal();
       })
       .catch((error) => {
