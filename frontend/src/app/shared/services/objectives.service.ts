@@ -98,7 +98,7 @@ public async createObjective(data: ObjetivoDto, idNino: number): Promise<number 
 
   public async addActivityToObjective(idObjetivo: number, idActividad: number): Promise<void> {
     await axios.post(
-      `${this.baseUrl}/objetivos/${idObjetivo}/actividades`,
+      `${this.baseUrl}/objetivos/${idObjetivo}`,
       { actividad_id: idActividad },
       this.getAuthHeaders()
     );

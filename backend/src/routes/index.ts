@@ -15,6 +15,7 @@ import ninoRoutes from "./ninos.router";
 import objetivosRouter from "./objetivos.router";
 import rutinasRouter from "./rutinas.router";
 import perfilAprendizajeRouter from "./perfil-aprendizaje.router";
+import objetivosHasActivitiesRoute from "./objetivo-has-actividades.router";
 
 const apiRouter = Router();
 
@@ -32,5 +33,6 @@ apiRouter.use("/notes", notesRoute);
 apiRouter.use("/perfil-aprendizaje", perfilAprendizajeRouter);
 apiRouter.use("/familia", familiaRoutes);
 apiRouter.use("/familia/:id/usuarios", familiaUsuariosRoutes);
+apiRouter.use("/objetivos/", objetivosHasActivitiesRoute);
 
 export default apiRouter;

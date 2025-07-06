@@ -12,6 +12,7 @@ import { ObjectivesService } from '../../../../shared/services/objectives.servic
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { ObjectivesFormComponent } from '../../components/objectives-form/objectives-form.component';
 import { ActivityFormComponent } from '../../../../components/activity/activity-form.component';
+import { ObjetivosHasActivitiesService } from '../../../../shared/services/objetivo-has-actividades.service';
 
 @Component({
   selector: 'app-objectives-page',
@@ -31,6 +32,7 @@ export class ObjectivesPageComponent {
   private childService = inject(ChildService);
   private objectivesService = inject(ObjectivesService);
   private activityService = inject(ActivityService);
+  private objetivosHasActivitiesService = inject(ObjetivosHasActivitiesService)
   private cdr = inject(ChangeDetectorRef);
 
   children: IChild[] = [];
@@ -264,11 +266,13 @@ async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
     // 1. Creamos la actividad
     const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
 
+    console.log('actividadCreada:', actividadCreada);
+
     // 2. Asociamos la actividad al objetivo seleccionado
-    await this.objectivesService.addActivityToObjective(
-      this.objetivoParaNuevaActividad.id,
-      actividadCreada.id
-    );
+    await this.objetivosHasActivitiesService.addActivityToObjective({
+      objetivoId: this.objetivoParaNuevaActividad.id,
+      actividadId: actividadCreada.id
+    }); 
 
     // 3. Refrescamos la lista de objetivos
     this.loadObjectives(this.selectedChildId);
