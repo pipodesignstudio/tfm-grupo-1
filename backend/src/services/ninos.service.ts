@@ -46,7 +46,6 @@ export class NinosService {
   async update(id: number, dto: UpdateNinoDto) {
     try {
       const data: any = {};
-
       // Copiar campos simples
       Object.entries(dto).forEach(([key, val]) => {
         if (
@@ -67,20 +66,13 @@ export class NinosService {
       if ("img_perfil" in dto) {
         data.img_perfil = dto.img_perfil
           ? Buffer.from(dto.img_perfil, "base64")
-          : null;
+          : undefined;
       }
-
-      const result = await prisma.ninos.updateMany({ where: { id }, data });
-      if (result.count === 0) {
-        throw new NotFoundError(
-          "Niño no encontrado",
-          { error: "NINO_NOT_FOUND" },
-          false
-        );
-      }
+      console.log("Datos para actualizar:", data);
+      return await prisma.ninos.update({ where: { id }, data });
     } catch (error) {
       console.error("Error real al actualizar niño:", error);
-      throw new InternalServerError("Error al actualizar niño", {
+      throw new InternalServerError("Error al actualizar niño" + JSON.stringify(error), {
         error: "INTERNAL_SERVER_ERROR",
       });
     }

@@ -27,6 +27,7 @@ export class NinosController {
       const nino = await ninosService.getById(Number(req.params.id));
       ApiCorrectResponse.genericSuccess(res, nino, true, "Niño obtenido", 200);
     } catch (err) {
+      console.error('Error al obtener perfil de aprendizaje:', err);
       next(err);
     }
   }
@@ -37,6 +38,7 @@ export class NinosController {
     next: NextFunction
   ): Promise<void> {
     try {
+      console.log('Datos recibidos para actualizar:', req.body);
       await ninosService.update(Number(req.params.id), req.body);
       ApiCorrectResponse.genericSuccess(
         res,
@@ -46,6 +48,7 @@ export class NinosController {
         200
       );
     } catch (err) {
+      console.error('Error al actualizar perfil de aprendizaje:', err);
       next(err);
     }
   }

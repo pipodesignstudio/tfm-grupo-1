@@ -168,11 +168,18 @@ export class ChildService {
     }
   }
 
-  async updateChild(id: number, data: Partial<IChild>): Promise<IChild> {
-    await axios.put(`${this.apiUrl}/ninos/${id}`, data, {
-      headers: { Authorization: `Bearer ${this.tokenService.token()}` },
-    });
-    return this.getChildById(id); // <- volvemos a pedir el niño actualizado
+  async updateChild(id: number, data: Partial<IChild>): Promise<IChild | null> {
+    console.log("Datos para actualizar:", data);
+    try {
+      await axios.put(`${this.apiUrl}/ninos/${id}`, data, {
+        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+      });
+      const updatedChild = await this.getChildById(id);
+      return updatedChild;
+    } catch (error) {
+      console.error('Error al actualizar niño:', error);
+      return null;
+    }
   }
   
 }

@@ -32,7 +32,6 @@ export class ChildProfileComponent implements OnInit {
   error = '';
   saving = signal<boolean>(false);
   imgFileUrl = signal<string | null>(null);
-  img_perfil: SafeUrl | null = null;
 
   editProfile = false;
   editDescription = false;
@@ -132,10 +131,13 @@ export class ChildProfileComponent implements OnInit {
       console.log('✅ Perfil actualizado:', updated);
 
       if (!updated || !updated.fecha_nacimiento) {
-        throw new Error('El servidor no devolvió el perfil actualizado');
+        this.error = 'No se pudo actualizar el perfil.';
+        this.saving.set(false);
+        return;
       }
 
       this.child = updated;
+      this.cdr.detectChanges();
       this.edadCalculada = this.calcularEdad(new Date(this.child.fecha_nacimiento));
       this.editProfile = false;
       this.saving.set(false);
@@ -253,7 +255,7 @@ export class ChildProfileComponent implements OnInit {
     this.editDescription ? this.saveDescription() : this.editDescription = true;
   }
 
-  private processImageFromPrisma(imgData: any): void {
+ processImageFromPrisma(imgData: any): SafeUrl | null {
     try {
       const keys = Object.keys(imgData)
         .filter(key => !isNaN(parseInt(key)))
@@ -271,12 +273,15 @@ export class ChildProfileComponent implements OnInit {
       
       const imageUrl = `data:image/jpeg;base64,${base64String}`;
       
-      this.img_perfil = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+      return this.sanitizer.bypassSecurityTrustUrl(imageUrl);
       
     } catch (error) {
       console.error('Error procesando imagen:', error);
+      return null;
     }
   }
+
+
 
   
 

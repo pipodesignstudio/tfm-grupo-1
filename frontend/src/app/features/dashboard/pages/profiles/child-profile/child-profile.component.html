@@ -20,7 +20,7 @@
 
             @if (child.img_perfil && !editProfile) {
             <img
-              [src]="img_perfil"
+              [src]="processImageFromPrisma(child.img_perfil)"
               alt="Foto del niño"
               class="w-32 h-32 rounded-full object-cover border-4 border-primary shadow transition group-hover:scale-105 duration-200"
             />
@@ -102,7 +102,7 @@
             <button
               pButton
               [label]="saving() ? 'Guardando...' : editProfile ? 'Guardar' : 'Editar'"
-              [disabled]="saving()"
+              [disabled]="saving() || (!child.fecha_nacimiento || !child.peso || !child.altura || !child.genero)"
               [loading]="saving()"
               (click)="onProfileButtonClick()"
             ></button>
