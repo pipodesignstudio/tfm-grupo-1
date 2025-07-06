@@ -117,3 +117,23 @@ npm i
 npx ng serve
 
 ```
+
+## Demo y notas adicionales: 
+
+Las credenciales para hacer un uso exhaustivo de la aplicación son las siguientes:
+
+Usuario: userdemo@gmail.com   
+Contraseña: 123456789
+
+Los console.log() utilizados durante el desarrollo se mantienen el código para demostrar el flujo de desarrollo utilizado durante el TFM. 
+
+En el archivo main.ts se encuentra el siguiente código que deshabilitaría los console.log() en el entorno de producción:
+
+```ts
+
+if (environment.production) {
+  enableProdMode();
+  window.console.log = () => {};
+}
+
+```
