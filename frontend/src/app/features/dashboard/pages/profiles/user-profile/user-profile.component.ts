@@ -160,7 +160,7 @@ export class UserProfileComponent {
   }
 
   goToNino(childId: number) {
-    this.router.navigate(['dashboard', 'children', childId]);
+    this.router.navigate(['dashboard', 'child-profile', childId]);
   }
 
   showChildModal() {
