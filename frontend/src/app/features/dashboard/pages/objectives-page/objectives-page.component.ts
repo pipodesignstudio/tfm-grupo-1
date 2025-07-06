@@ -282,6 +282,7 @@ export class ObjectivesPageComponent {
       const actividadAEnviar: IActivity = {
         ...nuevaActividad,
         tipo: 'Objetivo',
+        color: this.objetivoParaNuevaActividad.color,
         ninos_id: this.selectedChildId,
       } as IActivity;
 
