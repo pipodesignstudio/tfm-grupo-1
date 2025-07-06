@@ -29,14 +29,9 @@
   @if (!loading()) {
   <div class="relative flex items-center md:justify-center">
     <!-- Flecha izquierda -->
-    <button
-      class="p-2 pr-6"
-      (click)="previousChild()"
-      [disabled]="children.length <= 1"
-      aria-label="Niño anterior"
-    >
-      <i class="pi pi-chevron-left"></i>
-    </button>
+    <p-button icon="pi pi-chevron-left"
+    styleClass="mx-3"
+    [severity]="'contrast'" (click)="previousChild()" [rounded]="true"  [disabled]="children.length <= 1" aria-label="Niño anterior" />
 
     <div class="flex-1">
       @if (children.length > 0) {
@@ -44,14 +39,22 @@
         <a
           [routerLink]="['/dashboard/child-profile', children[activeChild].id]"
         >
+        @if (children[activeChild].img_perfil) { 
           <img
-            [src]="
-              children[activeChild].img_perfil ||
-              'https://api.dicebear.com/9.x/dylan/svg?seed=Aidan&backgroundColor=ffd700&mood=happy&skinColor=c26450&scale=90'
-            "
+            [src]="processImageFromPrisma(children[activeChild].img_perfil)"
             [alt]="children[activeChild].nombre + ' photo'"
             class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto cursor-pointer"
           />
+        } @else {
+          <img
+          [src]="
+            'https://api.dicebear.com/9.x/dylan/svg?seed=Aidan&backgroundColor=ffd700&mood=happy&skinColor=c26450&scale=90'
+          "
+          [alt]="children[activeChild].nombre + ' photo'"
+          class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto cursor-pointer"
+        />
+        }
+         
         </a>
         <h2 class="text-xl font-semibold mb-6 text-center">
           El día de {{ children[activeChild].nombre }}
@@ -71,11 +74,12 @@
             <span class="flex-1 text-gray-900 dark:text-white">
               {{ activity.titulo }}
             </span>
-
             <span
-              class="font-mono text-sm text-gray-700 w-24 text-right ml-3 dark:text-white"
+              class="font-mono text-sm text-gray-700 w-50 text-right ml-3 dark:text-white"
             >
-              {{ activity.hora_inicio | date : "HH:mm" : "UTC" }}
+              {{ activity.hora_inicio | date : "HH:mm" : "UTC" }} -
+
+              {{ activity.hora_fin | date : "HH:mm" : "UTC" }}
             </span>
           </li>
           }
@@ -90,14 +94,8 @@
     </div>
 
     <!-- Flecha derecha -->
-    <button
-      class="p-2 pl-6"
-      (click)="nextChild()"
-      [disabled]="children.length <= 1"
-      aria-label="Niño siguiente"
-    >
-      <i class="pi pi-chevron-right"></i>
-    </button>
+    <p-button icon="pi pi-chevron-right" styleClass="mx-3" [severity]="'contrast'" (click)="nextChild()" [rounded]="true"  [disabled]="children.length <= 1" aria-label="Niño siguiente" />
+
   </div>
   }
 

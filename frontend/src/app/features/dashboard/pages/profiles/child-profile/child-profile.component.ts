@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -9,11 +9,12 @@ import { ChildService } from '../../../../../shared/services/child.service';
 import { HealthService, Alergia, Enfermedad, Vacuna } from '../../../../../shared/services/Health.service';
 import { IChild } from '../../../../../shared/interfaces';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-child-profile',
   templateUrl: './child-profile.component.html',
-  styleUrls: ['./child-profile.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -29,7 +30,9 @@ export class ChildProfileComponent implements OnInit {
   edadCalculada = '';
   loading = true;
   error = '';
-  saving = false;
+  saving = signal<boolean>(false);
+  imgFileUrl = signal<string | null>(null);
+  img_perfil: SafeUrl | null = null;
 
   editProfile = false;
   editDescription = false;
@@ -48,6 +51,7 @@ export class ChildProfileComponent implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private childService: ChildService,
+    private sanitizer: DomSanitizer,
     private healthService: HealthService
   ) {}
 
@@ -82,6 +86,10 @@ export class ChildProfileComponent implements OnInit {
       this.alergias = alergias;
       this.enfermedades = enfermedades;
       this.vacunas = vacunas;
+
+      if (this.child.img_perfil) {
+        this.processImageFromPrisma(this.child.img_perfil);
+      }
     } catch (e: any) {
       console.error('❌ Error al cargar perfil del niño:', e);
       this.error = e?.error?.message || e?.message || 'No se pudo cargar el perfil.';
@@ -102,7 +110,7 @@ export class ChildProfileComponent implements OnInit {
 
   async saveProfile(): Promise<void> {
     if (!this.child) return;
-    this.saving = true;
+    this.saving.set(true);
     this.error = '';
 
     try {
@@ -130,13 +138,13 @@ export class ChildProfileComponent implements OnInit {
       this.child = updated;
       this.edadCalculada = this.calcularEdad(new Date(this.child.fecha_nacimiento));
       this.editProfile = false;
+      this.saving.set(false);
     } catch (e: any) {
       console.error('❌ Error al guardar perfil:', e);
+      this.saving.set(false);
+
       this.error = e?.error?.message || e?.message || JSON.stringify(e) || 'No se pudo guardar el perfil.';
-    } finally {
-      this.saving = false;
-      this.cdr.detectChanges(); // <- Asegura actualización de UI
-    }
+    } 
   }
 
   async saveDescription(): Promise<void> {
@@ -145,7 +153,7 @@ export class ChildProfileComponent implements OnInit {
     try {
       await this.childService.updateChild(this.child.id, this.child);
       this.editDescription = false;
-      this.cdr.detectChanges();
+      this.saving.set(false);
     } catch (e: any) {
       console.error(e);
       this.error = e?.error?.message || e?.message || JSON.stringify(e) || 'No se pudo guardar la descripción.';
@@ -153,11 +161,13 @@ export class ChildProfileComponent implements OnInit {
   }
 
   onFileSelected(event: Event): void {
+    this.imgFileUrl.set(null);
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         if (this.child) this.child.img_perfil = reader.result as string;
+        this.imgFileUrl.set(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -231,7 +241,7 @@ export class ChildProfileComponent implements OnInit {
   }
 
   onProfileButtonClick(): void {
-    if (this.saving) return;
+    if (this.saving()) return;
     this.editProfile ? this.saveProfile() : this.editProfile = true;
   }
 
@@ -242,4 +252,32 @@ export class ChildProfileComponent implements OnInit {
   onDescriptionButtonClick(): void {
     this.editDescription ? this.saveDescription() : this.editDescription = true;
   }
+
+  private processImageFromPrisma(imgData: any): void {
+    try {
+      const keys = Object.keys(imgData)
+        .filter(key => !isNaN(parseInt(key)))
+        .map(key => parseInt(key))
+        .sort((a, b) => a - b);
+      
+      const byteArray = keys.map(key => imgData[key]);
+      
+      let base64String = btoa(String.fromCharCode(...byteArray));
+      
+      const jpegStart = base64String.indexOf('/9j/');
+      if (jpegStart > 0) {
+        base64String = base64String.substring(jpegStart);
+      }
+      
+      const imageUrl = `data:image/jpeg;base64,${base64String}`;
+      
+      this.img_perfil = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+      
+    } catch (error) {
+      console.error('Error procesando imagen:', error);
+    }
+  }
+
+  
+
 }
