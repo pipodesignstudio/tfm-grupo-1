@@ -15,7 +15,7 @@ import {
   FullCalendarModule,
   FullCalendarComponent,
 } from '@fullcalendar/angular';
-import { CalendarOptions, DateSelectArg, EventApi } from '@fullcalendar/core';
+import { CalendarOptions, DateSelectArg, EventApi, ViewApi } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { FormsModule } from '@angular/forms';
@@ -87,7 +87,6 @@ export class CalendarPageComponent {
     this.familiaEffect;
     this.changeDetector.detectChanges();
   }
-
 
   private familiaEffect = effect(async () => {
     this.userFamilia = this.familiesStore.familiaSeleccionada();
@@ -184,19 +183,31 @@ export class CalendarPageComponent {
     contentHeight: 'auto',
     longPressDelay: 0,
     select: this.handleDateSelect.bind(this),
-    eventDidMount: this.eventDidMount.bind(this),
+    eventDidMount: ({ event }) => this.addDot(event),
+    datesSet: (info) => this.refreshDots(info.view),
     locale: esLocale,
   });
 
-  // Metodo para añadir el dot
-  eventDidMount(info: any) {
-    const dateStr = info.event.startStr.split('T')[0];
-    const dayCell = document.querySelector(`[data-date="${dateStr}"]`);
-
-    if (dayCell && !dayCell.classList.contains('has-event-dot')) {
-      dayCell.classList.add('has-event-dot');
-    }
+  onNavigate(info: any) {
+    console.log('Nuevo rango mostrado:', info.startStr, '→', info.endStr);
   }
+  // Metodo para añadir el dot
+  private addDot(event: EventApi) {
+    const dateStr = event.startStr.split('T')[0];
+    const cell = document.querySelector(`[data-date="${dateStr}"]`);
+    if (cell) cell.classList.add('has-event-dot');
+  }
+
+
+  private refreshDots(view: ViewApi) {
+  // quita dots antiguos
+  document
+    .querySelectorAll('.has-event-dot')
+    .forEach(el => el.classList.remove('has-event-dot'));
+
+  // pinta los de los eventos visibles
+  view.calendar.getEvents().forEach(ev => this.addDot(ev));
+}
 
   handleDateSelect(selectInfo: DateSelectArg) {
     this.clickedDate = selectInfo.startStr.split('T')[0];
@@ -211,14 +222,16 @@ export class CalendarPageComponent {
       start: format(new Date(activity.fecha_realizacion), 'yyyy-MM-dd'), // asegúrate que `fecha` sea en formato ISO o YYYY-MM-DD
       allDay: true,
       color: activity.color ?? undefined,
-      actividadInfo: activity, 
+      actividadInfo: activity,
     }));
   }
 
-  actividadTipo: 'evento' | 'objetivo' | 'rutina' | null = "evento"; // Por defecto, el tipo de actividad es 'evento'
+  actividadTipo: 'evento' | 'objetivo' | 'rutina' | null = 'evento'; // Por defecto, el tipo de actividad es 'evento'
   abrirActivityModal(actividad: IActivity | null = null) {
     this.actividadInfo = actividad || null;
-    this.actividadTipo = actividad ? actividad.tipo?.toLowerCase() as 'evento' | 'objetivo' | 'rutina' : 'evento';
+    this.actividadTipo = actividad
+      ? (actividad.tipo?.toLowerCase() as 'evento' | 'objetivo' | 'rutina')
+      : 'evento';
     this.mostrarActivityModal = true;
     // Si no se pasa actividad, se inicializa como null
   }
@@ -228,7 +241,7 @@ export class CalendarPageComponent {
   }
 
   redirectToObjective() {
-    this.router.navigate(['/objectives']);
+    this.router.navigate(['dashboard', 'objectives']);
   }
 
   guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {

@@ -97,8 +97,8 @@ export class UserFormComponent implements OnInit {
 
     const editExtras = {
       nick: ['', [Validators.required, Validators.minLength(3)]],
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      nombre: [''],
+      apellido: [''],
       img_perfil: [null],
     };
 
