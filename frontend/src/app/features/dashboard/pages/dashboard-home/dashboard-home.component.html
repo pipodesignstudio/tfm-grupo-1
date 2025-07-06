@@ -71,11 +71,12 @@
             <span class="flex-1 text-gray-900 dark:text-white">
               {{ activity.titulo }}
             </span>
-
             <span
-              class="font-mono text-sm text-gray-700 w-24 text-right ml-3 dark:text-white"
+              class="font-mono text-sm text-gray-700 w-50 text-right ml-3 dark:text-white"
             >
-              {{ activity.hora_inicio | date : "HH:mm" : "UTC" }}
+              {{ activity.hora_inicio | date : "HH:mm" : "UTC" }} -
+
+              {{ activity.hora_fin | date : "HH:mm" : "UTC" }}
             </span>
           </li>
           }
