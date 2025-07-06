@@ -1,1 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+@plugin "tailwindcss-primeui";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+  }
+}
+
+@theme {
+  --font-nido: "Poppins", "sans-serif";
+}
+
+body {
+  line-height: 1.5;
+}
+
+.card {
+  @apply dark:bg-[#9ed2c5] shadow-md bg-[#618E83] p-6 rounded-lg text-white dark:bg-gray-800 dark:text-white;
+}
+
+.card-secondary {
+  @apply shadow-md bg-[#ffffff] p-6 rounded-lg text-gray-700 dark:bg-gray-800 dark:text-white;
+  border: 1.5px solid transparent;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+label {
+  @apply font-medium text-sm;
+}

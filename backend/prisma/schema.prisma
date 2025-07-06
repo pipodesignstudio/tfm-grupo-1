@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model actividades {
+  id                        Int                         @id @default(autoincrement())
+  rutina_id                 Int?
+  ninos_id                  Int
+  titulo                    String?                     @db.VarChar(100)
+  descripcion               String?                     @db.Text
+  fecha_creacion            DateTime                    @default(now()) @db.Timestamp(0)
+  fecha_realizacion         DateTime                    @db.Timestamp(0)
+  hora_inicio               DateTime                    @db.Time(0)
+  hora_fin                  DateTime                    @db.Time(0)
+  color                     String?                     @db.VarChar(45)
+  tipo                      actividades_tipo
+  ubicacion                 Json?
+  usuario_responsable       Int
+  completado                Boolean?                    @default(false)
+  rutinas                   rutinas?                    @relation(fields: [rutina_id], references: [id], onDelete: Cascade, map: "fk_actividad_rutina")
+  ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_actividades_ninos1")
+  objetivos_has_actividades objetivos_has_actividades[]
+  recordatorios             recordatorios[]
+
+  @@index([rutina_id], map: "fk_actividad_rutina")
+  @@index([ninos_id], map: "fk_actividades_ninos1_idx")
+}
+
+model alergias {
+  id       Int    @id @default(autoincrement())
+  ninos_id Int
+  nombre   String @db.VarChar(100)
+  ninos    ninos  @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_alergias_ninos1")
+
+  @@index([ninos_id], map: "fk_alergias_ninos1_idx")
+}
+
+model familia {
+  id                         Int                          @id @default(autoincrement())
+  descripcion                String?                      @db.Text
+  familia_usuarios           familia_usuarios[]
+  invitacion_usuario_familia invitacion_usuario_familia[]
+  ninos                      ninos[]
+}
+
+model familia_usuarios {
+  familia_id  Int
+  usuarios_id Int
+  rol         familia_usuarios_rol
+  familia     familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_familia_usuarios_familia1")
+  usuarios    usuarios             @relation(fields: [usuarios_id], references: [id], onDelete: Cascade, map: "fk_familia_usuarios_usuarios1")
+
+  @@id([familia_id, usuarios_id])
+  @@index([familia_id], map: "fk_familia_usuarios_familia_idx")
+  @@index([usuarios_id], map: "fk_familia_usuarios_usuarios_idx")
+}
+
+model ninos {
+  id                      Int                  @id @default(autoincrement())
+  perfiles_aprendizaje_id Int
+  familia_id              Int
+  nombre                  String               @db.VarChar(100)
+  apellido                String               @db.VarChar(100)
+  img_perfil              Bytes?               @db.MediumBlob
+  fecha_nacimiento        DateTime             @db.Date
+  descripcion             String?              @db.Text
+  genero                  String?              @db.VarChar(45)
+  peso                    Int?
+  altura                  Int?
+  actividades             actividades[]
+  alergias                alergias[]
+  enfermedades            enfermedades[]
+  familia                 familia              @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_ninos_familia1")
+  perfiles_aprendizaje    perfiles_aprendizaje @relation(fields: [perfiles_aprendizaje_id], references: [id], map: "fk_ninos_perfiles_aprendizaje1")
+  notas                   notas[]
+  objetivos               objetivos[]
+  rutinas                 rutinas[]
+  vacunas                 vacunas[]
+
+  @@index([perfiles_aprendizaje_id], map: "fk_ninos_perfiles_aprendizaje1_idx")
+  @@index([familia_id], map: "fk_ninos_familia1")
+}
+
+model notas {
+  id             Int      @id @default(autoincrement())
+  ninos_id       Int
+  titulo         String?  @db.VarChar(45)
+  texto          String?  @db.Text
+  fecha_creacion DateTime @default(now()) @db.Timestamp(0)
+  ninos          ninos    @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_notas_ninos1")
+
+  @@index([ninos_id], map: "fk_notas_ninos1_idx")
+}
+
+model objetivos {
+  id                        Int                         @id @default(autoincrement())
+  nombre                    String                      @db.VarChar(45)
+  ninos_id                  Int
+  color                     String?                     @db.VarChar(45)
+  tipo                      String?                     @db.VarChar(45)
+  fecha_fin                 DateTime?                   @db.Date
+  ninos                     ninos                       @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_objetivos_ninos1")
+  objetivos_has_actividades objetivos_has_actividades[]
+
+  @@index([ninos_id], map: "fk_objetivos_ninos1")
+}
+
+model perfiles_aprendizaje {
+  id          Int     @id @default(autoincrement())
+  nombre      String  @db.VarChar(100)
+  descripcion String? @db.VarChar(100)
+  ninos       ninos[]
+}
+
+model recordatorios {
+  id           Int                        @id @default(autoincrement())
+  actividad_id Int
+  usuario_id   Int
+  periodicidad recordatorios_periodicidad @default(daily)
+  activo       Boolean                    @default(true)
+  ultimo_envio DateTime?                  @db.Timestamp(0)
+  actividades  actividades                @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_actividad")
+  usuarios     usuarios                   @relation(fields: [usuario_id], references: [id], onDelete: Cascade, map: "fk_recordatorio_usuario")
+
+  @@index([actividad_id], map: "fk_recordatorio_actividad")
+  @@index([usuario_id], map: "fk_recordatorio_usuario")
+}
+
+model rutinas {
+  id             Int           @id @default(autoincrement())
+  ninos_id       Int
+  nombre         String        @db.VarChar(100)
+  descripcion    String?       @db.Text
+  fecha_creacion DateTime      @default(now()) @db.Timestamp(0)
+  frecuencia     Json?
+  fecha_fin      DateTime?     @db.Timestamp(0)
+  actividades    actividades[]
+  ninos          ninos         @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_rutinas_ninos1")
+
+  @@index([ninos_id], map: "fk_rutinas_ninos1")
+}
+
+model usuarios {
+  id               Int                @id @default(autoincrement())
+  nombre           String?            @db.VarChar(100)
+  apellido         String?            @db.VarChar(100)
+  nick             String             @unique(map: "nick") @db.VarChar(45)
+  img_perfil       Bytes?             @db.MediumBlob
+  email            String             @unique(map: "email") @db.VarChar(255)
+  contrasena       String             @db.VarChar(255)
+  primera_sesion   Boolean            @default(true)
+  fecha_creacion   DateTime           @default(now()) @db.Timestamp(0)
+  borrado          Boolean            @default(false)
+  email_verificado Boolean            @default(false)
+  familia_usuarios familia_usuarios[]
+  recordatorios    recordatorios[]
+}
+
+model invitacion_usuario_familia {
+  id                 Int                            @id @default(autoincrement())
+  familia_id         Int
+  usuario_emisor     Int
+  email_destinatario String                         @db.VarChar(255)
+  rol                invitacion_usuario_familia_rol
+  atentido           Boolean                        @default(false)
+  aceptado           Boolean                        @default(false)
+  fecha_envio        DateTime                       @default(now()) @db.Timestamp(0)
+  familia            familia                        @relation(fields: [familia_id], references: [id], onDelete: Cascade, map: "fk_invitacion_usuario_familia_familia1")
+
+  @@index([familia_id], map: "fk_invitacion_usuario_familia_familia1_idx")
+}
+
+model objetivos_has_actividades {
+  objetivo_id  Int
+  actividad_id Int
+  actividades  actividades @relation(fields: [actividad_id], references: [id], onDelete: Cascade, map: "fk_actividad_objetivo_actividad_id")
+  objetivos    objetivos   @relation(fields: [objetivo_id], references: [id], onDelete: Cascade, map: "fk_actividad_objetivo_objetivo_id")
+
+  @@id([objetivo_id, actividad_id])
+  @@index([actividad_id], map: "idx_actividad_objetivo_actividad_id")
+  @@index([objetivo_id], map: "idx_actividad_objetivo_objetivo_id")
+}
+
+model enfermedades {
+  id       Int    @id @default(autoincrement())
+  ninos_id Int
+  nombre   String @db.VarChar(100)
+  doctor   String @db.VarChar(100)
+  ninos    ninos  @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_enfermedades_ninos1")
+
+  @@index([ninos_id], map: "fk_enfermedades_ninos1")
+}
+
+model vacunas {
+  id       Int      @id @default(autoincrement())
+  ninos_id Int
+  nombre   String   @db.VarChar(100)
+  fecha    DateTime @db.Timestamp(0)
+  ninos    ninos    @relation(fields: [ninos_id], references: [id], onDelete: Cascade, map: "fk_vacunas_ninos1")
+
+  @@index([ninos_id], map: "fk_vacunas_ninos1")
+}
+
+enum familia_usuarios_rol {
+  admin
+  cuidador
+  nino
+}
+
+enum actividades_tipo {
+  Objetivo
+  Rutina
+  Evento
+}
+
+enum invitacion_usuario_familia_rol {
+  admin
+  cuidador
+  nino
+}
+
+enum recordatorios_periodicidad {
+  daily
+  weekly
+  monthly
+}

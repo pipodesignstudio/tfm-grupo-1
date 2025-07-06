@@ -1,0 +1,122 @@
+<div class="p-4 max-w-xl mx-auto md:max-w-6xl space-y-6">
+  <!-- Loading -->
+  @if (loading()) {
+  <div class="text-center py-8">
+    <i class="pi pi-spin pi-spinner text-3xl"></i>
+    <p>Cargando datos...</p>
+  </div>
+  } @if (!loading() && children.length === 0) {
+  <div class="text-center text-gray-500 mt-4">
+    No hay datos para mostrar. Selecciona una familia o añade niños.
+  </div>
+  }
+
+  <!-- Saludo -->
+  @if (!loading()) {
+  <div class="flex flex-col items-start">
+    <h1 class="text-4xl font-bold pb-4 pt-3">
+      ¡Hola
+      <span
+        class="relative inline-block text-black dark:text-white underline-animate"
+        [class.underline-in]="underlineIn()"
+        >{{ userName }}</span
+      >!
+    </h1>
+  </div>
+  }
+
+  <!-- El día del niño -->
+  @if (!loading()) {
+  <div class="relative flex items-center md:justify-center">
+    <!-- Flecha izquierda -->
+    <p-button icon="pi pi-chevron-left"
+    styleClass="mx-3"
+    [severity]="'contrast'" (click)="previousChild()" [rounded]="true"  [disabled]="children.length <= 1" aria-label="Niño anterior" />
+
+    <div class="flex-1">
+      @if (children.length > 0) {
+      <div class="mb-8">
+        <a
+          [routerLink]="['/dashboard/child-profile', children[activeChild].id]"
+        >
+        @if (children[activeChild].img_perfil) { 
+          <img
+            [src]="processImageFromPrisma(children[activeChild].img_perfil)"
+            [alt]="children[activeChild].nombre + ' photo'"
+            class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto cursor-pointer"
+          />
+        } @else {
+          <img
+          [src]="
+            'https://api.dicebear.com/9.x/dylan/svg?seed=Aidan&backgroundColor=ffd700&mood=happy&skinColor=c26450&scale=90'
+          "
+          [alt]="children[activeChild].nombre + ' photo'"
+          class="w-24 h-24 rounded-full object-cover mb-4 shadow mx-auto cursor-pointer"
+        />
+        }
+         
+        </a>
+        <h2 class="text-xl font-semibold mb-6 text-center">
+          El día de {{ children[activeChild].nombre }}
+        </h2>
+        <ul class="w-full space-y-2">
+          @for (activity of activities; track activity.id) {
+          <li
+            class="flex items-center px-3 py-2 rounded-lg shadow-sm transition-all duration-300 group bg-white dark:bg-gray-700"
+          >
+            <span
+              class="w-12 h-12 mr-3 rounded-full flex items-center justify-center bg-white border-4 dark:bg-gray-400"
+              [style.border-color]="activity.color || '#cccccc'"
+            >
+              <span class="text-2xl">📌</span>
+            </span>
+
+            <span class="flex-1 text-gray-900 dark:text-white">
+              {{ activity.titulo }}
+            </span>
+            <span
+              class="font-mono text-sm text-gray-700 w-50 text-right ml-3 dark:text-white"
+            >
+              {{ activity.hora_inicio | date : "HH:mm" : "UTC" }} -
+
+              {{ activity.hora_fin | date : "HH:mm" : "UTC" }}
+            </span>
+          </li>
+          }
+        </ul>
+        @if (activities.length === 0) {
+        <div class="text-center text-gray-500 mt-4">
+          No hay eventos próximos para este niño.
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Flecha derecha -->
+    <p-button icon="pi pi-chevron-right" styleClass="mx-3" [severity]="'contrast'" (click)="nextChild()" [rounded]="true"  [disabled]="children.length <= 1" aria-label="Niño siguiente" />
+
+  </div>
+  }
+
+  <!-- Enlaces directos -->
+  @if (!loading()) {
+  <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+    @for (link of links; track link.url) {
+    <a
+      class="bg-primary hover:bg-[#ff7f50] hover:text-white rounded-xl p-4 flex flex-col justify-between items-start shadow transition dark:bg-gray-800 dark:hover:bg-gray-700 h-24 md:h-40 w-full"
+      [routerLink]="link.url"
+    >
+      <span class="flex-shrink-0">
+        <i [class]="link.icon + ' text-2xl md:text-3xl lg:text-3xl'"></i>
+      </span>
+      <span
+        class="w-full text-right text-base md:text-xl font-semibold tracking-wide"
+      >
+        {{ link.label }}
+      </span>
+    </a>
+    }
+  </div>
+  }
+</div>

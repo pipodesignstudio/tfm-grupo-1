@@ -1,0 +1,106 @@
+<div class="mb-5 flex justify-end">
+    ⌛ 4 min
+</div>
+<h1>Ahora algo más difícil, vamos a añadir a un niño a la familia que hemos creado</h1>
+<p class="text-muted text-sm mt-3">(No te preocupes, podrás añadir todos los que quieras más adelante 😉)</p>
+
+
+<input
+  #fileInput
+  type="file"
+  accept="image/*"
+  class="sr-only"         
+  (change)="onFileChange($event)"
+/>
+
+<div class="flex flex-col gap-2 mt-5">
+    <label>Imagen del niño (opcional)</label>
+    <div (click)="fileInput.click()" class="cursor-pointer w-24 h-24 rounded-full bg-primary/30 text-primary flex items-center justify-center cursor-pointer">
+
+    
+    @if(ninoForm.value.imgPerfil){
+        <img [src]="ninoForm.value.imgPerfil!" alt="" class="w-full h-full object-cover rounded-full">
+    } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="size-12 fill-primary" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+          </svg>
+          
+    }
+</div>
+      
+</div>
+
+
+
+<form [formGroup]="ninoForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 mt-5">
+    <div class="grid md:grid-cols-2 gap-5">
+        <div class="flex flex-col gap-2">
+            <label>Nombre*</label>
+            <input type="text" formControlName="nombre" pInputText>
+            @if (ninoForm.get('nombre')?.errors 
+            && !ninoForm.get('nombre')?.pristine) {
+                <p-message severity="error">Necesitamos un nombre</p-message>
+            }
+        </div>
+        <div class="flex flex-col gap-2">
+            <label>Apellido*</label>
+            <input type="text" formControlName="apellido" pInputText>
+            @if (ninoForm.get('apellido')?.errors 
+            && !ninoForm.get('apellido')?.pristine) {
+                <p-message severity="error">Necesitamos un apellido</p-message>
+            }
+        </div>
+    </div>
+    <div class="flex flex-col gap-2">
+        <label>Descripción</label>
+        <textarea rows="3"cols="30" pTextarea formControlName="descripcion" [autoResize]="true"></textarea>
+
+        @if (ninoForm.get('descripcion')?.errors 
+        && !ninoForm.get('descripcion')?.pristine) {
+            <p-message severity="error">Necesitamos una descripción</p-message>
+        }
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+        <div class="flex flex-col gap-2">
+            <label>Fecha de nacimiento*</label>
+            <p-datepicker fluid [maxDate]="maxDate" formControlName="fecha_nacimiento" [iconDisplay]="'input'" [showIcon]="true" inputId="fecha_nacimiento" />
+            @if (ninoForm.get('fecha_nacimiento')?.errors 
+            && !ninoForm.get('fecha_nacimiento')?.pristine) {
+                <p-message severity="error">Necesitamos una fecha de nacimiento</p-message>
+            }
+        </div>
+    
+        <div class="flex flex-col gap-2">
+            <label>Género</label>
+            <p-select [options]="genres" formControlName="genero"  placeholder="Selecciona..." [appendTo]="'body'" class="w-full" />
+            @if (ninoForm.get('genero')?.errors 
+            && !ninoForm.get('genero')?.pristine) {
+                <p-message severity="error">Necesitamos un genero</p-message>
+            }
+        </div>
+        <div class="flex flex-col gap-2">
+            <label>Peso (kg)</label>
+            <p-inputnumber inputId="peso" formControlName="peso" suffix="kg" [showButtons]="true" step="0.1"  [min]="0" [max]="100"  />
+        </div>
+        <div class="flex flex-col gap-2">
+            <label>Altura (cm)</label>
+            <p-inputnumber inputId="altura" formControlName="altura" suffix="cm" [showButtons]="true" step="1"  [min]="0" [max]="250"  />
+        </div>
+    </div>
+    <div class="flex flex-row justify-end">
+        <p-button label="Continuar" (click)="onSubmit()" [disabled]="ninoForm.invalid" [loading]="isLoading" styleClass=" mt-5" icon="pi pi-arrow-right" iconPos="right" />
+
+    </div>
+</form>
+
+
+
+<div class="mt-3 flex flex-row gap-2 items-center justify-center">
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-primary"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+</div>
+<p-toast />

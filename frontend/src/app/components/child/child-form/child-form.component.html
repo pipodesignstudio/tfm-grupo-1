@@ -1,0 +1,152 @@
+<div
+  class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white dark:bg-gray-700 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
+  >
+    <h2
+      class="text-xl font-semibold text-gray-800 dark:text-white mb-4 shrink-0"
+    >
+      @if (editMode) { Editar Niño } @else { Crear Niño }
+    </h2>
+
+    <form
+      [formGroup]="childProfileForm"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-3"
+    >
+      <div class="flex flex-col gap-2">
+        <label for="name"
+          >Nombre <span class="required-asterisk">*</span></label
+        >
+        <input
+          type="text"
+          id="nombre"
+          pInputText
+          formControlName="nombre"
+          placeholder="Nombre del niño/a"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['nombre'].invalid && f['nombre'].touched
+          }"
+        />
+        @if (f['nombre'].invalid && f['nombre'].dirty) {
+        <small class="p-error">
+          @if (f['nombre'].errors?.['required']) { El nombre es obligatorio. }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="apellido"
+          >Apellido <span class="required-asterisk">*</span></label
+        >
+        <input
+          type="text"
+          id="apellido"
+          pInputText
+          formControlName="apellido"
+          placeholder="Apellido del niño/a"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              f['apellido'].invalid && f['apellido'].touched
+          }"
+        />
+        @if (f['apellido'].invalid && f['apellido'].dirty) {
+        <small class="p-error">
+          @if (f['apellido'].errors?.['required']) { El apellido es obligatorio.
+          }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="fecha_nacimiento"
+          >Fecha de Nacimiento <span class="required-asterisk">*</span></label
+        >
+        <p-date-picker
+          inputId="fecha_nacimiento"
+          formControlName="fecha_nacimiento"
+          dateFormat="dd-mm-yy"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          styleClass="w-full"
+        ></p-date-picker>
+        @if (f['fecha_nacimiento'].invalid && f['fecha_nacimiento'].dirty) {
+        <small class="p-error">
+          @if (f['fecha_nacimiento'].errors?.['required']) { La fecha de
+          nacimiento es obligatoria. }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="genero">Género (Opcional)</label>
+        <p-dropdown
+          inputId="genero"
+          formControlName="genero"
+          [options]="genderOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona el género"
+          [showClear]="true"
+        ></p-dropdown>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="altura">Altura (cm - Opcional)</label>
+        <input
+          type="number"
+          id="altura"
+          pInputText
+          formControlName="altura"
+          placeholder="Ej: 90"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['altura'].invalid && f['altura'].touched
+          }"
+        />
+        @if (f['altura'].invalid && f['altura'].dirty) {
+        <small class="p-error">
+          @if (f['altura'].errors?.['min'] || f['altura'].errors?.['max']) {
+          Introduce una altura válida (1-300 cm). }
+        </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="peso">Peso (kg - Opcional)</label>
+        <input
+          type="number"
+          step="0.1"
+          id="peso"
+          pInputText
+          formControlName="peso"
+          placeholder="Ej: 15.5"
+          [ngClass]="{
+            'ng-invalid ng-dirty': f['peso'].invalid && f['peso'].touched
+          }"
+        />
+        @if (f['peso'].invalid && f['peso'].dirty) {
+        <small class="p-error">
+          @if (f['peso'].errors?.['min'] || f['peso'].errors?.['max']) {
+          Introduce un peso válido (0.1-200 kg). }
+        </small>
+        }
+      </div>
+
+      @if (errorMessage) {
+      <small class="p-error">{{ errorMessage }}</small>
+      }
+      <button
+        type="button"
+        (click)="cerrarModal()"
+        class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+      >
+        Cancelar
+      </button>
+      <button pButton type="submit"
+          class="px-4 py-2 rounded-md ">
+        @if (editMode) { Actualizar Niño } @else { Crear Niño }
+      </button>
+    </form>
+  </div>
+</div>

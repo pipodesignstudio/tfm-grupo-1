@@ -1,0 +1,43 @@
+<div class="mb-5 flex justify-end">
+    ⌛ 3 min
+</div>
+<h1>¡Ya casi estamos! Vamos a crear el primer objetivo para {{kidName() ?? 'tu hijo'}}</h1>
+<p class="text-muted text-sm mt-3">Puedes crear objetivos de (📙) aprendizaje, (🌱) desarrollo, (👥) sociales y mucho más</p>
+<form [formGroup]="objetivoForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 my-5">
+    <div class="grid md:grid-cols-2 gap-5">
+        <div class="flex flex-col gap-2">
+            <label>Nombre*</label>
+            <input type="text" formControlName="nombre" pInputText>
+            @if (objetivoForm.get('nombre')?.errors 
+            && !objetivoForm.get('nombre')?.pristine) {
+                <p-message severity="error">Necesitamos un nombre</p-message>
+            }
+        </div>
+        <div class="flex flex-col gap-2">
+            <label>Tipo</label>
+            <p-select [options]="tipos" formControlName="tipo" placeholder="Selecciona..." [appendTo]="'body'" class="w-full" />
+        </div>
+        <div class="flex flex-col gap-2">
+            <label>Fecha fin objetivo</label>
+            <p-datepicker fluid [minDate]="minDate" formControlName="fecha_fin" [iconDisplay]="'input'" [showIcon]="true" inputId="fecha_fin" />
+        </div>
+        <div class="flex flex-col gap-2">
+            <label>Color identificativo</label>
+            <p-colorPicker formControlName="color" />
+        </div>
+    </div>
+    <div class="flex flex-row justify-end">
+        <p-button label="Continuar" (click)="onSubmit()" [disabled]="objetivoForm.invalid" [loading]="isLoading" styleClass=" mt-5" icon="pi pi-arrow-right" iconPos="right" />
+    </div>
+</form>
+
+
+<div class="my-5 flex flex-row gap-2 items-center justify-center">
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+    <div class="h-2 w-2 rounded-full bg-primary"></div>
+    <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+</div>
+
+<p-toast />

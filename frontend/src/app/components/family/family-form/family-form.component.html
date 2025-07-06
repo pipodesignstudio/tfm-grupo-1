@@ -1,0 +1,59 @@
+<div
+  class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white dark:bg-gray-700 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
+  >
+    <h2
+      class="text-xl font-semibold text-gray-800 dark:text-white mb-4 shrink-0"
+    >
+      Agregar familiar
+    </h2>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible"
+    >
+      <input
+        type="emailDestinatario"
+        placeholder="Correo electrónico"
+        pInputText
+        formControlName="emailDestinatario"
+        class="p-3 rounded-md"
+      />
+
+      <p-select
+        [options]="roles"
+        formControlName="rol"
+        placeholder="Seleccionar rol"
+        optionLabel="label"
+        [optionValue]="'value'"
+        [appendTo]="'body'"
+      ></p-select>
+
+      <div class="flex justify-end gap-2 mt-4 shrink-0">
+        <button
+          type="button"
+          (click)="cerrarModal()"
+          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          p-button
+          [disabled]="form.invalid"
+          class="px-4 py-2 rounded-md"
+        >
+        @if(editMode) {
+          Editar familiar
+        } 
+        @else {
+          Enviar invitación
+        }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

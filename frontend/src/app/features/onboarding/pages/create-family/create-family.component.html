@@ -1,0 +1,40 @@
+<div class="mb-5 flex justify-end">
+  ⌛ 5 min
+</div>
+
+
+<h1>Empecemos con algo fácil, vamos a crear tu familia</h1>
+<form
+[formGroup]="familyForm"
+(ngSubmit)="onSubmit()"
+class="flex flex-col gap-5"
+>
+<div class="flex flex-col gap-2 mt-5">
+  <label for="description">Nombre de la familia</label>
+  <input 
+  [placeholder]="`Familia de ${currentUser$()?.nick}`"
+  type="text" id="description" formControlName="description" pInputText >
+  @if (familyForm.get('description')?.hasError('required') && !familyForm.get('description')?.pristine) {
+    <p-message 
+    severity="error">
+  Necesitamos un nombre para la familia
+  </p-message>
+  } @if (familyForm.get('description')?.hasError('minlength')) {
+    <p-message severity="error">
+    El nombre debe tener al menos 3 caracteres
+    </p-message>
+  }
+</div>
+<div class="flex flex-row justify-end">
+  <p-button label="Continuar" (click)="onSubmit()" [disabled]="familyForm.invalid" [loading]="isLoading" styleClass="w-full" icon="pi pi-arrow-right" iconPos="right" />
+
+</div>
+</form>
+
+<div class="my-5 flex flex-row gap-2 items-center justify-center">
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-primary"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+  <div class="h-2 w-2 rounded-full bg-neutral-200 dark:bg-neutral-900"></div>
+</div>

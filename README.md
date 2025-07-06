@@ -1,66 +1,139 @@
-# Todoapp (a falta del nombre definitivo)
+# Nido: Pasos para ejecutar la aplicación
 
 ## Paso 1: Levantar base de datos con Docker
+
+### En el directorio raíz del proyecto
 
 ```bash
 docker compose up -d
 ```
 
+### En el caso de que ya tengas una imagen creada y haya que resetearla
+
+```bash
+docker compose down -v
+```
+
+Posteriormente repetir el paso 1
+
+### Diagrama de la base de datos
+
+```bash
+../db/diagrama.pdf
+```
+
+Online:
+
+https://dbdiagram.io/d/TFM-6832fb62b9f7446da30abbdd
+
+#### Troubleshooting
+
+Existe la posibilidad de que tengas los cuerpos por defecto de MySQL y MongoDB ocupados por alguna práctica anterior. En tal caso, deberás remapear los puertos a otro puerto disponible.
+
+Ejemplo: en la línea 10 del docker-compose.yml
+
+```yaml
+ports:
+  - "3307:3306"
+```
+
+Nota: deberás ajustar a este puerto todas las referencias en el archivo .env
+
 ## Paso 2: Copnfigurar backend
 
-### Entrar en backend
+### 2.1 Entrar en backend
 
-``` bash
+```bash
 cd backend
 ```
 
-### Instalar dependencias
+### 2.2 Instalar dependencias
 
-
-``` bash
+```bash
 npm i
 
 ```
 
-### En caso de que no exista .env crear archivo:
+#### Troubleshooting
 
-``` env
+En ocasiones algunas dependencias no se actualizan correctamente en el package.json. En caso de que te falte algún módulo instálalo manualmente con npm install <modulo>
+
+### 2.3 En caso de que no exista .env crear archivo:
+
+```env
 # backend/.env
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASS=root
-DB_NAME=todoapp
-PORT=3000
 
 ```
 
-En caso de que exista .env.development renombrar archivo y ajustar las variables
+En caso de que exista .env.development renombrar archivo y ajustar las variables.
 
-### Levantar el servidor en modo desarrollo
+### 2.4 Sincronizar Prisma
 
-``` bash
+```bash
+npx prisma db pull // Sincroniza la base de datos con el esquema de prisma
+npx prisma generate // Genera el cliente de prisma
+npx prisma studio // Abre el studio de prisma para que puedas ver la BBDD
+```
+
+### 2.5 Levantar el servidor en modo desarrollo
+
+```bash
 npm run start:dev
 
 ```
+
+Si todo va bien deberías ver un mensaje como el siguiente:
+
+```bash
+✅ Conectado a la base de datos MySQL (Prisma)
+✅ Conectado a la base de datos MongoDB (Mongoose)
+🚀 Servidor arrancado en el puerto: 3000
+```
+
+En caso de errores, depurar. Lo más habitual es que sea un error de sintaxis entre alguna modificación de los modelos de prisma y las interfaces que devuelve la aplicación o la falta de alguna de las dependencias.
+
+### 2.6 Documentación
+
+Con el servidor corriendo visita http://localhost:3000/api-docs
 
 ## Paso 3: Levantar el frontend
 
 ### Entrar en frontend
 
-``` bash
+```bash
 cd frontend
 ```
+
 ### Instalar dependencias
 
-``` bash
+```bash
 npm i
 
 ```
 
 ### Levantar el servidor de desarrollo de Angular
 
-``` bash
+```bash
 npx ng serve
+
+```
+
+## Demo y notas adicionales: 
+
+Las credenciales para hacer un uso exhaustivo de la aplicación son las siguientes:
+
+Usuario: userdemo@gmail.com   
+Contraseña: 123456789
+
+Los console.log() utilizados durante el desarrollo se mantienen el código para demostrar el flujo de desarrollo utilizado durante el TFM. 
+
+En el archivo main.ts se encuentra el siguiente código que deshabilitaría los console.log() en el entorno de producción:
+
+```ts
+
+if (environment.production) {
+  enableProdMode();
+  window.console.log = () => {};
+}
 
 ```

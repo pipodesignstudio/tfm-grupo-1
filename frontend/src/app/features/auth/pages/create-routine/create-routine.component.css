@@ -1,0 +1,134 @@
+/* src/app/pages/public/create-routine/create-routine.component.css */
+@keyframes slideInFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.create-routine-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh; /* Usa min-height para que se expanda si el contenido es largo */
+  background-color: #c8e6f0;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.create-routine-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px; /* Más espacio entre el título y la cuadrícula */
+  width: 80%;
+  max-width: 1200px; /* Un poco más ancho para las 3 opciones */
+  background-color: #9ed2c5;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: slideInFadeIn 0.8s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.page-title {
+  font-size: 2.8em; /* Título un poco más grande */
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para el título */
+}
+
+.options-grid {
+  gap: 25px; /* Mantener el espacio vertical entre las tarjetas */
+  width: 100%;
+  margin-top: 20px;
+}
+
+.option-card {
+  margin-bottom: 15px;
+  background-color: #fbf8f0;
+  padding: 30px; /* Más padding para el contenido */
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 2px solid transparent; /* Borde para el hover */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 120px;
+}
+
+.option-card:hover {
+  transform: translateY(-8px); /* Elevación al pasar el ratón */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  border-color: #ffd700; /* Color del borde en hover */
+}
+
+.option-title {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #3a3a3a;
+  margin-bottom: 5px;
+}
+
+.option-description {
+  font-size: 0.95em;
+  color: #6b6b6b;
+}
+
+/* Media Queries para responsividad */
+@media (max-width: 992px) {
+  .options-grid {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(250px, 1fr)
+    ); /* Ajuste para tablets */
+    gap: 20px;
+  }
+  .option-title {
+    font-size: 1.4em;
+  }
+  .option-description {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-routine-content {
+    width: 95%;
+    padding: 30px 20px;
+    gap: 20px;
+  }
+  .page-title {
+    font-size: 2.2em;
+  }
+  .options-grid {
+    grid-template-columns: 1fr; /* Una columna en móviles */
+    gap: 20px;
+  }
+  .option-card {
+    padding: 25px;
+    min-height: auto; /* Dejar que la altura se ajuste al contenido */
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.8em;
+  }
+  .option-title {
+    font-size: 1.3em;
+  }
+  .option-description {
+    font-size: 0.85em;
+  }
+}

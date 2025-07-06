@@ -1,16 +1,29 @@
-version: '3.8'
-
 services:
   db:
-    image: mysql:latest
-    container_name: todoapp_mysql
+    image: mysql:8.0
+    container_name: nidodb_mysql
     restart: always
     environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: todoapp
+      MYSQL_DATABASE: nidodb
     ports:
       - "3306:3306"
     volumes:
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./db/charset.cnf:/etc/mysql/conf.d/charset.cnf
+      - ./db/init.sql:/docker-entrypoint-initdb.d/1_init.sql
       - ./db/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Nueva instancia de MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: nidodb_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db/data/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root_mongo_password

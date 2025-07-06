@@ -1,0 +1,48 @@
+@if (isLoading()) {
+<p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+} @else { @if( needLogin()) {
+<div class="flex flex-col gap-3">
+  <h1 class="text-2xl font-bold">Sesión caducada</h1>
+  <p>Por favor, inicia sesión de nuevo para poder continuar</p>
+  <p-button label="Iniciar sesión" (click)="showDialog()"></p-button>
+</div>
+} @else { @if(!emailVerified() && !needLogin()) {
+<div class="flex flex-col gap-3">
+  <h1 class="text-2xl font-bold">Por favor verifica tu email</h1>
+  <p>Por favor verifica tu email para poder continuar</p>
+  <p-button
+    styleClass="mt-5 w-full"
+    label="Verificar email"
+    (click)="verifyEmail()"
+    [loading]="isPosting"
+  ></p-button>
+</div>
+} @else {
+<div class="flex flex-col gap-3">
+  <h1 class="text-2xl font-bold">Registro completado ⭐️</h1>
+  <p>¡Ya casi terminamos!</p>
+  <p>
+    Solo falta añadir a tus pequeños para que puedas empezar a disfrutar de
+    todas las funcionalidades de la aplicación
+  </p>
+  <p-button
+    styleClass="mt-5 w-full"
+    label="Siguiente"
+    (click)="router.navigate(['onboarding/create-family'])"
+  ></p-button>
+</div>
+} }
+<p-dialog
+  #dialog
+  header="Inicio de sesión"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+>
+  <app-login-form-popup
+    [email]="email!"
+    (onNewToken)="handleNewToken($event)"
+  />
+</p-dialog>
+
+}

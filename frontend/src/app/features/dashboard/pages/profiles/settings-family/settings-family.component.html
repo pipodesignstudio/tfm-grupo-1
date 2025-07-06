@@ -1,0 +1,187 @@
+<div
+  class="max-w-md mx-auto dark:bg-gray-700 bg-white mt-4 rounded-lg shadow-sm"
+>
+  <div class="p-6">
+    <h2
+      class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+    >
+      Mis Familias
+    </h2>
+
+    @if (familiasUsuario?.length === 0) {
+    <div class="text-sm text-gray-500 dark:text-gray-300">
+      No perteneces a ninguna familia.
+    </div>
+    } @else {@for (familia of familiasUsuario; track familia) {
+    <div
+      class="flex justify-between items-center text-sm text-gray-800 dark:text-white mb-2"
+      [class.font-bold]="familia.id === familiaActual?.id"
+    >
+      <span>
+        {{ familia.descripcion }} ({{ familia.rol }}) @if (familia.id ===
+        familiaActual?.id) {
+        <span class="text-xs text-green-500 ml-1">(actual)</span>
+        }
+      </span>
+
+      <div class="space-x-2">
+        @if (familia.rol === 'admin') {
+        <button
+          (click)="showFamiliaEditarModal(familia)"
+          class="text-yellow-500 text-xs"
+        >
+          Editar
+        </button>
+        } @if (familia.id !== familiaActual?.id) {
+        <button
+          (click)="cambiarAFamilia(familia.id)"
+          class="text-blue-500 text-xs"
+        >
+          Entrar
+        </button>
+        }
+
+        <button
+          (click)="showMessageModal(familia)"
+          class="text-red-500 text-xs"
+        >
+          Salir
+        </button>
+      </div>
+    </div>
+    } }
+  </div>
+
+  <div class="p-6 border-t border-gray-300">
+    <h2
+      class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+    >
+      Invitaciones que has recibido
+    </h2>
+
+    @if (invitacionesRecibidas?.length === 0) {
+    <div class="text-sm text-gray-500 dark:text-gray-300">
+      No tienes invitaciones pendientes.
+    </div>
+    } @else { @for (invitacion of invitacionesRecibidas; track invitacion.id) {
+    <div class="flex justify-between items-center mb-2">
+      <span class="text-sm text-gray-800 dark:text-white">
+        {{ invitacion.familyDescription }} ({{ invitacion.role }})
+      </span>
+      @if( !invitacion.attended) {
+      <div class="space-x-2">
+        <button
+          (click)="aceptarInvitacion(invitacion.id)"
+          class="text-green-500 text-xs"
+        >
+          Aceptar
+        </button>
+        <button
+          (click)="rechazarInvitacion(invitacion.id)"
+          class="text-red-500 text-xs"
+        >
+          Rechazar
+        </button>
+      </div>
+      } @else {
+      <span
+        class="text-xs {{
+          invitacion.accepted ? 'text-green-500' : 'text-red-500'
+        }}"
+      >
+        {{ invitacion.accepted ? "Aceptada" : "Rechazada" }}
+      </span>
+      }
+    </div>
+    } }
+  </div>
+
+  <div class="p-6 border-t border-gray-300">
+    <div class="flex justify-between items-center mb-4 align-middle">
+      <h2
+        class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide"
+      >
+        Invitaciones que has enviado
+      </h2>
+      @if (familiaActual?.rol === 'admin') {
+      <div class="flex justify-center align-middle">
+        <p-button
+          (click)="openInvitacionModal()"
+          class="flex items-center gap-2 dark:border-1"
+        >
+          <i class="pi pi-user-plus text-sm"></i>
+          +
+        </p-button>
+      </div>
+      }
+    </div>
+
+    @if (invitacionesEnviadas?.length === 0) {
+    <div class="text-sm text-gray-500 dark:text-gray-300">
+      No has enviado invitaciones.
+    </div>
+    } @else { @for (invitacion of invitacionesEnviadas; track invitacion.id) {
+    <div class="text-sm text-gray-800 dark:text-white mb-1">
+      {{ invitacion.destinationEmail }} ({{ invitacion.role }}) - @if
+      (!invitacion.attended) { Enviada } @else {
+      {{ invitacion.accepted ? "Aceptada" : "Rechazada" }}
+      }
+    </div>
+    } }
+  </div>
+  @if(messageModalVisible) {
+  <app-message-modal
+    [message]="salirFamiliaMsg"
+    [buttonText]="'Salir'"
+    [showButton]="showBotonSalirFamilia"
+    (cerrar)="closeMessageModal()"
+    (button)="salirDeFamilia(familiaASalir || 0)"
+  ></app-message-modal>
+  } @if (showInvitacionModal) {
+  <app-family-form
+    (cerrar)="closeInvitacionModal()"
+    (guardar)="enviarInvitacion($event)"
+  ></app-family-form>
+
+  }
+</div>
+
+@if(showEditarFamiliaModal) {
+
+<div
+  class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden"
+  >
+    <h2
+      class="text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wide mb-4"
+    >
+      Editar Familia
+    </h2>
+
+    <form (ngSubmit)="editarFamilia()">
+      <div class="mb-4">
+        <label
+          for="descripcion"
+          class="block text-sm font-medium text-gray-700 dark:text-white"
+        >
+          Descripción de la familia
+        </label>
+        <input
+          id="descripcion"
+          [(ngModel)]="familiaDescripcion"
+          name="descripcion"
+          type="text"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-600 dark:text-white dark:border-gray-500"
+          required
+        />
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button (click)="closeFamiliaEditarModal()">Cancelar</button>
+        <button type="submit" class="">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+}

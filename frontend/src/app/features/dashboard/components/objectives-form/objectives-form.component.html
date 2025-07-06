@@ -1,0 +1,101 @@
+<div class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-[90%] max-w-md max-h-[90vh] flex flex-col p-6 overflow-hidden">
+    <!-- Título -->
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 shrink-0">
+      @if (editMode) {
+        Editar Objetivo
+      } @else {
+        Nuevo Objetivo
+      }
+    </h2>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4 overflow-y-auto grow pr-1 scroll-invisible dark:text-white"
+    >
+      <!-- Niño -->
+      <p-select
+        [options]="children"
+        formControlName="ninos_id"
+        optionLabel="label"
+        [optionValue]="'value'"
+        placeholder="Selecciona Niño"
+        [appendTo]="'body'"
+        class="w-full"
+      ></p-select>
+      
+      <!-- Título -->
+      <input
+        type="text"
+        pInputText
+        placeholder="Título del objetivo"
+        formControlName="nombre"
+        class="p-3 rounded-md"
+      />
+
+      <!-- Tipo -->
+      <div class="flex flex-col gap-2">
+        <label>Tipo</label>
+        <p-select
+          [options]="tipos"
+          formControlName="tipo"
+          optionLabel="label"
+          [optionValue]="'value'"
+          placeholder="Selecciona"
+          [appendTo]="'body'"
+          class="w-full"
+        ></p-select>
+      </div>
+
+      <!-- Fecha de fin -->
+      <div class="flex items-center gap-4">
+        <span class="min-w-max text-gray-700">Fecha de fin:</span>
+        <div class="flex-1 flex justify-end">
+          <p-datepicker
+            formControlName="fecha_fin"
+            class="border-0 rounded-md w-full max-w-[220px]"
+            [iconDisplay]="'input'"
+            [appendTo]="'body'"
+            [showIcon]="true"
+            [minDate]="minDate"
+          ></p-datepicker>
+        </div>
+      </div>
+
+      <!-- Color -->
+      <div>
+        <label class="text-sm block mb-1">Color del objetivo:</label>
+        <p-colorPicker
+          formControlName="color"
+          [inline]="false"
+          [appendTo]="'body'"
+          format="hex"
+          class="w-full h-12 border-0 rounded-md p-1"
+        ></p-colorPicker>
+      </div>
+
+      <!-- Acciones -->
+      <div class="flex justify-end gap-2 mt-4 shrink-0">
+        <button
+          type="button"
+          (click)="cerrarModal()"
+          class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="form.invalid"
+          class="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+        >
+          @if (editMode) {
+            Actualizar Objetivo
+          } @else {
+            Guardar Objetivo
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

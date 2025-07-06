@@ -1,0 +1,265 @@
+<div class="min-h-screen p-6">
+  @if (loading) {
+    <div class="text-center py-8">
+      <i class="pi pi-spin pi-spinner text-3xl"></i>
+      <p>Cargando perfil...</p>
+    </div>
+  } @else if (error) {
+    <div class="text-red-500 text-center py-8">{{ error }}</div>
+  } @else if (child) {
+    <div class="max-w-6xl mx-auto flex flex-col gap-6">
+
+      <!-- Grupo de las dos primeras cards -->
+      <div class="flex flex-col gap-6 lg:flex-row">
+        <!-- CARD: Información del Niño -->
+        <div class="card-secondary p-8 flex-1">
+          <h2 class="text-2xl font-bold text-[#3A3A3A] mb-4 text-center dark:text-white">
+            {{ child.nombre }} {{ child.apellido }}
+          </h2>
+          <div class="flex flex-col items-center mb-6 relative group">
+
+            @if (child.img_perfil && !editProfile) {
+            <img
+              [src]="processImageFromPrisma(child.img_perfil)"
+              alt="Foto del niño"
+              class="w-32 h-32 rounded-full object-cover border-4 border-primary shadow transition group-hover:scale-105 duration-200"
+            />
+            } 
+            @if (!child.img_perfil && !editProfile) {
+              <div class="w-32 h-32 rounded-full bg-primary flex items-center text-3xl justify-center">
+                {{ child.nombre.charAt(0).toUpperCase() + child.apellido.charAt(0).toUpperCase() }}
+              </div>
+            }
+            @if (editProfile) {
+              @if (imgFileUrl()) {
+                <img
+                  [src]="imgFileUrl()"
+                  alt="Foto del niño"
+                  class="w-32 h-32 rounded-full object-cover border-4 border-primary shadow transition group-hover:scale-105 duration-200"
+                />
+              } @else {
+                <div class="w-32 h-32 rounded-full bg-primary flex items-center text-3xl justify-center">
+                  {{ child.nombre.charAt(0).toUpperCase() + child.apellido.charAt(0).toUpperCase() }}
+                </div>
+              }
+              <label
+                class="absolute bottom-2 right-2 bg-primary w-11 h-11 flex items-center justify-center rounded-full cursor-pointer shadow-lg transition hover:bg-[#FF7F50] dark:bg-[#364153] dark:hover:bg-[#ff7f50]"
+              >
+                <i class="pi pi-camera text-xl text-white"></i>
+                <input type="file" hidden (change)="onFileSelected($event)" accept="image/*" />
+              </label>
+            }
+          </div>
+
+          @if (!editProfile) {
+            <div class="space-y-3 text-[#3A3A3A] w-full text-center">
+              <p class="flex items-center justify-center gap-2 dark:text-white">
+                <i class="pi pi-calendar text-primary"></i>
+                Cumpleaños:
+                <span class="font-semibold">
+                  {{ child.fecha_nacimiento ? (child.fecha_nacimiento | date:'dd/MM/yyyy') : '' }}
+                </span>
+                <span class="ml-2 text-primary font-medium">
+                  ({{ edadCalculada }})
+                </span>
+              </p>
+              <p class="flex items-center justify-center gap-2 dark:text-white">
+                <i class="pi pi-chart-bar text-primary"></i>
+                Peso: <span class="font-semibold">{{ child.peso }} kg</span>
+              </p>
+              <p class="flex items-center justify-center gap-2 dark:text-white">
+                <i class="pi pi-arrows-v text-primary"></i>
+                Altura: <span class="font-semibold">{{ child.altura }} cm</span>
+              </p>
+              <p class="flex items-center justify-center gap-2 dark:text-white">
+                <i class="pi pi-user text-primary"></i>
+                Género: <span class="font-semibold">{{ child.genero }}</span>
+              </p>
+            </div>
+          } @else {
+            <div class="flex flex-col w-full max-w-xs mx-auto gap-3">
+              <p-datePicker
+                [(ngModel)]="child.fecha_nacimiento"
+                dateFormat="yy-mm-dd"
+                styleClass="w-full"
+                fluid
+                [showIcon]="true"
+                placeholder="Fecha de nacimiento"
+                inputId="fechaNacimiento"
+              ></p-datePicker>
+              <input type="number" class="p-inputtext w-full" [(ngModel)]="child.peso" placeholder="Peso" />
+              <input type="number" class="p-inputtext w-full" [(ngModel)]="child.altura" placeholder="Altura" />
+              <p-select
+                [options]="generos"
+                [(ngModel)]="child.genero"
+                placeholder="Selecciona género"
+                class="w-full"
+              ></p-select>
+            </div>
+          }
+
+          <div class="flex justify-center mt-4">
+            <button
+              pButton
+              [label]="saving() ? 'Guardando...' : editProfile ? 'Guardar' : 'Editar'"
+              [disabled]="saving() || (!child.fecha_nacimiento || !child.peso || !child.altura || !child.genero)"
+              [loading]="saving()"
+              (click)="onProfileButtonClick()"
+            ></button>
+          </div>
+        </div>
+
+        <!-- CARD: Salud -->
+        <div class="card-secondary p-8 flex-1">
+          <h2 class="text-2xl font-bold text-[#3A3A3A] mb-4 text-center dark:text-white flex items-center justify-center gap-2">
+            <i class="pi pi-heart-fill text-primary"></i> Salud
+          </h2>
+
+          <!-- Vista solo lectura -->
+          <div class="space-y-3 text-[#3A3A3A] w-full text-center" [hidden]="editHealth">
+            @if (alergias.length > 0) {
+              <div>
+                <p class="font-semibold">Alergias:</p>
+                <div class="flex flex-col gap-1">
+                  @for (a of alergias; track a.id) {
+                    <p>{{ a.nombre }}</p>
+                  }
+                </div>
+              </div>
+            }
+            @if (enfermedades.length > 0) {
+              <div>
+                <p class="font-semibold mt-4">Enfermedades:</p>
+                <div class="flex flex-col gap-1">
+                  @for (e of enfermedades; track e.id) {
+                    <p>{{ e.nombre }} <span class="text-sm italic text-gray-500">({{ e.doctor }})</span></p>
+                  }
+                </div>
+              </div>
+            }
+            @if (vacunas.length > 0) {
+              <div>
+                <p class="font-semibold mt-4">Vacunas:</p>
+                <div class="flex flex-col gap-1">
+                  @for (v of vacunas; track v.id) {
+                    <p>{{ v.nombre }} <span class="text-sm italic text-gray-500">({{ v.fecha ? (v.fecha | date:'dd/MM/yyyy') : '' }})</span></p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Edición activa -->
+          <div class="flex flex-col w-full max-w-xl mx-auto gap-3" [hidden]="!editHealth">
+            <!-- Alergias -->
+             <div class="flex flex-row justify-between items-center">
+               <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Alergias</label>
+               <p-button 
+                label="Añadir alergia"
+                size="small"
+                severity="contrast"
+                icon="pi pi-plus"
+                (click)="alergias.push({ id: 0, nombre: '' })" />
+             </div>
+            <div>
+              @for (a of alergias; track a.id) {
+                <input
+                  pInputText
+                  [(ngModel)]="a.nombre"
+                  class="w-full bg-white border-2 border-primary rounded-2xl shadow-sm text-[#3A3A3A] font-medium px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition disabled:bg-gray-100 dark:bg-[#23272f] dark:text-white dark:border-[#364153] mt-2"
+                  placeholder="Nombre de la alergia"
+                />
+              }
+
+              
+            </div>
+            <!-- Enfermedades -->
+            <div class="mt-4 flex flex-row justify-between items-center">
+              <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Enfermedades</label>
+              <p-button 
+                label="Añadir enfermedad"
+                size="small"
+                severity="contrast"
+                          icon="pi pi-plus"
+                (click)="enfermedades.push({ id: 0, nombre: '', doctor: '' })" />
+            </div>
+            <div>
+              @for (e of enfermedades; track e.id) {
+                <div class="flex flex-col md:flex-row gap-2 mt-2">
+                  <input
+                    pInputText
+                    [(ngModel)]="e.nombre"
+                    class="w-full bg-white border-2 border-primary rounded-2xl shadow-sm text-[#3A3A3A] font-medium px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition disabled:bg-gray-100 dark:bg-[#23272f] dark:text-white dark:border-[#364153]"
+                    placeholder="Nombre de la enfermedad"
+                  />
+                  <input
+                    pInputText
+                    [(ngModel)]="e.doctor"
+                    class="w-full bg-white border-2 border-primary rounded-2xl shadow-sm text-[#3A3A3A] font-medium px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition disabled:bg-gray-100 dark:bg-[#23272f] dark:text-white dark:border-[#364153]"
+                    placeholder="Doctor"
+                  />
+                </div>
+              }
+
+            </div>
+            <!-- Vacunas -->
+            <div class="mt-4 flex flex-row justify-between items-center">
+              <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Vacunas</label>
+              <p-button 
+                label="Añadir vacuna"
+                size="small"
+                severity="contrast"
+                icon="pi pi-plus"
+                (click)="vacunas.push({ id: 0, nombre: '', fecha: '' })" />
+            </div>
+            <div>
+              @for (v of vacunas; track v.id) {
+                <div class="flex flex-col md:flex-row gap-2 items-center mt-2">
+                  <input
+                    pInputText
+                    [(ngModel)]="v.nombre"
+                    class="w-full bg-white border-2 border-primary rounded-2xl shadow-sm text-[#3A3A3A] font-medium px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition disabled:bg-gray-100 dark:bg-[#23272f] dark:text-white dark:border-[#364153]"
+                    placeholder="Nombre de la vacuna"
+                  />
+                  <p-datePicker
+                    [(ngModel)]="v.fecha"
+                    showIcon="true"
+                    class="w-48"
+                    inputClass="w-full bg-white border-2 border-primary rounded-2xl shadow-sm text-[#3A3A3A] font-medium px-4 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition disabled:bg-gray-100 dark:bg-[#23272f] dark:text-white dark:border-[#364153]"
+                    dateFormat="yy-mm-dd"
+                    placeholder="Fecha"
+                  ></p-datePicker>
+                </div>
+              }
+            </div>
+          </div>
+          <!-- Botón Guardar/Editar -->
+          <div class="flex justify-center mt-4">
+            <button
+              pButton
+              [label]="editHealth ? 'Guardar' : 'Editar'"
+              [icon]="editHealth ? 'pi pi-check' : 'pi pi-pencil'"
+              (click)="onHealthButtonClick()">
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD: Descripción -->
+      <div class="card-secondary p-6">
+        <h3 class="text-lg font-semibold mb-4 text-[#3A3A3A] flex items-center justify-center gap-2">
+          <i class="pi pi-comment text-primary"></i> Descripción
+        </h3>
+        <div class="text-center" [hidden]="editDescription">
+          <p class="text-[#6B6B6B] text-base">{{ child.descripcion }}</p>
+        </div>
+        <div [hidden]="!editDescription">
+          <textarea [(ngModel)]="child.descripcion" class="p-inputtext w-full" rows="3" placeholder="Descripción"></textarea>
+        </div>
+        <div class="flex justify-center mt-4">
+          <button pButton [label]="editDescription ? 'Guardar' : 'Editar'" [icon]="editDescription ? 'pi pi-check' : 'pi pi-pencil'" (click)="onDescriptionButtonClick()"></button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

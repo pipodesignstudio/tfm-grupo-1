@@ -1,0 +1,10 @@
+<div class="flex flex-col gap-3">
+    <h1 class="text-2xl font-semibold">¡Gracias por completar tu configuración inicial!</h1>
+<p>Ahora que ya tienes tu cuenta lista, puedes disfrutar de Nido y empezar a gestionar tus actividades y objetivos.</p>
+
+<div class="flex flex-row justify-end">
+    <p-button label="Ir a mi cuenta" (click)="onContinue()" icon="pi pi-arrow-right" iconPos="right"  [loading]="isLoading" />
+</div>
+</div>
+
+<p-toast />
