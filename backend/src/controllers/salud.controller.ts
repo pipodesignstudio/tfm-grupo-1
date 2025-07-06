@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SaludService } from '../services/salud.service';
 import { ApiCorrectResponse, CustomError, NotFoundError, checkIfChildBelongsToUser } from '../utils';
-import { CreateEnfermedadDto, CreateVacunaDto } from '../dtos/salud';
+import { CreateEnfermedadDto, CreateVacunaDto, UpdateVacunaDto } from '../dtos/salud';
 
 const saludService = new SaludService();
 
@@ -167,7 +167,11 @@ export class SaludController {
   public async actualizarVacuna(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = Number(req.params.id);
-      await saludService.updateVacuna(id, req.body);
+      const dto:UpdateVacunaDto = req.body;
+      if (!dto.nombre && !dto.fecha) {
+        throw new CustomError("Debes actualizar al menos un campo", 400, { error: "INVALID_DATA" }, false);
+      }
+      await saludService.updateVacuna(id, dto);
       ApiCorrectResponse.genericSuccess(res, null, true, 'Vacuna actualizada', 200);
     } catch (err) {
       next(err);

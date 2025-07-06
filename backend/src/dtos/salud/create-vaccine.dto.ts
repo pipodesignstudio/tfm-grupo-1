@@ -1,4 +1,4 @@
-import { IsDate,  IsString, MaxLength } from "class-validator";
+import { IsDate,  IsDateString,  IsString, MaxLength } from "class-validator";
 
 export class CreateVacunaDto {
   
@@ -6,6 +6,6 @@ export class CreateVacunaDto {
     @MaxLength(100)
     nombre!: string;
     
-    @IsDate()   
+    @IsDateString()   
     fecha!: Date;
 }
