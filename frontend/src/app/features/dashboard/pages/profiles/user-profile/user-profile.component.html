@@ -83,13 +83,7 @@
 
         <div class="relative mt-4">
           <img
-            [src]="
-              selectedChild.img_perfil
-                ? selectedChild.img_perfil
-                : selectedChild.genero == 'masculino'
-                ? 'nino.png'
-                : 'nina.png'
-            "
+            [src]="processImageFromPrisma(selectedChild.img_perfil) || (selectedChild.genero == 'masculino' ? 'nino.png' : 'nina.png')"
             alt="Foto del niño"
             class="w-full rounded-xl object-cover"
           />
@@ -224,7 +218,7 @@
               <div class="flex items-center gap-4">
                 <div class="relative mt-4">
                   <img
-                    [src]="formatImgPerfil(child.img_perfil) || (child.genero == 'masculino' ? 'nino.png' : 'nina.png')"
+                    [src]="processImageFromPrisma(child.img_perfil) || (child.genero == 'masculino' ? 'nino.png' : 'nina.png')"
                     alt="Foto del niño"
                     class="w-50 rounded-xl object-cover"
                   />

@@ -120,14 +120,44 @@ export class UserProfileComponent {
   });
 
   formatImgPerfil(img: string | Uint8Array | null | undefined): SafeUrl | null {
+    console.log("firstaaaaaaaa", img);
     if (!img) return null;
 
     const byteArray = Object.values(img) as number[];
     const uint8Array = new Uint8Array(byteArray);
     const base64String = btoa(String.fromCharCode(...uint8Array));
     const imageUrl = `data:image/jpeg;base64,${base64String}`;
+    console.log("secondaaaaaaaa", imageUrl);
     return this.sanitizer.bypassSecurityTrustUrl(imageUrl);
   }
+
+
+  processImageFromPrisma(imgData: any) {
+    try {
+      const keys = Object.keys(imgData)
+        .filter(key => !isNaN(parseInt(key)))
+        .map(key => parseInt(key))
+        .sort((a, b) => a - b);
+      
+      const byteArray = keys.map(key => imgData[key]);
+      
+      let base64String = btoa(String.fromCharCode(...byteArray));
+      
+      const jpegStart = base64String.indexOf('/9j/');
+      if (jpegStart > 0) {
+        base64String = base64String.substring(jpegStart);
+      }
+      
+      const imageUrl = `data:image/jpeg;base64,${base64String}`;
+
+      return this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+
+    } catch (error) {
+      console.error('Error procesando imagen:', error);
+      return null;
+    }
+  }
+
 
   formatearFecha(fecha: string): string {
     const opciones: Intl.DateTimeFormatOptions = {
