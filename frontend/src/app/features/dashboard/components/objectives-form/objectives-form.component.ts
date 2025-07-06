@@ -35,10 +35,9 @@ export class ObjectivesFormComponent implements OnChanges {
 
   form!: FormGroup;
   editMode = false;
+  minDate: Date;
 
-  public minDate: Date;
-
-  public tipos = [
+  tipos = [
     { label: 'Salud', value: 'Salud' },
     { label: 'Educación', value: 'Educación' },
     { label: 'Alimentación', value: 'Alimentación' },
@@ -59,11 +58,9 @@ export class ObjectivesFormComponent implements OnChanges {
 
   ngOnChanges(): void {
     this.editMode = !!this.objectiveInfo;
-
     const fecha = this.objectiveInfo?.fecha_fin;
     const parsedFecha = fecha ? new Date(fecha) : null;
 
-    // Valor por defecto del niño:
     const defaultChild =
       this.objectiveInfo?.ninos_id ??
       this.selectedChildId ??
@@ -116,13 +113,11 @@ export class ObjectivesFormComponent implements OnChanges {
       });
     } else {
       this.guardar.emit({ idNino, data: { ...data, ninos_id: idNino } });
-      // Al crear, cierra el modal y comunica el id del niño seleccionado
       this.cerrar.emit(idNino);
     }
   }
 
   cerrarModal(): void {
-    // Al cancelar, también comunica el niño seleccionado actual (para mantener el estado)
     const idNino = this.form.getRawValue().ninos_id;
     this.cerrar.emit(idNino ?? undefined);
   }

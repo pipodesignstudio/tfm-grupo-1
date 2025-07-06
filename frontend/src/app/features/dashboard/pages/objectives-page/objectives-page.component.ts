@@ -14,6 +14,10 @@ import { ObjectivesFormComponent } from '../../components/objectives-form/object
 import { ActivityFormComponent } from '../../../../components/activity/activity-form.component';
 import { ObjetivosHasActivitiesService } from '../../../../shared/services/objetivo-has-actividades.service';
 
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
+
 @Component({
   selector: 'app-objectives-page',
   standalone: true,
@@ -24,7 +28,10 @@ import { ObjetivosHasActivitiesService } from '../../../../shared/services/objet
     FormsModule,
     ObjectivesFormComponent,
     ActivityFormComponent,
+    ToastModule,
+    ConfirmDialogModule,
   ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './objectives-page.component.html',
 })
 export class ObjectivesPageComponent {
@@ -34,6 +41,8 @@ export class ObjectivesPageComponent {
   private activityService = inject(ActivityService);
   private objetivosHasActivitiesService = inject(ObjetivosHasActivitiesService)
   private cdr = inject(ChangeDetectorRef);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
 
   children: IChild[] = [];
   childrenOptions: { label: string; value: number }[] = [];
@@ -45,15 +54,9 @@ export class ObjectivesPageComponent {
 
   activitiesMap: Map<number, IActivity> = new Map();
 
-  // Modal formulario
   showForm = false;
   objectiveToEdit: IObjetivo | null = null;
 
-  // Modal borrado
-  objectiveToDelete: IObjetivo | null = null;
-  showDeleteConfirm = false;
-
-  // Modal añadir actividad
   mostrarActivityModal = false;
   actividadInfo: IActivity | null = null;
   objetivoParaNuevaActividad: IObjetivo | null = null;
@@ -138,15 +141,10 @@ export class ObjectivesPageComponent {
       this.objetivosCompletados = this.objetivos.filter(o => this.getProgreso(o) === 100);
       this.cdr.detectChanges();
     } catch (error) {
-      console.error('Error al actualizar la actividad:', error);
       this.activitiesMap.set(actividadId, { ...actividad });
       this.cdr.detectChanges();
     }
   }
-
-  // ========================
-  // NUEVO OBJETIVO - MODAL
-  // ========================
 
   openNewObjectiveForm(): void {
     if (!this.selectedChildId) return;
@@ -177,15 +175,20 @@ export class ObjectivesPageComponent {
   async onGuardarObjetivo({ idNino, data }: { idNino: number; data: any }): Promise<void> {
     try {
       const dataConTipoCorrecto = { ...data, tipo: 'Objetivo' };
-      const idObjetivo = await this.objectivesService.createObjective(dataConTipoCorrecto, idNino);
-      if (idObjetivo) {
-        // No necesitas llamar a loadObjectives aquí, ya se hace en el servicio
-        // La sincronización del selector se hace en onCerrarFormulario
-      } else {
-        console.error('Error: No se pudo crear el objetivo');
-      }
+      await this.objectivesService.createObjective(dataConTipoCorrecto, idNino);
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Objetivo creado!',
+        detail: 'El objetivo se ha creado correctamente.',
+        life: 2500,
+      });
     } catch (error) {
-      console.error('Error al guardar el objetivo', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al crear',
+        detail: 'No se pudo crear el objetivo.',
+        life: 3000,
+      });
     }
   }
 
@@ -194,43 +197,67 @@ export class ObjectivesPageComponent {
       await this.objectivesService.updateObjective(idNino, idObjetivo, data);
       this.loadObjectives(idNino);
       this.closeForm();
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Objetivo actualizado!',
+        detail: 'El objetivo se ha actualizado correctamente.',
+        life: 2500,
+      });
     } catch (error) {
-      console.error('Error al editar el objetivo', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al actualizar',
+        detail: 'No se pudo actualizar el objetivo.',
+        life: 3000,
+      });
     }
   }
-
-  // ========================
-  // BORRAR OBJETIVO - MODAL
-  // ========================
 
   confirmDeleteObjective(obj: IObjetivo): void {
-    this.objectiveToDelete = obj;
-    this.showDeleteConfirm = true;
-    this.cdr.detectChanges();
+    this.confirmationService.confirm({
+      message: `¿Seguro que quieres eliminar el objetivo "${obj.nombre}" y todas sus actividades asociadas?`,
+      header: 'Eliminar objetivo',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.deleteObjectiveConfirmed(obj),
+    });
   }
 
-  cancelDeleteObjective(): void {
-    this.showDeleteConfirm = false;
-    this.objectiveToDelete = null;
-  }
-
-  async deleteObjectiveConfirmed(): Promise<void> {
-    if (!this.objectiveToDelete) return;
+  async deleteObjectiveConfirmed(obj: IObjetivo): Promise<void> {
+    if (!obj) return;
     const idNino = this.selectedChildId!;
-    const idObjetivo = this.objectiveToDelete.id;
+    const idObjetivo = obj.id;
+
     try {
+      const actividades = obj.objetivos_has_actividades ?? [];
+      for (const act of actividades) {
+        try {
+          await this.activityService.deleteActivity(act.actividad_id, idNino);
+        } catch (e) {
+          console.error(`Error al borrar la actividad ${act.actividad_id}:`, e);
+        }
+      }
+
       await this.objectivesService.deleteObjective(idNino, idObjetivo);
+
       this.loadObjectives(idNino);
-      this.showDeleteConfirm = false;
-      this.objectiveToDelete = null;
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Objetivo eliminado!',
+        detail: 'El objetivo y sus actividades han sido eliminados.',
+        life: 2500,
+      });
     } catch (error) {
-      console.error('Error al borrar el objetivo:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al eliminar',
+        detail: 'No se pudo eliminar el objetivo o sus actividades.',
+        life: 3000,
+      });
     }
   }
-
-  // ========================
-  // AÑADIR ACTIVIDAD
-  // ========================
 
   cerrarActivityModal(): void {
     this.mostrarActivityModal = false;
@@ -238,49 +265,38 @@ export class ObjectivesPageComponent {
     this.objetivoParaNuevaActividad = null;
   }
 
-  // Al pulsar el botón "+" en un objetivo
   onAddActivity(obj: IObjetivo): void {
-  this.actividadInfo = null; // Nueva actividad
-  this.objetivoParaNuevaActividad = obj; // Guardamos el objetivo seleccionado
-  this.mostrarActivityModal = true;
-}
-
-  // objectives-page.component.ts
-    get selectedChildObj(): IChild | null {
-      return this.children.find(c => c.id === this.selectedChildId) || null;
-    }
-
-
-// Handler para guardar la nueva actividad
-async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
-  if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
-
-  try {
-    // Preparamos el objeto de actividad
-    const actividadAEnviar: IActivity = {
-      ...nuevaActividad,
-      tipo: 'Objetivo',
-      ninos_id: this.selectedChildId,
-    } as IActivity;
-
-    // 1. Creamos la actividad
-    const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
-
-    console.log('actividadCreada:', actividadCreada);
-
-    // 2. Asociamos la actividad al objetivo seleccionado
-    await this.objetivosHasActivitiesService.addActivityToObjective({
-      objetivoId: this.objetivoParaNuevaActividad.id,
-      actividadId: actividadCreada.id
-    }); 
-
-    // 3. Refrescamos la lista de objetivos
-    this.loadObjectives(this.selectedChildId);
-  } catch (error) {
-    console.error('Error al crear y asociar la actividad:', error);
-  } finally {
-    this.cerrarActivityModal();
+    this.actividadInfo = null;
+    this.objetivoParaNuevaActividad = obj;
+    this.mostrarActivityModal = true;
   }
-}
 
+  get selectedChildObj(): IChild | null {
+    return this.children.find(c => c.id === this.selectedChildId) || null;
+  }
+
+  async guardarNuevaActividad(nuevaActividad: Partial<IActivity>) {
+    if (!this.objetivoParaNuevaActividad || !this.selectedChildId) return;
+
+    try {
+      const actividadAEnviar: IActivity = {
+        ...nuevaActividad,
+        tipo: 'Objetivo',
+        ninos_id: this.selectedChildId,
+      } as IActivity;
+
+      const actividadCreada = await this.activityService.createActivity(actividadAEnviar);
+
+      await this.objetivosHasActivitiesService.addActivityToObjective({
+        objetivoId: this.objetivoParaNuevaActividad.id,
+        actividadId: actividadCreada.id
+      });
+
+      this.loadObjectives(this.selectedChildId);
+    } catch (error) {
+      // Manejo de error
+    } finally {
+      this.cerrarActivityModal();
+    }
+  }
 }

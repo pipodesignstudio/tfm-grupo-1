@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
 <section class="p-4 max-w-xl mx-auto md:max-w-6xl space-y-6">
   <!-- Selector de niño -->
   <div class="pt-4">
@@ -75,33 +77,31 @@
             }
 
             <p class="text-sm text-gray-800 font-medium mb-1">Progreso</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
-              <div
-                class="h-2 rounded-full transition-all duration-300"
-                [ngStyle]="{
-                  width: getProgreso(obj) + '%',
-                  backgroundColor: obj.color ?? '#3b82f6'
-                }"
-              ></div>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-full bg-gray-200 rounded-full h-2 relative">
+                <div
+                  class="h-2 rounded-full transition-all duration-300"
+                  [ngStyle]="{
+                    width: getProgreso(obj) + '%',
+                    backgroundColor: obj.color ?? '#3b82f6'
+                  }"
+                ></div>
+              </div>
+              <span class="text-xs font-semibold text-gray-700 min-w-[32px] text-right">
+                {{ getProgreso(obj) }}%
+              </span>
             </div>
 
             <!-- Actividades -->
             <div class="flex items-center gap-2 mb-2">
               <p class="text-sm font-semibold text-gray-800">Actividades</p>
-              <p-button
-                icon="pi pi-plus"
-                styleClass="p-button-text"
-                size="small"
-                [ngStyle]="{ color: obj.color ?? '#3b82f6' }"
-                (onClick)="onAddActivity(obj)"
-              ></p-button>
             </div>
             <div class="space-y-1">
               @for (act of obj.objetivos_has_actividades ?? []; track act.actividad_id) {
                 <label class="flex items-center gap-2 text-sm text-gray-800">
                   <input
                     type="checkbox"
-                    class="accent-blue-500"
+                    [ngStyle]="{ 'accent-color': obj.color ?? '#3b82f6' }"
                     [checked]="activitiesMap.get(act.actividad_id)?.completado"
                     (change)="onToggleActividad(obj, act.actividad_id)"
                   />
@@ -114,6 +114,14 @@
                   </span>
                 </label>
               }
+              <!-- Botón "+" debajo de la lista de actividades -->
+              <div>
+                <button
+                  type="button"
+                  class="text-sm text-[#FF7F50] hover:underline font-semibold"
+                  (click)="onAddActivity(obj)">+ Añadir Actividad
+                </button>
+              </div>
             </div>
           </div>
         }
@@ -168,33 +176,31 @@
             }
 
             <p class="text-sm font-medium text-gray-700">Progreso</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-              <div
-                class="h-2 rounded-full transition-all duration-300"
-                [ngStyle]="{
-                  width: '100%',
-                  backgroundColor: obj.color ?? '#10b981'
-                }"
-              ></div>
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-full bg-gray-200 rounded-full h-2 relative">
+                <div
+                  class="h-2 rounded-full transition-all duration-300"
+                  [ngStyle]="{
+                    width: '100%',
+                    backgroundColor: obj.color ?? '#10b981'
+                  }"
+                ></div>
+              </div>
+              <span class="text-xs font-semibold text-gray-700 min-w-[32px] text-right">
+                100%
+              </span>
             </div>
 
             <!-- Actividades en completados -->
             <div class="flex items-center gap-2 mb-2">
               <p class="text-sm font-semibold text-gray-800">Actividades</p>
-              <p-button
-                icon="pi pi-plus"
-                styleClass="p-button-text"
-                size="small"
-                [ngStyle]="{ color: obj.color ?? '#10b981' }"
-                (onClick)="onAddActivity(obj)"
-              ></p-button>
             </div>
             <div class="space-y-1">
               @for (act of obj.objetivos_has_actividades ?? []; track act.actividad_id) {
                 <label class="flex items-center gap-2 text-sm text-gray-800">
                   <input
                     type="checkbox"
-                    class="accent-blue-500"
+                    [ngStyle]="{ 'accent-color': obj.color ?? '#10b981' }"
                     [checked]="activitiesMap.get(act.actividad_id)?.completado"
                     (change)="onToggleActividad(obj, act.actividad_id)"
                   />
@@ -228,20 +234,6 @@
   />
 }
 
-@if (showDeleteConfirm) {
-  <div class="fixed inset-0 flex items-center justify-center bg-white/30 backdrop-blur-md z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-      <h3 class="text-lg font-bold mb-4">¿Eliminar objetivo?</h3>
-      <p class="mb-4">¿Seguro que quieres eliminar este objetivo y todas sus actividades asociadas?</p>
-      <div class="flex justify-end gap-2">
-        <button class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300" (click)="cancelDeleteObjective()">Cancelar</button>
-        <button class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700" (click)="deleteObjectiveConfirmed()">Eliminar</button>
-      </div>
-    </div>
-  </div>
-}
-
-
 @if (mostrarActivityModal) {
   <app-activity-form
     [actividadInfo]="actividadInfo"
@@ -253,4 +245,3 @@
     (cerrar)="cerrarActivityModal()"
   />
 }
-
