@@ -17,17 +17,36 @@
             {{ child.nombre }} {{ child.apellido }}
           </h2>
           <div class="flex flex-col items-center mb-6 relative group">
+
+            @if (child.img_perfil && !editProfile) {
             <img
-              [src]="child.img_perfil"
+              [src]="img_perfil"
               alt="Foto del niño"
               class="w-32 h-32 rounded-full object-cover border-4 border-primary shadow transition group-hover:scale-105 duration-200"
             />
+            } 
+            @if (!child.img_perfil && !editProfile) {
+              <div class="w-32 h-32 rounded-full bg-primary flex items-center text-3xl justify-center">
+                {{ child.nombre.charAt(0).toUpperCase() + child.apellido.charAt(0).toUpperCase() }}
+              </div>
+            }
             @if (editProfile) {
+              @if (imgFileUrl()) {
+                <img
+                  [src]="imgFileUrl()"
+                  alt="Foto del niño"
+                  class="w-32 h-32 rounded-full object-cover border-4 border-primary shadow transition group-hover:scale-105 duration-200"
+                />
+              } @else {
+                <div class="w-32 h-32 rounded-full bg-primary flex items-center text-3xl justify-center">
+                  {{ child.nombre.charAt(0).toUpperCase() + child.apellido.charAt(0).toUpperCase() }}
+                </div>
+              }
               <label
                 class="absolute bottom-2 right-2 bg-primary w-11 h-11 flex items-center justify-center rounded-full cursor-pointer shadow-lg transition hover:bg-[#FF7F50] dark:bg-[#364153] dark:hover:bg-[#ff7f50]"
               >
                 <i class="pi pi-camera text-xl text-white"></i>
-                <input type="file" hidden (change)="onFileSelected($event)" />
+                <input type="file" hidden (change)="onFileSelected($event)" accept="image/*" />
               </label>
             }
           </div>
@@ -62,6 +81,8 @@
               <p-datePicker
                 [(ngModel)]="child.fecha_nacimiento"
                 dateFormat="yy-mm-dd"
+                styleClass="w-full"
+                fluid
                 [showIcon]="true"
                 placeholder="Fecha de nacimiento"
                 inputId="fechaNacimiento"
@@ -80,9 +101,9 @@
           <div class="flex justify-center mt-4">
             <button
               pButton
-              [label]="saving ? 'Guardando...' : editProfile ? 'Guardar' : 'Editar'"
-              [icon]="saving ? 'pi pi-spin pi-spinner' : editProfile ? 'pi pi-check' : 'pi pi-pencil'"
-              [disabled]="saving"
+              [label]="saving() ? 'Guardando...' : editProfile ? 'Guardar' : 'Editar'"
+              [disabled]="saving()"
+              [loading]="saving()"
               (click)="onProfileButtonClick()"
             ></button>
           </div>
@@ -131,8 +152,16 @@
           <!-- Edición activa -->
           <div class="flex flex-col w-full max-w-xl mx-auto gap-3" [hidden]="!editHealth">
             <!-- Alergias -->
+             <div class="flex flex-row justify-between items-center">
+               <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Alergias</label>
+               <p-button 
+                label="Añadir alergia"
+                size="small"
+                severity="contrast"
+                icon="pi pi-plus"
+                (click)="alergias.push({ id: 0, nombre: '' })" />
+             </div>
             <div>
-              <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Alergias</label>
               @for (a of alergias; track a.id) {
                 <input
                   pInputText
@@ -141,17 +170,20 @@
                   placeholder="Nombre de la alergia"
                 />
               }
-              <button
-                pButton
-                icon="pi pi-plus"
-                class="mt-2 bg-primary text-white px-3 py-1 rounded-md text-sm"
-                (click)="alergias.push({ id: 0, nombre: '' })">
-                Añadir alergia
-              </button>
+
+              
             </div>
             <!-- Enfermedades -->
-            <div class="mt-4">
+            <div class="mt-4 flex flex-row justify-between items-center">
               <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Enfermedades</label>
+              <p-button 
+                label="Añadir enfermedad"
+                size="small"
+                severity="contrast"
+                          icon="pi pi-plus"
+                (click)="enfermedades.push({ id: 0, nombre: '', doctor: '' })" />
+            </div>
+            <div>
               @for (e of enfermedades; track e.id) {
                 <div class="flex flex-col md:flex-row gap-2 mt-2">
                   <input
@@ -168,17 +200,19 @@
                   />
                 </div>
               }
-              <button
-                pButton
-                icon="pi pi-plus"
-                class="mt-2 bg-primary text-white px-3 py-1 rounded-md text-sm"
-                (click)="enfermedades.push({ id: 0, nombre: '', doctor: '' })">
-                Añadir enfermedad
-              </button>
+
             </div>
             <!-- Vacunas -->
-            <div class="mt-4">
+            <div class="mt-4 flex flex-row justify-between items-center">
               <label class="text-sm font-medium text-[#3A3A3A] dark:text-white">Vacunas</label>
+              <p-button 
+                label="Añadir vacuna"
+                size="small"
+                severity="contrast"
+                icon="pi pi-plus"
+                (click)="vacunas.push({ id: 0, nombre: '', fecha: '' })" />
+            </div>
+            <div>
               @for (v of vacunas; track v.id) {
                 <div class="flex flex-col md:flex-row gap-2 items-center mt-2">
                   <input
@@ -197,13 +231,6 @@
                   ></p-datePicker>
                 </div>
               }
-              <button
-                pButton
-                icon="pi pi-plus"
-                class="mt-2 bg-primary text-white px-3 py-1 rounded-md text-sm"
-                (click)="vacunas.push({ id: 0, nombre: '', fecha: '' })">
-                Añadir vacuna
-              </button>
             </div>
           </div>
           <!-- Botón Guardar/Editar -->

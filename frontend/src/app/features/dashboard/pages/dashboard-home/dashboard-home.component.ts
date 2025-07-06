@@ -7,11 +7,14 @@ import { ActivityService } from '../../../../shared/services/activity.service';
 import { IChild } from '../../../../shared/interfaces';
 import { IActivity } from '../../../../shared/interfaces/iactivity.interface';
 import { DatePipe } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterModule, DatePipe],
+  imports: [RouterModule, DatePipe, ButtonModule],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css'],
 })
@@ -20,6 +23,8 @@ export class DashboardHomeComponent implements OnInit {
   private familiesStore = inject(FamiliesStore);
   private usersService = inject(UsersService);
   private childService = inject(ChildService);
+  private sanitizer = inject(DomSanitizer);
+
   private activityService = inject(ActivityService);
 
   // PROPIEDADES
@@ -146,4 +151,31 @@ export class DashboardHomeComponent implements OnInit {
       dA.getUTCDate() === dateB.getUTCDate()
     );
   }
+
+  processImageFromPrisma(imgData: any):SafeUrl | null {
+    try {
+      const keys = Object.keys(imgData)
+        .filter(key => !isNaN(parseInt(key)))
+        .map(key => parseInt(key))
+        .sort((a, b) => a - b);
+      
+      const byteArray = keys.map(key => imgData[key]);
+      
+      let base64String = btoa(String.fromCharCode(...byteArray));
+      
+      const jpegStart = base64String.indexOf('/9j/');
+      if (jpegStart > 0) {
+        base64String = base64String.substring(jpegStart);
+      }
+      
+      const imageUrl = `data:image/jpeg;base64,${base64String}`;
+      
+      return this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+      
+    } catch (error) {
+      console.error('Error procesando imagen:', error);
+      return null;
+    }
+  }
+
 }
