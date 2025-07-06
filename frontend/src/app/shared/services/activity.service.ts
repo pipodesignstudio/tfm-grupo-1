@@ -51,9 +51,9 @@ export class ActivityService {
    * This method sends an HTTP GET request to the backend API endpoint `/actividades/ninos/{nino_id}`.
    * The request includes a Bearer token for authentication.
    */
-  getActivitiesNino(nino_id: string): Promise<IActivity[]> {
-    return lastValueFrom(
-      this.httpClient.get<{ data: IActivity[] }>(
+  async getActivitiesNino(nino_id: string): Promise<IActivity[]> {
+    const response = await lastValueFrom(
+      this.httpClient.get<{ data: IActivity[]; }>(
         `${this.apiUrl}/actividades/ninos/${nino_id}`,
         {
           headers: {
@@ -61,7 +61,9 @@ export class ActivityService {
           },
         }
       )
-    ).then((response) => response.data ?? []);
+    );
+    console.log(response.data);
+    return response.data ?? [];
   }
 
   /**

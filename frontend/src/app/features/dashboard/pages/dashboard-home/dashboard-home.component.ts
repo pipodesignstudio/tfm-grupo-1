@@ -99,19 +99,14 @@ export class DashboardHomeComponent implements OnInit {
           (a) =>
             a.tipo &&
             a.tipo.toLowerCase() === 'evento' &&
-            a.fecha_realizacion &&
-            this.isSameUTCDate(
-              typeof a.fecha_realizacion === 'string'
-                ? a.fecha_realizacion
-                : a.fecha_realizacion.toISOString(),
-              new Date()
-            )
+            a.fecha_realizacion
         )
         .sort(
           (a, b) =>
             new Date(a.hora_inicio).getTime() -
             new Date(b.hora_inicio).getTime()
         );
+        console.log(this.activities);
     } else {
       this.activities = [];
     }
