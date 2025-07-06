@@ -169,13 +169,10 @@ export class ChildService {
   }
 
   async updateChild(id: number, data: Partial<IChild>): Promise<IChild> {
-    const response = await axios.put<{ data: IChild }>(
-      `${this.apiUrl}/ninos/${id}`,
-      data,
-      {
-        headers: { Authorization: `Bearer ${this.tokenService.token()}` },
-      }
-    );
-    return response.data.data;
+    await axios.put(`${this.apiUrl}/ninos/${id}`, data, {
+      headers: { Authorization: `Bearer ${this.tokenService.token()}` },
+    });
+    return this.getChildById(id); // <- volvemos a pedir el niño actualizado
   }
+  
 }

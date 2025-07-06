@@ -1,153 +1,245 @@
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { CalendarModule } from 'primeng/calendar';
-import { DropdownModule } from 'primeng/dropdown';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ChildService } from '../../../../../shared/services/child.service';
-import { IChild } from '../../../../../shared/interfaces';
+import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
-import { ChangeDetectorRef } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { ChildService } from '../../../../../shared/services/child.service';
+import { HealthService, Alergia, Enfermedad, Vacuna } from '../../../../../shared/services/Health.service';
+import { IChild } from '../../../../../shared/interfaces';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-child-profile',
-  standalone: true,
-  imports: [
-    FormsModule,
-    CommonModule,
-    ButtonModule,
-    InputTextModule,
-    InputNumberModule,
-    CalendarModule,
-    DropdownModule,
-    DatePickerModule,
-    SelectModule,
-  ],
   templateUrl: './child-profile.component.html',
   styleUrls: ['./child-profile.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    DatePickerModule,
+    SelectModule,
+    ButtonModule,
+    InputTextModule
+  ]
 })
 export class ChildProfileComponent implements OnInit {
-  today: Date = new Date();
-
-  editProfile = false;
-  editDescription = false;
-  editHealth = false;
-  generos = [
-    { label: 'Masculino', value: 'Masculino' },
-    { label: 'Femenino', value: 'Femenino' },
-  ];
-
   child: IChild | null = null;
   edadCalculada = '';
   loading = true;
   error = '';
   saving = false;
 
+  editProfile = false;
+  editDescription = false;
+  editHealth = false;
+
+  generos = [
+    { label: 'Masculino', value: 'Masculino' },
+    { label: 'Femenino', value: 'Femenino' },
+  ];
+
+  alergias: Alergia[] = [];
+  enfermedades: Enfermedad[] = [];
+  vacunas: Vacuna[] = [];
+
   constructor(
-    private childService: ChildService,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private childService: ChildService,
+    private healthService: HealthService
   ) {}
 
   async ngOnInit() {
-    try {
-      const idParam = this.route.snapshot.paramMap.get('id');
-      const id = Number(idParam);
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = Number(idParam);
 
-      if (!idParam || isNaN(id) || id <= 0) {
-        this.error = 'ID de niño inválido.';
-        this.loading = false;
-        this.cdr.detectChanges();
+    if (!idParam || isNaN(id) || id <= 0) {
+      this.error = 'ID de niño inválido.';
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    try {
+      this.child = await this.childService.getChildById(id);
+      if (!this.child) {
+        this.error = 'No se encontró el niño.';
         return;
       }
 
-      this.child = await this.childService.getChildById(id);
-      this.edadCalculada = this.calcularEdad(this.child.fecha_nacimiento);
+      if (this.child.fecha_nacimiento) {
+        this.edadCalculada = this.calcularEdad(new Date(this.child.fecha_nacimiento));
+      }
 
-      this.loading = false;
-      this.cdr.detectChanges();
-    } catch (e) {
-      this.error = 'No se pudo cargar el perfil del niño.';
+      const [alergias, enfermedades, vacunas] = await Promise.all([
+        this.healthService.getAlergias(id),
+        this.healthService.getEnfermedades(id),
+        this.healthService.getVacunas(id),
+      ]);
+
+      this.alergias = alergias;
+      this.enfermedades = enfermedades;
+      this.vacunas = vacunas;
+    } catch (e: any) {
+      console.error('❌ Error al cargar perfil del niño:', e);
+      this.error = e?.error?.message || e?.message || 'No se pudo cargar el perfil.';
+    } finally {
       this.loading = false;
       this.cdr.detectChanges();
     }
   }
 
-  calcularEdad(fecha: string): string {
-    if (!fecha) return '';
-    const nacimiento = new Date(fecha);
+  calcularEdad(fecha: Date): string {
+    if (!fecha || isNaN(fecha.getTime())) return '';
     const hoy = new Date();
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const mes = hoy.getMonth() - nacimiento.getMonth();
-    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-      edad--;
-    }
+    let edad = hoy.getFullYear() - fecha.getFullYear();
+    const mes = hoy.getMonth() - fecha.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) edad--;
     return `${edad} años`;
   }
 
   async saveProfile(): Promise<void> {
     if (!this.child) return;
     this.saving = true;
-    try {
-      const updated = await this.childService.updateChild(this.child.id, {
-        ...this.child,
-        fecha_nacimiento: this.child.fecha_nacimiento,
-        peso: this.child.peso,
-        altura: this.child.altura,
-        genero: this.child.genero,
-        img_perfil: this.child.img_perfil,
-      });
+    this.error = '';
 
-      if (updated && updated.fecha_nacimiento) {
-        this.child = updated;
-        this.edadCalculada = this.calcularEdad(this.child.fecha_nacimiento);
-        this.editProfile = false;
-        this.error = '';
-      } else {
-        // Recarga el niño desde la API si la respuesta no es válida. Solucionar en el backend.
-        this.child = await this.childService.getChildById(this.child.id);
-        if (this.child && this.child.fecha_nacimiento) {
-          this.edadCalculada = this.calcularEdad(this.child.fecha_nacimiento);
-          this.editProfile = false;
-          this.error = '';
-        } else {
-          this.error = 'No se pudo obtener el perfil actualizado.';
-        }
+    try {
+      if (!this.child.nombre || !this.child.apellido || !this.child.fecha_nacimiento) {
+        throw new Error('Faltan datos obligatorios');
       }
-    } catch (e) {
-      this.error = 'No se pudo guardar el perfil.';
+
+      const d = new Date(this.child.fecha_nacimiento);
+      if (isNaN(d.getTime())) {
+        throw new Error('Fecha de nacimiento inválida');
+      }
+
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      this.child.fecha_nacimiento = `${yyyy}-${mm}-${dd}`;
+
+      const updated = await this.childService.updateChild(this.child.id, this.child);
+      console.log('✅ Perfil actualizado:', updated);
+
+      if (!updated || !updated.fecha_nacimiento) {
+        throw new Error('El servidor no devolvió el perfil actualizado');
+      }
+
+      this.child = updated;
+      this.edadCalculada = this.calcularEdad(new Date(this.child.fecha_nacimiento));
+      this.editProfile = false;
+    } catch (e: any) {
+      console.error('❌ Error al guardar perfil:', e);
+      this.error = e?.error?.message || e?.message || JSON.stringify(e) || 'No se pudo guardar el perfil.';
     } finally {
       this.saving = false;
-      this.cdr.detectChanges();
+      this.cdr.detectChanges(); // <- Asegura actualización de UI
     }
   }
 
   async saveDescription(): Promise<void> {
     if (!this.child) return;
+    this.error = '';
     try {
-      this.child = await this.childService.updateChild(this.child.id, {
-        descripcion: this.child.descripcion,
-      });
+      await this.childService.updateChild(this.child.id, this.child);
       this.editDescription = false;
-    } catch (e) {
-      this.error = 'No se pudo guardar la descripción.';
+      this.cdr.detectChanges();
+    } catch (e: any) {
+      console.error(e);
+      this.error = e?.error?.message || e?.message || JSON.stringify(e) || 'No se pudo guardar la descripción.';
     }
   }
 
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        if (this.child) {
-          this.child.img_perfil = reader.result as string;
-        }
+        if (this.child) this.child.img_perfil = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  async saveHealth(): Promise<void> {
+    if (!this.child) return;
+    const id = this.child.id;
+    this.error = '';
+
+    try {
+      for (const a of this.alergias) {
+        if (!a.nombre?.trim()) continue;
+        if (a.id === 0 || !a.id) await this.healthService.addAlergia(id, a);
+        else await this.healthService.updateAlergia(id, a);
+      }
+
+      for (const e of this.enfermedades) {
+        if (!e.nombre?.trim()) continue;
+        if (e.id === 0 || !e.id) await this.healthService.addEnfermedad(id, e);
+        else await this.healthService.updateEnfermedad(id, e);
+      }
+
+      for (const v of this.vacunas) {
+        if (!v.nombre?.trim()) continue;
+
+        if (typeof v.fecha === 'string') {
+          const parsed = new Date(v.fecha);
+          if (!isNaN(parsed.getTime())) {
+            v.fecha = parsed;
+          } else {
+            console.warn('⚠️ Fecha inválida (string) para vacuna:', v);
+            continue;
+          }
+        }
+
+        if (!(v.fecha instanceof Date) || isNaN(v.fecha.getTime())) {
+          console.warn('⚠️ Fecha inválida (objeto) para vacuna:', v);
+          continue;
+        }
+
+        const yyyy = v.fecha.getFullYear();
+        const mm = String(v.fecha.getMonth() + 1).padStart(2, '0');
+        const dd = String(v.fecha.getDate()).padStart(2, '0');
+        v.fecha = `${yyyy}-${mm}-${dd}`;
+
+        if (v.id === 0 || !v.id) {
+          await this.healthService.addVacuna(id, v);
+        } else {
+          await this.healthService.updateVacuna(id, v.id, v);
+        }
+      }
+
+      this.editHealth = false;
+
+      [this.alergias, this.enfermedades, this.vacunas] = await Promise.all([
+        this.healthService.getAlergias(id),
+        this.healthService.getEnfermedades(id),
+        this.healthService.getVacunas(id)
+      ]);
+
+      this.cdr.detectChanges();
+    } catch (e: any) {
+      console.error(e);
+      this.error = e?.error?.message || e?.message || JSON.stringify(e) || 'Error al guardar salud';
+    }
+  }
+
+  trackById(index: number, item: { id: number }) {
+    return item.id;
+  }
+
+  onProfileButtonClick(): void {
+    if (this.saving) return;
+    this.editProfile ? this.saveProfile() : this.editProfile = true;
+  }
+
+  onHealthButtonClick(): void {
+    this.editHealth ? this.saveHealth() : this.editHealth = true;
+  }
+
+  onDescriptionButtonClick(): void {
+    this.editDescription ? this.saveDescription() : this.editDescription = true;
   }
 }
