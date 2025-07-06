@@ -1,0 +1,664 @@
+{
+	"info": {
+		"_postman_id": "c586122f-c5a7-4cdd-8f7d-6aa5eb854994",
+		"name": "TFM Unir",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15961991"
+	},
+	"item": [
+		{
+			"name": "Test Errors",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Analiza la respuesta JSON de la petición.\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"if (response.success && response.data && response.data.token && response.data.token.token) {\r",
+							"    // Extrae el token de la respuesta.\r",
+							"    const authToken = response.data.token.token;\r",
+							"\r",
+							"    pm.environment.set(\"authToken\", authToken);\r",
+							"\r",
+							"    console.log(\"Token de autenticación guardado (authToken):\", authToken);\r",
+							"\r",
+							"    pm.test(\"Token de autenticación guardado correctamente\", function () {\r",
+							"        pm.expect(pm.environment.get(\"authToken\")).to.eql(authToken);\r",
+							"    });\r",
+							"\r",
+							"} else {\r",
+							"    console.log(\"No se pudo extraer el token de la respuesta de login.\");\r",
+							"    console.log(\"Respuesta completa:\", response);\r",
+							"    pm.test(\"No se pudo extraer el token de autenticación\", function () {\r",
+							"        pm.expect(response.success).to.be.true;\r",
+							"        pm.expect(response.data.token.token).to.be.a('string');\r",
+							"    });\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"emartineztores@gmail.com\",\r\n    \"contrasena\": \"12345678\",\r\n    \"nick\": \"esther\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/auth/register",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "contraseña",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Data",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/api/users/profile",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Complete User Onboarding",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users/complete-onboarding",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"complete-onboarding"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify User Email",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users/complete-onboarding",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"complete-onboarding"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users/complete-onboarding",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"complete-onboarding"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users/delete",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Build Activities Suggestions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/suggestions",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"suggestions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Invitation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiZW1haWwiOiJqbWlsbGFuZGV2QGljbG91ZC5jb20iLCJpYXQiOjE3NDkxMTI5MzIsImV4cCI6MTc0OTExNjUzMn0.lZXoLrRGOYDFhC1W_COMXp7-FUnAYUYtcvVQqlwO-h4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"destinationEmail\" : \"millanvillalobos.javier@gmail.com\",\r\n    \"familyId\": 8,\r\n    \"role\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/invitations/send",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"invitations",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get My Sent Invitations",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiZW1haWwiOiJqbWlsbGFuZGV2QGljbG91ZC5jb20iLCJpYXQiOjE3NDkxNDIyOTgsImV4cCI6MTc0OTE0NTg5OH0.OIWRnuGzuZ_4H9Jf-NBz1FRs4MPNer4ghVQy8OTDY2Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/invitations/sent",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"invitations",
+						"sent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get My Sent Invitations Received",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiZW1haWwiOiJqbWlsbGFuZGV2QGljbG91ZC5jb20iLCJpYXQiOjE3NDkxNDIyOTgsImV4cCI6MTc0OTE0NTg5OH0.OIWRnuGzuZ_4H9Jf-NBz1FRs4MPNer4ghVQy8OTDY2Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/invitations/sent",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"invitations",
+						"sent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Export PDF",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImVtYWlsIjoiam1pbGxhbmRldkBpY2xvdWQuY29tIiwiaWF0IjoxNzUxMDIxMTQ3LCJleHAiOjE3NTEwMjQ3NDd9.sSlozPEF_79fBM-Bpxn-WB8ZobKCU2pFk4kQX54cqOA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"activityIds\" : [\r\n       1, 2, 3, 4\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/actividades/export",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"actividades",
+						"export"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Perfil Aprendizaje",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImVtYWlsIjoiam1pbGxhbmRldkBpY2xvdWQuY29tIiwiaWF0IjoxNzUxNTY2MzQ1LCJleHAiOjE3NTE3MzkxNDV9.EvcwR5pYPgU-LBHkqZ9luSizwIx4zXoAjm6R2r_gzus",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nombre",
+							"value": "Hoal mundo",
+							"type": "text"
+						},
+						{
+							"key": "descripcion",
+							"value": "Hola-iHMoLMrY",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/perfil-aprendizaje",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"perfil-aprendizaje"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Nueva Vacuna",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJsdWNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTgwMTM0NiwiZXhwIjoxNzUxOTc0MTQ2fQ.aQhJtxW4Dnjuc71LxVKyK_buX-0VxQjeIEp4YjbkLGY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"nombre\": \"Vacuna de Refuerzo\",\n  \"fecha\": \"2025-07-06T11:32:15.000Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/ninos/1/salud/vacunas",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"ninos",
+						"1",
+						"salud",
+						"vacunas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar Vacuna",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJsdWNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTgwMTgxMywiZXhwIjoxNzUxOTc0NjEzfQ.IhfBmsVClx42WIDMgLDAlh1J8J7nSu02sFbYKTgYK6c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJsdWNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTgwMTgxMywiZXhwIjoxNzUxOTc0NjEzfQ.IhfBmsVClx42WIDMgLDAlh1J8J7nSu02sFbYKTgYK6c",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\" : \"Vacuna de pruebas\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/ninos/1/salud/vacunas/11",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"ninos",
+						"1",
+						"salud",
+						"vacunas",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar Enfermedad",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJsdWNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTgwMTgxMywiZXhwIjoxNzUxOTc0NjEzfQ.IhfBmsVClx42WIDMgLDAlh1J8J7nSu02sFbYKTgYK6c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJsdWNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTgwMTgxMywiZXhwIjoxNzUxOTc0NjEzfQ.IhfBmsVClx42WIDMgLDAlh1J8J7nSu02sFbYKTgYK6c",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\" : \"Diabetes tipo II\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/ninos/1/salud/enfermedades/20",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"ninos",
+						"1",
+						"salud",
+						"enfermedades",
+						"20"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Enfermedad",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJsdWNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTgwMTgxMywiZXhwIjoxNzUxOTc0NjEzfQ.IhfBmsVClx42WIDMgLDAlh1J8J7nSu02sFbYKTgYK6c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\" : \"Diabetes\",\n    \"doctor\" : \"Dr. Garrido\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/ninos/1/salud/enfermedades",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"ninos",
+						"1",
+						"salud",
+						"enfermedades"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
